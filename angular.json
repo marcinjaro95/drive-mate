@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "bootstrap-scaffold-temp": {
+    "drive-mate": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -83,10 +83,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "bootstrap-scaffold-temp:build:production"
+              "buildTarget": "drive-mate:build:production"
             },
             "development": {
-              "buildTarget": "bootstrap-scaffold-temp:build:development"
+              "buildTarget": "drive-mate:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -95,3 +95,4 @@
     }
   }
 }
+
