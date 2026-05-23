@@ -1,0 +1,6 @@
+name = "drive-mate"
+pages_build_output_dir = "dist/drive-mate/browser"
+compatibility_date = "2026-05-23"
+
+[placement]
+mode = "smart"
