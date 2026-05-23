@@ -1,6 +1,11 @@
 name = "drive-mate"
-pages_build_output_dir = "dist/drive-mate/browser"
+main = "functions/worker.ts"
 compatibility_date = "2026-05-23"
+
+[assets]
+directory = "dist/drive-mate/browser"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
 
 [placement]
 mode = "smart"

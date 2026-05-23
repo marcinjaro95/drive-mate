@@ -1,18 +1,19 @@
-interface Env {
-  OPENROUTER_API_KEY: string;
-}
-
 const CORS_HEADERS: HeadersInit = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-export async function onRequestPost(
-  context: { request: Request; env: Env },
-): Promise<Response> {
-  const { request, env } = context;
+interface Fetcher {
+  fetch(input: RequestInfo, init?: RequestInit): Promise<Response>;
+}
 
+interface Env {
+  ASSETS: Fetcher;
+  OPENROUTER_API_KEY: string;
+}
+
+async function handleAI(request: Request, env: Env): Promise<Response> {
   if (!env.OPENROUTER_API_KEY) {
     return new Response(JSON.stringify({ error: 'API key not configured' }), {
       status: 500,
@@ -35,7 +36,7 @@ export async function onRequestPost(
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${env.OPENROUTER_API_KEY}`,
-      'HTTP-Referer': 'https://drive-mate.pages.dev',
+      'HTTP-Referer': 'https://drive-mate.workers.dev',
       'X-Title': 'DriveMate',
     },
     body: JSON.stringify(body),
@@ -50,6 +51,20 @@ export async function onRequestPost(
   });
 }
 
-export async function onRequestOptions(): Promise<Response> {
-  return new Response(null, { status: 204, headers: CORS_HEADERS });
-}
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+
+    if (url.pathname === '/api/ai') {
+      if (request.method === 'OPTIONS') {
+        return new Response(null, { status: 204, headers: CORS_HEADERS });
+      }
+      if (request.method === 'POST') {
+        return handleAI(request, env);
+      }
+      return new Response('Method Not Allowed', { status: 405 });
+    }
+
+    return env.ASSETS.fetch(request);
+  },
+};
