@@ -345,10 +345,10 @@ At MVP scale (small data volume per the PRD), the three indexes on `user_id` and
 
 #### Automated
 
-- [x] 3.1 `npm run build` passes
-- [x] 3.2 `npm test` passes (all new Vitest specs green)
+- [x] 3.1 `npm run build` passes — 6aae1c6
+- [x] 3.2 `npm test` passes (all new Vitest specs green) — 6aae1c6
 
 #### Manual
 
-- [x] 3.3 VehicleService.createVehicle creates row with correct `user_id` visible in Supabase Studio
-- [x] 3.4 Deleting a vehicle cascades to its service records (confirmed manually)
+- [x] 3.3 VehicleService.createVehicle creates row with correct `user_id` visible in Supabase Studio — 6aae1c6
+- [x] 3.4 Deleting a vehicle cascades to its service records (confirmed manually) — 6aae1c6
