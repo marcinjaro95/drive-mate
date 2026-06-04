@@ -326,20 +326,20 @@ At MVP scale (small data volume per the PRD), the three indexes on `user_id` and
 
 #### Automated
 
-- [x] 1.1 `supabase link` succeeds for remote project
-- [x] 1.2 `supabase db push` applies migration with zero errors
+- [x] 1.1 `supabase link` succeeds for remote project — 8139496
+- [x] 1.2 `supabase db push` applies migration with zero errors — 8139496
 
 #### Manual
 
-- [x] 1.3 Both tables visible in Supabase Studio with correct columns and types
-- [x] 1.4 4 RLS policies per table visible and active in Supabase Studio
-- [x] 1.5 RLS smoke test: user B cannot see user A's vehicle row
+- [x] 1.3 Both tables visible in Supabase Studio with correct columns and types — 8139496
+- [x] 1.4 4 RLS policies per table visible and active in Supabase Studio — 8139496
+- [x] 1.5 RLS smoke test: user B cannot see user A's vehicle row — 8139496
 
 ### Phase 2: TypeScript Domain Types
 
 #### Automated
 
-- [ ] 2.1 `npm run build` passes with zero TypeScript errors
+- [x] 2.1 `npm run build` passes with zero TypeScript errors
 
 ### Phase 3: Angular Data Services
 
