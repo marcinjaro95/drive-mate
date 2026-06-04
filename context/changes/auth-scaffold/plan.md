@@ -295,19 +295,19 @@ None specific to this change — auth is a one-time initialization path, not a h
 
 #### Automated
 
-- [x] 2.1 `npm run build` passes with no TypeScript errors
+- [x] 2.1 `npm run build` passes with no TypeScript errors — 2dc75c3
 
 #### Manual
 
-- [ ] 2.2 Visiting `/` while unauthenticated redirects to `/login`
-- [ ] 2.3 Visiting `/dashboard` while unauthenticated redirects to `/login`
-- [ ] 2.4 No console errors on redirect
+- [x] 2.2 Visiting `/` while unauthenticated redirects to `/login`
+- [x] 2.3 Visiting `/dashboard` while unauthenticated redirects to `/login`
+- [x] 2.4 No console errors on redirect
 
 ### Phase 3: Auth UI Components
 
 #### Automated
 
-- [ ] 3.1 `npm run build` passes with no TypeScript errors or template errors
+- [x] 3.1 `npm run build` passes with no TypeScript errors or template errors
 
 #### Manual
 
