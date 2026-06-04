@@ -3,18 +3,7 @@ import { ServiceRecordService } from './service-record.service';
 import { SupabaseService } from '../supabase.service';
 import { AuthService } from '../auth/auth.service';
 import type { ServiceRecord } from '../models/service-record.model';
-
-const MOCK_USER = { id: 'user-abc' } as any;
-
-function createMockBuilder(result: { data: unknown; error: unknown }) {
-  const builder: any = {};
-  for (const m of ['select', 'insert', 'update', 'delete', 'eq', 'order', 'single', 'maybeSingle']) {
-    builder[m] = vi.fn().mockReturnValue(builder);
-  }
-  builder.then = (resolve: any, reject: any) => Promise.resolve(result).then(resolve, reject);
-  builder.catch = (fn: any) => Promise.resolve(result).catch(fn);
-  return builder;
-}
+import { MOCK_USER, createMockBuilder } from '../testing/mock-supabase-builder';
 
 const makeRecord = (overrides: Partial<ServiceRecord> = {}): ServiceRecord => ({
   id: 'sr1',
@@ -144,6 +133,24 @@ describe('ServiceRecordService', () => {
       mockFrom.mockReturnValue(createMockBuilder({ data: null, error: pgError }));
 
       await expect(service.deleteServiceRecord('sr1')).rejects.toEqual(pgError);
+    });
+  });
+
+  describe('updateServiceRecord', () => {
+    it('returns the updated ServiceRecord on success', async () => {
+      const record = makeRecord({ label: 'Tyre rotation' });
+      mockFrom.mockReturnValue(createMockBuilder({ data: record, error: null }));
+
+      const result = await service.updateServiceRecord('sr1', { label: 'Tyre rotation' });
+
+      expect(result).toEqual(record);
+    });
+
+    it('throws when Supabase returns an error', async () => {
+      const pgError = { message: 'update error', code: '42501' };
+      mockFrom.mockReturnValue(createMockBuilder({ data: null, error: pgError }));
+
+      await expect(service.updateServiceRecord('sr1', { label: 'Tyre rotation' })).rejects.toEqual(pgError);
     });
   });
 });

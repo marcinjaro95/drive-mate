@@ -44,3 +44,4 @@ No convention established in git history yet. Document the agreed format here on
 
 - FR-005 (AI schedule): the Anthropic API call must route through a server-side proxy (Cloudflare Worker or Supabase Edge Function) — the SPA cannot hold an API key.
 - FR-001/FR-004 (VIN lookup): the EU/Polish-market VIN API is unresolved — see Open Question 1 in `@context/foundation/prd.md` before starting this work.
+- **Error contracts**: data services (`VehicleService`, `ServiceRecordService`) throw on error; `AuthService` returns `AuthError | null`. Do not introduce a third pattern.

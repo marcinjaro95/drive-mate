@@ -3,18 +3,7 @@ import { VehicleService } from './vehicle.service';
 import { SupabaseService } from '../supabase.service';
 import { AuthService } from '../auth/auth.service';
 import type { Vehicle } from '../models/vehicle.model';
-
-const MOCK_USER = { id: 'user-abc' } as any;
-
-function createMockBuilder(result: { data: unknown; error: unknown }) {
-  const builder: any = {};
-  for (const m of ['select', 'insert', 'update', 'delete', 'eq', 'order', 'single', 'maybeSingle']) {
-    builder[m] = vi.fn().mockReturnValue(builder);
-  }
-  builder.then = (resolve: any, reject: any) => Promise.resolve(result).then(resolve, reject);
-  builder.catch = (fn: any) => Promise.resolve(result).catch(fn);
-  return builder;
-}
+import { MOCK_USER, createMockBuilder } from '../testing/mock-supabase-builder';
 
 const makeVehicle = (overrides: Partial<Vehicle> = {}): Vehicle => ({
   id: 'v1',
@@ -152,6 +141,24 @@ describe('VehicleService', () => {
       mockFrom.mockReturnValue(createMockBuilder({ data: null, error: pgError }));
 
       await expect(service.deleteVehicle('v1')).rejects.toEqual(pgError);
+    });
+  });
+
+  describe('updateVehicle', () => {
+    it('returns the updated Vehicle on success', async () => {
+      const vehicle = makeVehicle({ make: 'Honda' });
+      mockFrom.mockReturnValue(createMockBuilder({ data: vehicle, error: null }));
+
+      const result = await service.updateVehicle('v1', { make: 'Honda' });
+
+      expect(result).toEqual(vehicle);
+    });
+
+    it('throws when Supabase returns an error', async () => {
+      const pgError = { message: 'update error', code: '42501' };
+      mockFrom.mockReturnValue(createMockBuilder({ data: null, error: pgError }));
+
+      await expect(service.updateVehicle('v1', { make: 'Honda' })).rejects.toEqual(pgError);
     });
   });
 });

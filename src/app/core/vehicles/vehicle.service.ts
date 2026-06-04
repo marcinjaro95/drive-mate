@@ -10,11 +10,13 @@ export class VehicleService {
     private readonly auth: AuthService,
   ) {}
 
-  async getVehicles(): Promise<Vehicle[]> {
+  async getVehicles(options: { limit?: number; offset?: number } = {}): Promise<Vehicle[]> {
+    const { limit = 100, offset = 0 } = options;
     const { data, error } = await this.supabase.client
       .from('vehicles')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
     if (error) throw error;
     return data as Vehicle[];
   }
@@ -30,7 +32,9 @@ export class VehicleService {
   }
 
   async createVehicle(payload: Omit<NewVehicle, 'user_id'>): Promise<Vehicle> {
-    const user_id = this.auth.currentUser()!.id;
+    const user = this.auth.currentUser();
+    if (!user) throw new Error('Unauthenticated');
+    const user_id = user.id;
     const { data, error } = await this.supabase.client
       .from('vehicles')
       .insert({ ...payload, user_id })
@@ -41,10 +45,13 @@ export class VehicleService {
   }
 
   async updateVehicle(id: string, payload: VehicleUpdate): Promise<Vehicle> {
+    const user = this.auth.currentUser();
+    if (!user) throw new Error('Unauthenticated');
     const { data, error } = await this.supabase.client
       .from('vehicles')
       .update(payload)
       .eq('id', id)
+      .eq('user_id', user.id)
       .select()
       .single();
     if (error) throw error;
@@ -52,10 +59,13 @@ export class VehicleService {
   }
 
   async deleteVehicle(id: string): Promise<void> {
+    const user = this.auth.currentUser();
+    if (!user) throw new Error('Unauthenticated');
     const { error } = await this.supabase.client
       .from('vehicles')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('user_id', user.id);
     if (error) throw error;
   }
 }
