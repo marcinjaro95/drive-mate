@@ -13,7 +13,10 @@ export class DashboardComponent {
   private readonly router = inject(Router);
 
   async signOut(): Promise<void> {
-    await this.auth.signOut();
-    this.router.navigate(['/login']);
+    try {
+      await this.auth.signOut();
+    } finally {
+      await this.router.navigate(['/login']);
+    }
   }
 }

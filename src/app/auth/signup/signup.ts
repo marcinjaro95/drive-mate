@@ -35,7 +35,7 @@ export class SignupComponent {
     if (error) {
       this.errorMessage.set(error.message);
     } else {
-      this.router.navigate(['/dashboard']);
+      await this.router.navigate(['/dashboard']);
     }
   }
 }
