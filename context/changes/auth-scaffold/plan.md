@@ -281,21 +281,21 @@ None specific to this change — auth is a one-time initialization path, not a h
 
 #### Automated
 
-- [x] 1.1 `npm run build` passes with no TypeScript errors
-- [x] 1.2 `@supabase/supabase-js` appears in `package.json` dependencies
-- [x] 1.3 `@angular/material` and `@angular/cdk` appear in `package.json` dependencies
-- [x] 1.4 A prebuilt Material theme CSS entry is listed in `angular.json` styles
+- [x] 1.1 `npm run build` passes with no TypeScript errors — de60aea
+- [x] 1.2 `@supabase/supabase-js` appears in `package.json` dependencies — de60aea
+- [x] 1.3 `@angular/material` and `@angular/cdk` appear in `package.json` dependencies — de60aea
+- [x] 1.4 A prebuilt Material theme CSS entry is listed in `angular.json` styles — de60aea
 
 #### Manual
 
-- [ ] 1.5 `npm start` runs without console errors
-- [ ] 1.6 App still renders with no blank screen
+- [x] 1.5 `npm start` runs without console errors
+- [x] 1.6 App still renders with no blank screen
 
 ### Phase 2: AuthService + Auth Guard
 
 #### Automated
 
-- [ ] 2.1 `npm run build` passes with no TypeScript errors
+- [x] 2.1 `npm run build` passes with no TypeScript errors
 
 #### Manual
 
