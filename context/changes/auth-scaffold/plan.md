@@ -324,9 +324,9 @@ None specific to this change — auth is a one-time initialization path, not a h
 
 #### Automated
 
-- [x] 4.1 `npm test` passes with all `auth.service.spec.ts` cases green
-- [x] 4.2 `npm run build` passes with no TypeScript errors in the spec file
+- [x] 4.1 `npm test` passes with all `auth.service.spec.ts` cases green — 95305c8
+- [x] 4.2 `npm run build` passes with no TypeScript errors in the spec file — 95305c8
 
 #### Manual
 
-- [ ] 4.3 Test output shows all AuthService spec cases green with no skipped tests
+- [x] 4.3 Test output shows all AuthService spec cases green with no skipped tests
