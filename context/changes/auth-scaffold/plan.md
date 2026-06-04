@@ -37,7 +37,9 @@ Four sequential phases: install dependencies and create the Supabase client sing
 
 **Auth state initialization race.** Supabase's `auth.getSession()` is always asynchronous — the initial session cannot be resolved synchronously on app boot. The `AuthService` exposes a public `initialized: Promise<void>` that resolves once `getSession()` completes and the `currentUser` signal is set. The `authGuard` must `await auth.initialized` before checking `isAuthenticated()` to avoid incorrectly redirecting authenticated users who refresh the page. This is the only place `await` appears in the guard — treat it as load-bearing.
 
-**`onAuthStateChange` is the exclusive updater of `currentUser`.** After initialization, Supabase fires the listener on every session change (sign-in, sign-out, token refresh). The `currentUser` signal must be updated exclusively from this listener so all downstream consumers stay in sync automatically. `signIn`, `signUp`, and `signOut` do not set the signal directly — they call the Supabase auth method and let the listener do the update.
+**`getSession()` must catch network failures.** If `getSession()` rejects (DNS failure, paused Supabase project, timeout), a bare `.then()` leaves `initialized` as a rejected Promise. The guard's `await auth.initialized` then propagates the rejection, Angular Router cancels navigation, and the app renders nothing. Always chain `.catch(() => { this._currentUser.set(null); }).finally(() => { this._isLoading.set(false); })` so `initialized` always resolves and the guard falls through to the unauthenticated path.
+
+**`onAuthStateChange` is the exclusive updater of `currentUser` after initialization.** After initialization, Supabase fires the listener on every session change (sign-in, sign-out, token refresh). The `currentUser` signal must be updated exclusively from this listener so all downstream consumers stay in sync automatically. `signIn`, `signUp`, and `signOut` do not set the signal directly — they call the Supabase auth method and let the listener do the update.
 
 ---
 
@@ -55,7 +57,12 @@ Install the two missing packages (`@supabase/supabase-js` and Angular Material),
 
 **Intent**: Add `@supabase/supabase-js` to `package.json` dependencies, and add Angular Material (including `@angular/cdk`) with its prebuilt theme wired into `angular.json`.
 
-**Contract**: Run `npm install @supabase/supabase-js`, then run `ng add @angular/material` — select the `indigo-pink` prebuilt theme, enable global typography, and use async animations. The `ng add` schematic updates `angular.json` (adds theme CSS to `styles`), `src/index.html` (font preconnect links), and may add `provideAnimationsAsync()` to `app.config.ts`. Verify after running.
+**Contract**: Run `npm install @supabase/supabase-js @angular/animations@<same-version-as-@angular/core>`, then run `ng add @angular/material` — select the `indigo-pink` prebuilt theme, enable global typography, and use async animations.
+
+After `ng add`, verify all three schematic outputs were applied (the Angular 21 schematic has a known bug that silently skips file mutations — apply manually if missing):
+- `angular.json` styles array includes `@angular/material/prebuilt-themes/indigo-pink.css`
+- `src/index.html` has Roboto + Material Icons `<link>` tags
+- `src/app/app.config.ts` imports and calls `provideAnimationsAsync()`
 
 #### 2. `src/app/core/supabase.service.ts` (new file)
 
@@ -130,7 +137,7 @@ None of the three methods update `currentUser` directly — the `onAuthStateChan
   /dashboard   → DashboardComponent
   / (empty)    → redirectTo 'dashboard', pathMatch: 'full'
 ```
-`LoginComponent`, `SignupComponent`, and `DashboardComponent` are the components created in Phase 3. Forward-reference them here; imports will be added in Phase 3.5.
+`LoginComponent`, `SignupComponent`, and `DashboardComponent` are the components created in Phase 3. Use `loadComponent` with lazy `import()` for all three routes. Because TypeScript resolves dynamic import paths at build time, create minimal stub files (`src/app/auth/login/login.ts`, `src/app/auth/signup/signup.ts`, `src/app/dashboard/dashboard.ts`) now so Phase 2's build criterion passes. Phase 3 replaces the stubs with full implementations — no separate Phase 3.5 import step is needed.
 
 ### Success Criteria:
 
@@ -214,6 +221,24 @@ Build the login and signup Angular Material forms, a placeholder dashboard with 
 Write Vitest unit tests for `AuthService` that verify signal state transitions using a mocked `SupabaseService`, covering initialization, sign-in success/failure, sign-up success/failure, and sign-out.
 
 ### Changes Required:
+
+#### 0. Wire Vitest test runner (pre-requisite)
+
+**File**: `angular.json` + terminal
+
+**Intent**: Make `npm test` functional before writing any spec. `tsconfig.spec.json` already references `vitest/globals` but no test target exists and the runner packages are absent.
+
+**Contract**: Run `npm install --save-dev vitest happy-dom`. Add a `test` target to `angular.json` under the project's `architect` block:
+```json
+"test": {
+  "builder": "@angular/build:unit-test",
+  "options": {
+    "tsConfig": "tsconfig.spec.json",
+    "runner": "vitest"
+  }
+}
+```
+Verify with `npm test` (no spec files yet — should exit with "no tests found" or similar, not an error).
 
 #### 1. `src/app/core/auth/auth.service.spec.ts` (new file)
 
