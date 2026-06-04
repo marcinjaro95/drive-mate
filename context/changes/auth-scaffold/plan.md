@@ -307,25 +307,25 @@ None specific to this change — auth is a one-time initialization path, not a h
 
 #### Automated
 
-- [x] 3.1 `npm run build` passes with no TypeScript errors or template errors
+- [x] 3.1 `npm run build` passes with no TypeScript errors or template errors — 25f3da5
 
 #### Manual
 
-- [ ] 3.2 `/login` renders Angular Material login form with email + password fields
-- [ ] 3.3 `/signup` renders Angular Material signup form with a link to login
-- [ ] 3.4 Invalid password shows inline error below submit button; no navigation
-- [ ] 3.5 Valid credentials log in and navigate to `/dashboard`
-- [ ] 3.6 Sign-out returns to `/login`
-- [ ] 3.7 Unauthenticated access to `/dashboard` redirects to `/login`
-- [ ] 3.8 Page refresh while signed in keeps user on `/dashboard`
-- [ ] 3.9 UI is usable at 375 px viewport with no horizontal scroll
+- [x] 3.2 `/login` renders Angular Material login form with email + password fields
+- [x] 3.3 `/signup` renders Angular Material signup form with a link to login
+- [x] 3.4 Invalid password shows inline error below submit button; no navigation
+- [x] 3.5 Valid credentials log in and navigate to `/dashboard`
+- [x] 3.6 Sign-out returns to `/login`
+- [x] 3.7 Unauthenticated access to `/dashboard` redirects to `/login`
+- [x] 3.8 Page refresh while signed in keeps user on `/dashboard`
+- [x] 3.9 UI is usable at 375 px viewport with no horizontal scroll
 
 ### Phase 4: AuthService Unit Tests
 
 #### Automated
 
-- [ ] 4.1 `npm test` passes with all `auth.service.spec.ts` cases green
-- [ ] 4.2 `npm run build` passes with no TypeScript errors in the spec file
+- [x] 4.1 `npm test` passes with all `auth.service.spec.ts` cases green
+- [x] 4.2 `npm run build` passes with no TypeScript errors in the spec file
 
 #### Manual
 
