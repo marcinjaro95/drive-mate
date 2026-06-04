@@ -339,16 +339,16 @@ At MVP scale (small data volume per the PRD), the three indexes on `user_id` and
 
 #### Automated
 
-- [x] 2.1 `npm run build` passes with zero TypeScript errors
+- [x] 2.1 `npm run build` passes with zero TypeScript errors — 89a33b3
 
 ### Phase 3: Angular Data Services
 
 #### Automated
 
-- [ ] 3.1 `npm run build` passes
-- [ ] 3.2 `npm test` passes (all new Vitest specs green)
+- [x] 3.1 `npm run build` passes
+- [x] 3.2 `npm test` passes (all new Vitest specs green)
 
 #### Manual
 
-- [ ] 3.3 VehicleService.createVehicle creates row with correct `user_id` visible in Supabase Studio
-- [ ] 3.4 Deleting a vehicle cascades to its service records (confirmed manually)
+- [x] 3.3 VehicleService.createVehicle creates row with correct `user_id` visible in Supabase Studio
+- [x] 3.4 Deleting a vehicle cascades to its service records (confirmed manually)
