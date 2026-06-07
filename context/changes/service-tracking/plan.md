@@ -211,4 +211,4 @@ None. `service_records` table and RLS policies are already deployed.
 
 #### Automated
 
-- [x] 2.1 All tests pass: `npm test`
+- [x] 2.1 All tests pass: `npm test` — 303e347
