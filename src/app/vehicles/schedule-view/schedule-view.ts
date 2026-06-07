@@ -18,7 +18,6 @@ import type {ScheduleItem} from '../../core/models/schedule-item.model';
 
 @Component({
   selector: 'app-schedule-view',
-  imports: [DecimalPipe, MatCardModule, MatChipsModule, MatButtonModule, MatProgressSpinnerModule, RouterModule, MatDialogModule],
   imports: [
     DecimalPipe,
     MatCardModule,
@@ -28,6 +27,7 @@ import type {ScheduleItem} from '../../core/models/schedule-item.model';
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
+    MatDialogModule,
     RouterModule,
   ],
   templateUrl: './schedule-view.html',
