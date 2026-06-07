@@ -23,10 +23,13 @@ export class ServiceRecordService {
   }
 
   async getServiceRecord(id: string): Promise<ServiceRecord | null> {
+    const user = this.auth.currentUser();
+    if (!user) throw new Error('Unauthenticated');
     const { data, error } = await this.supabase.client
       .from('service_records')
       .select('*')
       .eq('id', id)
+      .eq('user_id', user.id)
       .maybeSingle();
     if (error) throw error;
     return data as ServiceRecord | null;

@@ -40,7 +40,7 @@
     </mat-card>
   } @else {
     <div class="schedule-list">
-      @for (item of scheduleItems(); track item.item) {
+      @for (item of scheduleItems(); track $index) {
         <mat-card class="schedule-card">
           <mat-card-header>
             <mat-card-title>{{ item.item }}</mat-card-title>
@@ -55,10 +55,69 @@
               <p>Next due: {{ item.next_due_date }}</p>
             }
             <small>Source: {{ item.source }}</small>
+
+            @if (expandedItem()?.item === item.item) {
+              <div class="mark-done-form">
+                <form [formGroup]="markDoneForm">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Service date</mat-label>
+                    <input type="date" matInput formControlName="service_date" />
+                    @if (markDoneForm.controls.service_date.touched && markDoneForm.controls.service_date.invalid) {
+                      <mat-error>Date is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Mileage (km)</mat-label>
+                    <input type="number" matInput formControlName="mileage" min="0" />
+                    @if (markDoneForm.controls.mileage.touched && markDoneForm.controls.mileage.invalid) {
+                      <mat-error>Valid mileage is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Notes (optional)</mat-label>
+                    <textarea matInput formControlName="notes" rows="3"></textarea>
+                  </mat-form-field>
+                </form>
+
+                @if (saveError()) {
+                  <p class="save-error">{{ saveError() }}</p>
+                }
+
+                <div class="mark-done-actions">
+                  <button mat-raised-button color="primary" [disabled]="isSaving()" (click)="saveMarkDone()">
+                    Save
+                  </button>
+                  <button mat-button [disabled]="isSaving()" (click)="cancelMarkDone()">Cancel</button>
+                </div>
+              </div>
+            }
           </mat-card-content>
+
+          @if (expandedItem()?.item !== item.item) {
+            <mat-card-actions>
+              <button mat-button (click)="openMarkDone(item)">Mark as done</button>
+            </mat-card-actions>
+          }
         </mat-card>
       }
     </div>
+
+    @if (regenPromptVisible()) {
+      <div class="regen-prompt">
+        <span>Schedule may now be out of date.</span>
+        <button mat-button (click)="retry(); regenPromptVisible.set(false)">Regenerate</button>
+        <button mat-button (click)="regenPromptVisible.set(false)">Dismiss</button>
+      </div>
+    }
+
+    @if (mileageSyncWarning()) {
+      <div class="mileage-warning">
+        <span>Service recorded, but odometer was not updated.</span>
+        <button mat-button (click)="mileageSyncWarning.set(false)">Dismiss</button>
+      </div>
+    }
   }
 }
 
