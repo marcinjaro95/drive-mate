@@ -198,14 +198,14 @@ None. `service_records` table and RLS policies are already deployed.
 
 #### Manual
 
-- [ ] 1.3 "Mark as done" button visible on each loaded schedule card
-- [ ] 1.4 Clicking expands inline form; other cards unaffected
-- [ ] 1.5 Form pre-fills today's date and vehicle's current mileage
-- [ ] 1.6 Empty date/mileage shows validation error; no service call fired
-- [ ] 1.7 Successful save creates ServiceRecord row in Supabase and updates current_mileage
-- [ ] 1.8 Regen prompt appears; Regenerate and Dismiss work correctly
-- [ ] 1.9 Mileage sync failure shows non-blocking warning; record still saved
-- [ ] 1.10 Cancel closes form without saving
+- [x] 1.3 "Mark as done" button visible on each loaded schedule card
+- [x] 1.4 Clicking expands inline form; other cards unaffected
+- [x] 1.5 Form pre-fills today's date and vehicle's current mileage
+- [x] 1.6 Empty date/mileage shows validation error; no service call fired
+- [x] 1.7 Successful save creates ServiceRecord row in Supabase and updates current_mileage
+- [x] 1.8 Regen prompt appears; Regenerate and Dismiss work correctly
+- [x] 1.9 Mileage sync failure shows non-blocking warning; record still saved
+- [x] 1.10 Cancel closes form without saving
 
 ### Phase 2: ServiceRecordService spec coverage
 
