@@ -1,9 +1,10 @@
 ---
-change_id: service-tracking
-title: Service tracking
-status: planned
+change_id: ui-improvements
+title: UI improvements
+status: implementing
 created: 2026-06-07
 updated: 2026-06-07
+
 archived_at: null
 ---
 

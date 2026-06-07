@@ -3,7 +3,7 @@ project: DriveMate
 version: 1
 status: draft
 created: 2026-06-01
-updated: 2026-06-01
+updated: 2026-06-07
 prd_version: 1
 main_goal: speed
 top_blocker: external
@@ -35,6 +35,7 @@ A private car owner knows their car needs servicing but doesn't know what, when,
 | S-02 | service-tracking    | mark a service item as done with date and mileage                | S-01                    | FR-006                         | proposed |
 | S-03 | vin-car-add         | add a car via VIN with fields auto-populated                     | S-01, VIN API validated | FR-001, FR-004, US-01          | blocked  |
 | S-04 | car-deletion        | delete a car and all its service records                         | S-01                    | FR-003                         | proposed |
+| S-05 | ui-improvements     | use the app with a consistent, coherent visual design            | S-01                    | —                              | planned  |
 
 ## Streams
 
@@ -44,6 +45,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | ------ | ------------------------ | --------------------------------------- | -------------------------------------------------------------------------- |
 | A      | Auth & schedule loop     | `F-01` → `S-01` → `S-02` → `S-03`      | Core speed path; S-03 is blocked pending OQ-1 (VIN API).                  |
 | B      | Data enabler & lifecycle | `F-02` → `S-01` (joins A) / `S-04`     | F-02 runs parallel with F-01; S-04 runs parallel with S-02 after S-01.    |
+| C      | UI polish                | `S-01` → `S-05`                        | Runs after the core loop is proven; can be parallelised with S-02/S-04.   |
 
 ## Baseline
 
@@ -139,6 +141,19 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** Delete must cascade to `service_records` — confirm cascade behaviour against the F-02 schema before implementing; hard-delete without cascade leaves orphaned records.
 - **Status:** proposed
 
+### S-05: UI improvements
+
+- **Outcome:** user can navigate and use the app with a consistent visual design — shared colour palette, typography scale, spacing system, and component style applied uniformly across all screens.
+- **Change ID:** ui-improvements
+- **PRD refs:** —
+- **Prerequisites:** S-01
+- **Parallel with:** S-02, S-04 (once S-01 ships)
+- **Blockers:** —
+- **Unknowns:**
+  - Which design system or component library (if any) to adopt — own primitives vs. an off-the-shelf library? — Owner: user. Block: no (work can start with a token/variable pass before a library decision is finalised).
+- **Risk:** Broad scope; must be timeboxed to avoid infinite polish — scope to the screens delivered by S-01 through S-04 only.
+- **Status:** planned
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID           | Suggested issue title                                      | Ready for `/10x-plan` | Notes                                        |
@@ -149,6 +164,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-02       | service-tracking    | Service tracking: mark item done with date and mileage     | no                    | Requires S-01                                |
 | S-03       | vin-car-add         | VIN car add with auto-populated fields                     | no                    | Blocked: resolve OQ-1 (VIN API) first        |
 | S-04       | car-deletion        | Car deletion with confirmation and cascade                 | no                    | Requires S-01; parallel with S-02            |
+| S-05       | ui-improvements     | UI improvements: consistent design across all screens      | no                    | Requires S-01; run after core loop ships     |
 
 ## Open Roadmap Questions
 

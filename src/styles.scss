@@ -1,1 +1,62 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+:root {
+  // Urgency/status colors
+  --color-overdue: #f44336;
+  --color-overdue-text: #fff;
+  --color-due-soon: #ff9800;
+  --color-due-soon-text: #fff;
+  --color-upcoming: #4caf50;
+  --color-upcoming-text: #fff;
+
+  // Banner backgrounds
+  --color-regen-bg: #fff8e1;
+  --color-warning-bg: #fce4ec;
+
+  // Skeleton
+  --color-skeleton-base: #e0e0e0;
+  --color-skeleton-shine: #f5f5f5;
+
+  // Spacing scale
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  // Typography
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+
+  // Layout
+  --content-max-width: 720px;
+  --border-radius-sm: 4px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, sans-serif;
+}
+
+.page-content {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--space-md);
+}

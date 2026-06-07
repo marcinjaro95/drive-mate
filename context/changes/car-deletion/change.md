@@ -1,7 +1,7 @@
 ---
 change_id: car-deletion
 title: Car deletion
-status: impl_reviewed
+status: planned
 created: 2026-06-07
 updated: 2026-06-07
 archived_at: null
