@@ -79,6 +79,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
   openDeleteDialog(): void {
     const v = this.vehicle();
     if (!v) return;
+    this.abortController?.abort();
     this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: `Delete ${v.year} ${v.make} ${v.model}`,

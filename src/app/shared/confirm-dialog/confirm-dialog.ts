@@ -19,8 +19,8 @@ export class ConfirmDialogComponent {
   readonly data = inject<ConfirmDialogData>(MAT_DIALOG_DATA);
   private readonly dialogRef = inject(MatDialogRef<ConfirmDialogComponent>);
 
-  isDeleting = signal(false);
-  error = signal<string | null>(null);
+  readonly isDeleting = signal(false);
+  readonly error = signal<string | null>(null);
 
   async confirm(): Promise<void> {
     this.isDeleting.set(true);
@@ -30,6 +30,7 @@ export class ConfirmDialogComponent {
       this.dialogRef.close();
     } catch (err: unknown) {
       this.error.set(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
       this.isDeleting.set(false);
     }
   }

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MatDialog } from '@angular/material/dialog';
 import { ScheduleViewComponent } from './schedule-view';
 import { VehicleService } from '../../core/vehicles/vehicle.service';
 import { AiScheduleService } from '../../core/ai-schedule/ai-schedule.service';
@@ -35,7 +36,7 @@ describe('ScheduleViewComponent — delete flow', () => {
     navigateSpy = vi.fn().mockResolvedValue(true);
     dialogOpenSpy = vi.fn().mockReturnValue({});
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [ScheduleViewComponent],
       providers: [
         provideAnimationsAsync(),
@@ -44,13 +45,14 @@ describe('ScheduleViewComponent — delete flow', () => {
         { provide: VehicleService, useValue: { getVehicle: vi.fn().mockResolvedValue(vehicle), deleteVehicle: deleteVehicleSpy } },
         { provide: AiScheduleService, useValue: { generateAndSave: vi.fn().mockResolvedValue([]) } },
       ],
-    }).compileComponents();
+    });
+    TestBed.overrideComponent(ScheduleViewComponent, {
+      set: { providers: [{ provide: MatDialog, useValue: { open: dialogOpenSpy } }] },
+    });
+    await TestBed.compileComponents();
 
     const fixture = TestBed.createComponent(ScheduleViewComponent);
     component = fixture.componentInstance;
-    // Replace injected private fields after construction so tests are isolated from DI
-    // complexity introduced by the standalone component's own module imports.
-    (component as any).dialog = { open: dialogOpenSpy };
     (component as any).router = { navigate: navigateSpy };
   });
 

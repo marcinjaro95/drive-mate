@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MatDialog } from '@angular/material/dialog';
 import { VehicleListComponent } from './vehicle-list';
 import { VehicleService } from '../../core/vehicles/vehicle.service';
 import type { Vehicle } from '../../core/models/vehicle.model';
@@ -32,7 +33,7 @@ describe('VehicleListComponent — delete flow', () => {
     deleteVehicleSpy = vi.fn().mockResolvedValue(undefined);
     dialogOpenSpy = vi.fn().mockReturnValue({});
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [VehicleListComponent],
       providers: [
         provideAnimationsAsync(),
@@ -42,13 +43,14 @@ describe('VehicleListComponent — delete flow', () => {
           useValue: { getVehicles: vi.fn().mockResolvedValue([vehicle]), deleteVehicle: deleteVehicleSpy },
         },
       ],
-    }).compileComponents();
+    });
+    TestBed.overrideComponent(VehicleListComponent, {
+      set: { providers: [{ provide: MatDialog, useValue: { open: dialogOpenSpy } }] },
+    });
+    await TestBed.compileComponents();
 
     const fixture = TestBed.createComponent(VehicleListComponent);
     component = fixture.componentInstance;
-    // MatDialogModule (inside the standalone component's imports) takes precedence over
-    // TestBed providers, so we replace the injected field directly after construction.
-    (component as any).dialog = { open: dialogOpenSpy };
   });
 
   it('opens dialog with data.title containing the vehicle make and model', () => {
