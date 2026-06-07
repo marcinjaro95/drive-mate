@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -16,11 +16,13 @@ import type { ScheduleItem } from '../../core/models/schedule-item.model';
   templateUrl: './schedule-view.html',
   styleUrl: './schedule-view.scss',
 })
-export class ScheduleViewComponent implements OnInit {
+export class ScheduleViewComponent implements OnInit, OnDestroy {
   private readonly vehicleService = inject(VehicleService);
   private readonly aiScheduleService = inject(AiScheduleService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  private abortController: AbortController | null = null;
 
   vehicle = signal<Vehicle | null>(null);
   scheduleItems = signal<ScheduleItem[]>([]);
@@ -52,12 +54,15 @@ export class ScheduleViewComponent implements OnInit {
   }
 
   async generateSchedule(): Promise<void> {
+    this.abortController?.abort();
+    this.abortController = new AbortController();
     this.isGenerating.set(true);
     this.error.set(null);
     try {
-      const items = await this.aiScheduleService.generateAndSave(this.vehicle()!);
+      const items = await this.aiScheduleService.generateAndSave(this.vehicle()!, this.abortController.signal);
       this.scheduleItems.set(items);
     } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') return;
       this.error.set(err instanceof Error ? err.message : 'Failed to generate schedule');
     } finally {
       this.isGenerating.set(false);
@@ -66,5 +71,9 @@ export class ScheduleViewComponent implements OnInit {
 
   retry(): void {
     this.generateSchedule();
+  }
+
+  ngOnDestroy(): void {
+    this.abortController?.abort();
   }
 }

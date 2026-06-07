@@ -1,9 +1,10 @@
 ---
 change_id: car-add-ai-schedule
 title: Car add AI schedule
-status: implemented
+status: impl_reviewed
 created: 2026-06-04
 updated: 2026-06-07
+impl_reviewed: 2026-06-07
 archived_at: null
 ---
 

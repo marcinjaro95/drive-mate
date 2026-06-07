@@ -12,7 +12,7 @@ const makeVehicle = (overrides: Partial<Vehicle> = {}): Vehicle => ({
   model: 'Corolla',
   year: 2019,
   engine_capacity: 1.6,
-  fuel_type: 'petrol',
+  fuel_type: 'gasoline',
   vin: null,
   current_mileage: 45000,
   ai_schedule: null,
@@ -146,7 +146,7 @@ describe('AiScheduleService', () => {
       expect(prompt).toContain('Corolla');
       expect(prompt).toContain('2019');
       expect(prompt).toContain('1.6');
-      expect(prompt).toContain('petrol');
+      expect(prompt).toContain('gasoline');
     });
   });
 });

@@ -2,7 +2,7 @@
 
 ## Overview
 
-S-01 from the DriveMate roadmap: user fills in car details (make, model, year, engine capacity, fuel type, optional mileage) → car is saved → user lands directly on the AI-generated maintenance schedule. Schedule is generated via OpenRouter (Gemini Flash 2.0) through the existing Cloudflare Worker proxy, persisted as JSONB on the `vehicles` row, and rendered with hard source-attribution enforcement.
+S-01 from the DriveMate roadmap: user fills in car details (make, model, year, engine capacity, fuel type, optional mileage) → car is saved → user lands directly on the AI-generated maintenance schedule. Schedule is generated via OpenRouter (`gpt-oss-120b:free`) through the existing Cloudflare Worker proxy, persisted as JSONB on the `vehicles` row, and rendered with hard source-attribution enforcement.
 
 ## Current State Analysis
 
@@ -148,7 +148,7 @@ const httpRes = await fetch('/api/ai', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    model: 'google/gemini-2.0-flash-001',
+    model: 'gpt-oss-120b:free',
     messages: [{ role: 'user', content: this.buildPrompt(vehicle) }],
     response_format: { type: 'json_object' },
   }),
@@ -432,7 +432,17 @@ None at this stage — full E2E testing is deferred; manual verification covers 
 
 ## Performance Considerations
 
-Gemini Flash 2.0 target latency is 2–5 seconds for this prompt size. No latency NFR applies. The JSON array of 10–15 schedule items is approximately 2–4 KB — well under Cloudflare's 6 MB body limit (roadmap S-01 unknown risk). No streaming is needed. The JSONB column means `getVehicle()` always fetches the full schedule; at 2–4 KB per vehicle this is negligible.
+Target latency is 2–5 seconds for this prompt size. No latency NFR applies. The JSON array of 10–15 schedule items is approximately 2–4 KB — well under Cloudflare's 6 MB body limit (roadmap S-01 unknown risk). No streaming is needed. The JSONB column means `getVehicle()` always fetches the full schedule; at 2–4 KB per vehicle this is negligible.
+
+## Addendum: Unplanned Files Accepted During Implementation
+
+The following files were added outside the plan's "Changes Required" and accepted at impl-review:
+
+- `proxy.conf.json` — dev-server proxy forwarding `/api/*` to local Wrangler (port 8787); dev-only, no prod impact
+- `angular.json` — wires `proxyConfig: "proxy.conf.json"` into `architect.serve.options`; prod build target unchanged
+- `src/app/core/vehicles/vehicle.service.spec.ts` — full Vitest coverage for VehicleService including the updated `createVehicle` signature; additive and consistent with the mock infrastructure
+
+---
 
 ## Migration Notes
 
