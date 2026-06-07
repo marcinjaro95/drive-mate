@@ -412,26 +412,26 @@ Manually verify every screen at 375px viewport width. Run through the visual con
 
 #### Automated
 
-- [x] 2.1 Build succeeds: `npm run build`
+- [x] 2.1 Build succeeds: `npm run build` — b7bd39f
 
 #### Manual
 
-- [x] 2.2 Dashboard header shows colored background with DriveMate branding
-- [x] 2.3 Schedule view: "← My cars" appears above the vehicle name
-- [x] 2.4 Add-vehicle page: "← My cars" link appears at the top before the form
-- [x] 2.5 Both back-links navigate correctly to /dashboard
+- [x] 2.2 Dashboard header shows colored background with DriveMate branding — b7bd39f
+- [x] 2.3 Schedule view: "← My cars" appears above the vehicle name — b7bd39f
+- [x] 2.4 Add-vehicle page: "← My cars" link appears at the top before the form — b7bd39f
+- [x] 2.5 Both back-links navigate correctly to /dashboard — b7bd39f
 
 ### Phase 3: Auth Pages
 
 #### Automated
 
-- [ ] 3.1 Build succeeds: `npm run build`
+- [x] 3.1 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 3.2 Login page: DriveMate wordmark visible above "Sign in" in brand color
-- [ ] 3.3 Signup page: DriveMate wordmark visible above "Sign up" in brand color
-- [ ] 3.4 Auth form layout unchanged — centered, full-height, usable
+- [x] 3.2 Login page: DriveMate wordmark visible above "Sign in" in brand color
+- [x] 3.3 Signup page: DriveMate wordmark visible above "Sign up" in brand color
+- [x] 3.4 Auth form layout unchanged — centered, full-height, usable
 
 ### Phase 4: Vehicle Pages
 
