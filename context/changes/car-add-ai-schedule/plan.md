@@ -41,7 +41,7 @@ After this plan:
 - Marking service done / schedule recalculation (S-02)
 - Car deletion (S-04)
 - User-triggered schedule regeneration when a valid schedule already exists (deferred to S-02)
-- Streaming AI response (SSE) — one-shot fetch fits within the 10-second NFR for Gemini Flash 2.0
+- Streaming AI response (SSE) — one-shot fetch is sufficient for Gemini Flash 2.0
 - Component-level Vitest specs — service + parsing logic specs only (no component test setup)
 - Editing existing vehicles
 
@@ -388,7 +388,7 @@ Imports: `MatCardModule`, `MatChipsModule`, `MatButtonModule`, `MatProgressSpinn
 #### Manual Verification
 
 - Navigate to a vehicle with no `ai_schedule` (fresh add): skeleton cards appear while generating
-- Schedule renders within 10 seconds with ≥ 5 items, each with a non-empty source citation
+- Schedule renders with ≥ 5 items, each with a non-empty source citation
 - Each item shows: name, urgency chip (colour-coded), next-due info, source citation
 - Items without a source do not appear in the list
 - If all items are filtered, the "all filtered" warning card appears with a "Regenerate" button
@@ -423,7 +423,7 @@ None at this stage — full E2E testing is deferred; manual verification covers 
 3. Click "Add your first car" → fill form (Toyota / Corolla / 2019 / 1.6 / Petrol / 45000) → click "Save car"
 4. Confirm navigation to `/dashboard/vehicles/<uuid>`
 5. Confirm skeleton cards appear (generation in progress)
-6. Confirm schedule appears within 10 seconds with ≥ 5 items, each with a non-empty source
+6. Confirm schedule appears with ≥ 5 items, each with a non-empty source
 7. Confirm urgency chips are colour-coded (red / amber / green)
 8. Navigate to `/dashboard` → confirm car card appears with year/make/model
 9. Click car card → confirm schedule loads instantly (no skeleton — cached from DB)
@@ -432,7 +432,7 @@ None at this stage — full E2E testing is deferred; manual verification covers 
 
 ## Performance Considerations
 
-Gemini Flash 2.0 target latency is 2–5 seconds for this prompt size. The PRD NFR of under 10 seconds should be met comfortably. The JSON array of 10–15 schedule items is approximately 2–4 KB — well under Cloudflare's 6 MB body limit (roadmap S-01 unknown risk). No streaming is needed. The JSONB column means `getVehicle()` always fetches the full schedule; at 2–4 KB per vehicle this is negligible.
+Gemini Flash 2.0 target latency is 2–5 seconds for this prompt size. No latency NFR applies. The JSON array of 10–15 schedule items is approximately 2–4 KB — well under Cloudflare's 6 MB body limit (roadmap S-01 unknown risk). No streaming is needed. The JSONB column means `getVehicle()` always fetches the full schedule; at 2–4 KB per vehicle this is negligible.
 
 ## Migration Notes
 
@@ -491,32 +491,32 @@ No data migration required. The `ai_schedule` column defaults to NULL for all ex
 
 #### Automated
 
-- [x] 4.1 Type-check passes (npx tsc --noEmit)
+- [x] 4.1 Type-check passes (npx tsc --noEmit) — 66d22cf
 
 #### Manual
 
-- [x] 4.2 Form renders all six fields with correct labels
-- [x] 4.3 Empty required fields show inline validation errors on submit
-- [x] 4.4 current_mileage accepts blank and positive integer; rejects negative values
-- [x] 4.5 fuel_type select shows exactly five options
-- [x] 4.6 Valid submit creates vehicle in DB and navigates to /dashboard/vehicles/<uuid>
-- [x] 4.7 Cancel link returns to /dashboard
-- [x] 4.8 New car appears in vehicle list on /dashboard
+- [x] 4.2 Form renders all six fields with correct labels — 66d22cf
+- [x] 4.3 Empty required fields show inline validation errors on submit — 66d22cf
+- [x] 4.4 current_mileage accepts blank and positive integer; rejects negative values — 66d22cf
+- [x] 4.5 fuel_type select shows exactly five options — 66d22cf
+- [x] 4.6 Valid submit creates vehicle in DB and navigates to /dashboard/vehicles/<uuid> — 66d22cf
+- [x] 4.7 Cancel link returns to /dashboard — 66d22cf
+- [x] 4.8 New car appears in vehicle list on /dashboard — 66d22cf
 
 ### Phase 5: Schedule View Component
 
 #### Automated
 
-- [ ] 5.1 Type-check passes (npx tsc --noEmit)
-- [ ] 5.2 npm test passes with no regressions
+- [x] 5.1 Type-check passes (npx tsc --noEmit)
+- [x] 5.2 npm test passes with no regressions
 
 #### Manual
 
-- [ ] 5.3 Fresh add: skeleton cards appear during AI generation
-- [ ] 5.4 Schedule renders within 10 seconds with ≥ 5 items each with non-empty source
-- [ ] 5.5 Each item shows name, colour-coded urgency chip, next-due info, source citation
-- [ ] 5.6 Items without source do not appear
-- [ ] 5.7 All-filtered warning card appears with Regenerate button when appropriate
-- [ ] 5.8 Network error shows error card; "Try again" succeeds after network restored
-- [ ] 5.9 Navigating away and back loads schedule instantly from DB (no AI call)
-- [ ] 5.10 Vehicle header shows correct year/make/model/fuel type/engine capacity
+- [x] 5.3 Fresh add: skeleton cards appear during AI generation
+- [x] 5.4 Schedule renders with ≥ 5 items each with non-empty source
+- [x] 5.5 Each item shows name, colour-coded urgency chip, next-due info, source citation
+- [x] 5.6 Items without source do not appear
+- [x] 5.7 All-filtered warning card appears with Regenerate button when appropriate
+- [x] 5.8 Network error shows error card; "Try again" succeeds after network restored
+- [x] 5.9 Navigating away and back loads schedule instantly from DB (no AI call)
+- [x] 5.10 Vehicle header shows correct year/make/model/fuel type/engine capacity

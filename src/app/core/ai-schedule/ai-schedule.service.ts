@@ -12,7 +12,7 @@ export class AiScheduleService {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-001',
+        model: 'gpt-oss-120b:free',
         messages: [{ role: 'user', content: this.buildPrompt(vehicle) }],
         response_format: { type: 'json_object' },
       }),

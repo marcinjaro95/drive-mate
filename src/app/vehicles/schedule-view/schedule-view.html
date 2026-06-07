@@ -1,0 +1,67 @@
+@if (!isLoading()) {
+  @let v = vehicle();
+  @if (v) {
+    <div class="vehicle-header">
+      <h2>{{ v.year }} {{ v.make }} {{ v.model }}</h2>
+      <p>{{ v.engine_capacity }}L · {{ v.fuel_type }}</p>
+    </div>
+  }
+}
+
+@if (isLoading()) {
+  <div class="spinner-container">
+    <mat-progress-spinner mode="indeterminate" />
+  </div>
+} @else {
+  @if (isGenerating()) {
+    <div class="schedule-list">
+      @for (_ of [1, 2, 3, 4, 5]; track $index) {
+        <mat-card class="skeleton-card">
+          <mat-card-content>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar short"></div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  } @else if (error()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <p>{{ error() }}</p>
+        <button mat-raised-button (click)="retry()">Try again</button>
+      </mat-card-content>
+    </mat-card>
+  } @else if (scheduleItems().length === 0) {
+    <mat-card>
+      <mat-card-content>
+        <p>All schedule items were filtered because they lacked source attribution. Try regenerating.</p>
+        <button mat-raised-button (click)="retry()">Regenerate</button>
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <div class="schedule-list">
+      @for (item of scheduleItems(); track item.item) {
+        <mat-card class="schedule-card">
+          <mat-card-header>
+            <mat-card-title>{{ item.item }}</mat-card-title>
+            <mat-chip [class]="'urgency-chip chip-' + item.urgency.replace('_', '-')">
+              {{ item.urgency }}
+            </mat-chip>
+          </mat-card-header>
+          <mat-card-content>
+            @if (item.next_due_km !== null) {
+              <p>Next due: {{ item.next_due_km | number }} km</p>
+            } @else if (item.next_due_date) {
+              <p>Next due: {{ item.next_due_date }}</p>
+            }
+            <small>Source: {{ item.source }}</small>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+}
+
+<div class="back-link">
+  <a routerLink="/dashboard">← My cars</a>
+</div>

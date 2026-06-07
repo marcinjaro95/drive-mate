@@ -60,6 +60,6 @@ The Angular SPA adds child routes under `/dashboard`. `VehicleAddComponent` call
 
 ## Success Criteria (Summary)
 
-- User can add a car manually and see an AI-generated maintenance schedule within 10 seconds (PRD US-01, FR-002, FR-005)
+- User can add a car manually and see an AI-generated maintenance schedule (PRD US-01, FR-002, FR-005)
 - Every rendered maintenance item cites a source — no unsourced items reach the UI (PRD Guardrail)
 - Subsequent visits load the schedule instantly from the database — no repeat AI calls

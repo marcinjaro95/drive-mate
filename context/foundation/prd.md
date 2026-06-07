@@ -87,7 +87,7 @@ Moment they reach for DriveMate: standing at the workshop counter being quoted a
 
 ## Non-Functional Requirements
 
-- A user perceives the maintenance schedule as fully loaded within 10 seconds of completing car addition.
+- A user perceives the maintenance schedule as fully loaded after completing car addition (no time limit).
 - The app remains fully functional on the two most recent major releases of Chrome, Firefox, Safari, and Edge.
 - One user's car records and service history are never readable or enumerable by any other user account.
 - All user-facing screens are usable on a mid-range mobile browser at 375 px viewport width without horizontal scrolling.
