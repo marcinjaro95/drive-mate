@@ -1,22 +1,20 @@
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { VehicleService } from '../../core/vehicles/vehicle.service';
-import { AiScheduleService } from '../../core/ai-schedule/ai-schedule.service';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { VehicleService } from '../../core/vehicles/vehicle.service';
-import { AiScheduleService } from '../../core/ai-schedule/ai-schedule.service';
-import { ServiceRecordService } from '../../core/service-records/service-record.service';
-import type { Vehicle } from '../../core/models/vehicle.model';
-import type { ScheduleItem } from '../../core/models/schedule-item.model';
+import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {DecimalPipe} from '@angular/common';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatCardModule} from '@angular/material/card';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatButtonModule} from '@angular/material/button';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {VehicleService} from '../../core/vehicles/vehicle.service';
+import {AiScheduleService} from '../../core/ai-schedule/ai-schedule.service';
+import {ConfirmDialogComponent} from '../../shared/confirm-dialog/confirm-dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {ServiceRecordService} from '../../core/service-records/service-record.service';
+import type {Vehicle} from '../../core/models/vehicle.model';
+import type {ScheduleItem} from '../../core/models/schedule-item.model';
 
 @Component({
   selector: 'app-schedule-view',
@@ -121,7 +119,8 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
         },
       },
     });
-    
+  }
+
   openMarkDone(item: ScheduleItem): void {
     const today = new Date().toISOString().split('T')[0];
     this.markDoneForm.reset({
