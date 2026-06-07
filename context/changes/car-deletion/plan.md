@@ -349,10 +349,10 @@ None — single-row Supabase delete with no client-side caching layer to invalid
 
 #### Automated
 
-- [x] 4.1 npm test reports all new specs passing
-- [x] 4.2 npm run build compiles without errors
+- [x] 4.1 npm test reports all new specs passing — 2e5dc06
+- [x] 4.2 npm run build compiles without errors — 2e5dc06
 
 #### Manual
 
-- [x] 4.3 Test descriptions read clearly in npm test output
-- [x] 4.4 No unexpected console errors in the test runner
+- [x] 4.3 Test descriptions read clearly in npm test output — 2e5dc06
+- [x] 4.4 No unexpected console errors in the test runner — 2e5dc06
