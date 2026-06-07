@@ -112,14 +112,6 @@
       }
     </div>
 
-    @if (regenPromptVisible()) {
-      <div class="regen-prompt">
-        <span>Schedule may now be out of date.</span>
-        <button mat-button (click)="retry(); regenPromptVisible.set(false)">Regenerate</button>
-        <button mat-button (click)="regenPromptVisible.set(false)">Dismiss</button>
-      </div>
-    }
-
     @if (mileageSyncWarning()) {
       <div class="mileage-warning">
         <span>Service recorded, but odometer was not updated.</span>

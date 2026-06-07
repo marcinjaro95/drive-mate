@@ -7,6 +7,7 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatButtonModule} from '@angular/material/button';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import {VehicleService} from '../../core/vehicles/vehicle.service';
 import {AiScheduleService} from '../../core/ai-schedule/ai-schedule.service';
 import {ConfirmDialogComponent} from '../../shared/confirm-dialog/confirm-dialog';
@@ -15,6 +16,7 @@ import {MatInputModule} from '@angular/material/input';
 import {ServiceRecordService} from '../../core/service-records/service-record.service';
 import type {Vehicle} from '../../core/models/vehicle.model';
 import type {ScheduleItem} from '../../core/models/schedule-item.model';
+import type {ServiceRecord} from '../../core/models/service-record.model';
 
 @Component({
   selector: 'app-schedule-view',
@@ -28,6 +30,7 @@ import type {ScheduleItem} from '../../core/models/schedule-item.model';
     MatInputModule,
     ReactiveFormsModule,
     MatDialogModule,
+    MatSnackBarModule,
     RouterModule,
   ],
   templateUrl: './schedule-view.html',
@@ -41,6 +44,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
 
   private abortController: AbortController | null = null;
 
@@ -53,7 +57,6 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
   expandedItem = signal<ScheduleItem | null>(null);
   isSaving = signal(false);
   saveError = signal<string | null>(null);
-  regenPromptVisible = signal(false);
   mileageSyncWarning = signal(false);
 
   markDoneForm = this.fb.group({
@@ -91,7 +94,17 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
     this.isGenerating.set(true);
     this.error.set(null);
     try {
-      const items = await this.aiScheduleService.generateAndSave(this.vehicle()!, this.abortController.signal);
+      let serviceRecords: ServiceRecord[] = [];
+      try {
+        serviceRecords = await this.serviceRecordService.getServiceRecords(this.vehicle()!.id);
+      } catch {
+        // non-blocking — proceed with empty history
+      }
+      const items = await this.aiScheduleService.generateAndSave(
+        this.vehicle()!,
+        this.abortController.signal,
+        serviceRecords,
+      );
       this.scheduleItems.set(items);
     } catch (err: unknown) {
       if (err instanceof Error && err.name === 'AbortError') return;
@@ -171,7 +184,20 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
       }
 
       this.expandedItem.set(null);
-      this.regenPromptVisible.set(true);
+      this.snackBar.open(
+        `${item.item} recorded — ${service_date}, ${mileage} km`,
+        undefined,
+        { duration: 4000 },
+      );
+      this.dialog.open(ConfirmDialogComponent, {
+        data: {
+          title: 'Regenerate schedule?',
+          message:
+            'Service recorded. The AI schedule may be outdated — regenerate now to reflect the latest service history.',
+          confirmLabel: 'Regenerate',
+          onConfirm: async () => { await this.generateSchedule(); },
+        },
+      });
     } finally {
       this.isSaving.set(false);
     }

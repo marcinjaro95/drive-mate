@@ -12,7 +12,7 @@ Add a "Mark as done" action to each AI schedule item so users can record when th
 
 ## Desired End State
 
-Each schedule card shows a "Mark as done" button. Clicking it expands an inline form inside the card with a pre-filled date (today) and mileage (vehicle's current odometer). After saving, a `ServiceRecord` is created in Supabase, the vehicle's `current_mileage` is updated if the entered mileage is higher, and a dismissable banner prompts the user to regenerate the schedule.
+Each schedule card shows a "Mark as done" button. Clicking it expands an inline form inside the card with a pre-filled date (today) and mileage (vehicle's current odometer). After saving, a `ServiceRecord` is created in Supabase, the vehicle's `current_mileage` is updated if the entered mileage is higher, and a `MatDialog` opens prompting the user to regenerate the schedule ("Regenerate" / "Dismiss").
 
 ## Key Decisions Made
 
@@ -22,7 +22,8 @@ Each schedule card shows a "Mark as done" button. Clicking it expands an inline 
 | Form UX | Inline expansion inside the card | Keeps user in context without a modal; simpler state than a separate route |
 | Mileage | Required | Both fields are load-bearing for future schedule recalculation accuracy |
 | Mileage sync | Auto-update if higher | Vehicle odometer stays current automatically; matches the AI schedule's expectation |
-| Schedule regen | Dismissable prompt, not auto | Avoids a surprise AI API call on every mark-done; user decides when to refresh |
+| Save feedback | `MatSnackBar` (4 s) | Instant, non-blocking confirmation of what was recorded before the regen dialog opens |
+| Schedule regen | `ConfirmDialogComponent` via `MatDialog`, not auto | Avoids a surprise AI API call on every mark-done; dialog forces an explicit user choice (Regenerate / Cancel) |
 | Error handling | Record-first, non-blocking mileage warning | Service record is the primary data; a failed odometer update is recoverable |
 | Testing | Service layer spec only | Component already tested manually; existing ServiceRecordService spec is near-complete |
 
@@ -32,7 +33,10 @@ Each schedule card shows a "Mark as done" button. Clicking it expands an inline 
 - "Mark as done" button + inline form per schedule card in `ScheduleViewComponent`
 - `ServiceRecordService.createServiceRecord()` call on save
 - Conditional `VehicleService.updateVehicle()` for mileage sync
-- Regen prompt banner (dismissable)
+- `MatSnackBar` confirmation after save (label + date + mileage, 4 s auto-dismiss)
+- `ConfirmDialogComponent` via `MatDialog` for regen prompt (Regenerate / Cancel)
+- `ServiceRecordService.getServiceRecords()` fetch inside `generateSchedule()` before every AI call
+- `AiScheduleService.generateAndSave` + `buildPrompt` extended to include service history in the AI prompt
 - Non-blocking mileage sync warning
 - ServiceRecordService spec gap-fill
 
@@ -44,7 +48,7 @@ Each schedule card shows a "Mark as done" button. Clicking it expands an inline 
 
 ## Architecture / Approach
 
-All changes are confined to `ScheduleViewComponent` (`.ts`, `.html`, `.scss`) plus a spec gap-fill pass. The component gains a `FormBuilder`-backed form group, five new signals tracking expand/save/prompt state, and a `saveMarkDone()` method that sequences two service calls. No routing changes; no new components.
+Changes span `ScheduleViewComponent` (`.ts`, `.html`, `.scss`), `AiScheduleService`, and a spec gap-fill pass. The component gains a `FormBuilder`-backed form group, four new signals tracking expand/save state, and a `saveMarkDone()` method that sequences two service calls. `generateSchedule()` is updated to fetch service records before every AI call and pass them to `AiScheduleService.generateAndSave`. `AiScheduleService.buildPrompt` gains a `serviceRecords` parameter and appends a "Historia serwisowa" block so the AI can adjust `next_due_km` / `next_due_date` based on what's already been done. No routing changes; no new components; no DB migration.
 
 ## Phases at a Glance
 
@@ -66,3 +70,5 @@ All changes are confined to `ScheduleViewComponent` (`.ts`, `.html`, `.scss`) pl
 - User can mark any schedule item as done from the schedule view without leaving the page
 - The resulting `ServiceRecord` row appears in Supabase with correct `vehicle_id`, `user_id`, `service_date`, `mileage`, and `label`
 - Vehicle `current_mileage` updates when the saved mileage exceeds the prior value
+- Snackbar appears after save with the recorded label, date, and mileage
+- After "Regenerate", the `/api/ai` prompt body contains the "Service history" section with all saved records for that vehicle
