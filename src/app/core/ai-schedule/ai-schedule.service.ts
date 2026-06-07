@@ -7,10 +7,11 @@ import type { ScheduleItem } from '../models/schedule-item.model';
 export class AiScheduleService {
   constructor(private readonly vehicleService: VehicleService) {}
 
-  async generateAndSave(vehicle: Vehicle): Promise<ScheduleItem[]> {
+  async generateAndSave(vehicle: Vehicle, signal?: AbortSignal): Promise<ScheduleItem[]> {
     const httpRes = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal,
       body: JSON.stringify({
         model: 'gpt-oss-120b:free',
         messages: [{ role: 'user', content: this.buildPrompt(vehicle) }],
@@ -20,8 +21,10 @@ export class AiScheduleService {
     if (!httpRes.ok) throw new Error(`AI proxy error: ${httpRes.status}`);
     const envelope = await httpRes.json();
     const parsed: { items: ScheduleItem[] } = JSON.parse(envelope.choices[0].message.content);
+    if (!Array.isArray(parsed?.items)) throw new Error('AI response missing items array');
+    const VALID_URGENCY = new Set(['overdue', 'due_soon', 'upcoming']);
     const filtered = parsed.items.filter(
-      (i) => typeof i.source === 'string' && i.source.trim().length > 0,
+      (i) => typeof i.source === 'string' && i.source.trim().length > 0 && VALID_URGENCY.has(i.urgency),
     );
     await this.vehicleService.updateVehicle(vehicle.id, { ai_schedule: filtered });
     return filtered;
@@ -29,35 +32,35 @@ export class AiScheduleService {
 
   private buildPrompt(vehicle: Vehicle): string {
     const mileageNote = vehicle.current_mileage != null
-      ? `Current mileage: ${vehicle.current_mileage} km.`
-      : 'Current mileage is unknown.';
+      ? `Aktualny przebieg: ${vehicle.current_mileage} km.`
+      : 'Aktualny przebieg jest nieznany.';
 
-    return `You are an automotive maintenance expert. Generate a maintenance schedule for the following vehicle:
+    return `Jesteś ekspertem ds. obsługi technicznej pojazdów. Wygeneruj harmonogram przeglądów dla następującego pojazdu:
 
-Make: ${vehicle.make}
+Marka: ${vehicle.make}
 Model: ${vehicle.model}
-Year: ${vehicle.year}
-Engine capacity: ${vehicle.engine_capacity}L
-Fuel type: ${vehicle.fuel_type}
+Rok produkcji: ${vehicle.year}
+Pojemność silnika: ${vehicle.engine_capacity}L
+Rodzaj paliwa: ${vehicle.fuel_type}
 ${mileageNote}
 
-Return a JSON object with a single key "items" containing an array of maintenance schedule items. Each item must follow this exact shape:
+Zwróć obiekt JSON z pojedynczym kluczem "items" zawierającym tablicę elementów harmonogramu przeglądów. Każdy element musi mieć dokładnie taki kształt:
 
 {
-  "item": "Oil change",
+  "item": "Wymiana oleju",
   "interval_km": 10000,
   "next_due_km": 55000,
   "next_due_date": "2025-06-01",
   "urgency": "upcoming",
-  "source": "Toyota Corolla 2019 owner's manual, section 7.2"
+  "source": "Instrukcja obsługi Toyota Corolla 2019, rozdział 7.2"
 }
 
-Rules:
-- "urgency" must be one of: "overdue", "due_soon", "upcoming"
-- "interval_km" and "next_due_km" may be null if mileage-based scheduling is not applicable
-- "next_due_date" may be null if date-based scheduling is not applicable
-- "source" must be a non-empty string citing the manufacturer schedule or standard automotive practice — never leave it blank
-- Return 8–12 items covering the most important maintenance tasks for this vehicle
-- Base intervals on the manufacturer's recommended schedule where known, otherwise cite standard industry practice`;
+Zasady:
+- "urgency" musi być jedną z wartości: "overdue", "due_soon", "upcoming"
+- "interval_km" i "next_due_km" mogą być null, jeśli planowanie według przebiegu nie ma zastosowania
+- "next_due_date" może być null, jeśli planowanie według daty nie ma zastosowania
+- "source" musi być niepustym ciągiem znaków wskazującym harmonogram producenta lub standardową praktykę branżową — nigdy nie pozostawiaj go pustego
+- Zwróć 8–12 elementów obejmujących najważniejsze czynności serwisowe dla tego pojazdu
+- Opieraj interwały na zalecanym przez producenta harmonogramie serwisowym, jeśli jest znany, w przeciwnym razie powołaj się na standardowe praktyki branżowe`;
   }
 }
