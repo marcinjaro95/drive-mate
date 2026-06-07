@@ -4,6 +4,7 @@
     <div class="vehicle-header">
       <h2>{{ v.year }} {{ v.make }} {{ v.model }}</h2>
       <p>{{ v.engine_capacity }}L · {{ v.fuel_type }}</p>
+      <button mat-stroked-button color="warn" (click)="openDeleteDialog()">Delete car</button>
     </div>
   }
 }

@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+
+<mat-dialog-content>
+  <p>{{ data.message }}</p>
+  @if (error()) {
+    <p class="dialog-error">{{ error() }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-flat-button [disabled]="isDeleting()" (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="warn" [disabled]="isDeleting()" (click)="confirm()">
+    @if (isDeleting()) {
+      <mat-progress-spinner mode="indeterminate" diameter="20" />
+    } @else {
+      {{ data.confirmLabel ?? 'Delete' }}
+    }
+  </button>
+</mat-dialog-actions>
