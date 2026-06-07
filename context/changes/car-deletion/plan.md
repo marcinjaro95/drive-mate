@@ -335,24 +335,24 @@ None — single-row Supabase delete with no client-side caching layer to invalid
 
 #### Automated
 
-- [x] 3.1 npm run build compiles without errors
-- [x] 3.2 npm test passes
+- [x] 3.1 npm run build compiles without errors — de69dec
+- [x] 3.2 npm test passes — de69dec
 
 #### Manual
 
-- [x] 3.3 Delete car button appears in the vehicle header on the schedule-view page
-- [x] 3.4 Dialog opens with correct vehicle name and cascade warning
-- [x] 3.5 Confirming deletes the car and navigates to /dashboard; car absent from list
-- [x] 3.6 Cancelling keeps the user on the schedule-view page
+- [x] 3.3 Delete car button appears in the vehicle header on the schedule-view page — de69dec
+- [x] 3.4 Dialog opens with correct vehicle name and cascade warning — de69dec
+- [x] 3.5 Confirming deletes the car and navigates to /dashboard; car absent from list — de69dec
+- [x] 3.6 Cancelling keeps the user on the schedule-view page — de69dec
 
 ### Phase 4: Tests
 
 #### Automated
 
-- [ ] 4.1 npm test reports all new specs passing
-- [ ] 4.2 npm run build compiles without errors
+- [x] 4.1 npm test reports all new specs passing
+- [x] 4.2 npm run build compiles without errors
 
 #### Manual
 
-- [ ] 4.3 Test descriptions read clearly in npm test output
-- [ ] 4.4 No unexpected console errors in the test runner
+- [x] 4.3 Test descriptions read clearly in npm test output
+- [x] 4.4 No unexpected console errors in the test runner
