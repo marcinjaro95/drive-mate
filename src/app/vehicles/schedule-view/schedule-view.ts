@@ -119,37 +119,42 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
 
   async saveMarkDone(): Promise<void> {
     if (this.markDoneForm.invalid || this.isSaving()) return;
+    const vehicle = this.vehicle()!;
+    const item = this.expandedItem()!;
     this.isSaving.set(true);
     this.saveError.set(null);
 
     const { service_date, mileage, notes } = this.markDoneForm.getRawValue();
 
     try {
-      await this.serviceRecordService.createServiceRecord({
-        vehicle_id: this.vehicle()!.id,
-        label: this.expandedItem()!.item,
-        service_date: service_date!,
-        mileage: mileage!,
-        notes: notes || null,
-      });
-    } catch (err: unknown) {
-      this.saveError.set(err instanceof Error ? err.message : 'Failed to save record');
-      this.isSaving.set(false);
-      return;
-    }
-
-    if (mileage! > (this.vehicle()!.current_mileage ?? 0)) {
       try {
-        const updated = await this.vehicleService.updateVehicle(this.vehicle()!.id, { current_mileage: mileage! });
-        this.vehicle.set(updated);
-      } catch {
-        this.mileageSyncWarning.set(true);
+        await this.serviceRecordService.createServiceRecord({
+          vehicle_id: vehicle.id,
+          label: item.item,
+          service_date: service_date!,
+          mileage: mileage!,
+          notes: notes || null,
+        });
+      } catch (err: unknown) {
+        this.saveError.set(err instanceof Error ? err.message : 'Failed to save record');
+        return;
       }
-    }
 
-    this.expandedItem.set(null);
-    this.isSaving.set(false);
-    this.regenPromptVisible.set(true);
+      if (mileage! > (vehicle.current_mileage ?? 0)) {
+        try {
+          const updated = await this.vehicleService.updateVehicle(vehicle.id, { current_mileage: mileage! });
+          this.vehicle.set(updated);
+        } catch {
+          this.mileageSyncWarning.set(true);
+          this.vehicle.set({ ...vehicle, current_mileage: mileage! });
+        }
+      }
+
+      this.expandedItem.set(null);
+      this.regenPromptVisible.set(true);
+    } finally {
+      this.isSaving.set(false);
+    }
   }
 
   ngOnDestroy(): void {

@@ -40,7 +40,7 @@
     </mat-card>
   } @else {
     <div class="schedule-list">
-      @for (item of scheduleItems(); track item.item) {
+      @for (item of scheduleItems(); track $index) {
         <mat-card class="schedule-card">
           <mat-card-header>
             <mat-card-title>{{ item.item }}</mat-card-title>

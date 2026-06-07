@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { ServiceRecordService } from './service-record.service';
 import { SupabaseService } from '../supabase.service';
@@ -134,6 +135,16 @@ describe('ServiceRecordService', () => {
       const result = await service.getServiceRecord('nonexistent');
 
       expect(result).toBeNull();
+    });
+
+    it('filters by user_id to enforce ownership', async () => {
+      const record = makeRecord();
+      const builder = createMockBuilder({ data: record, error: null });
+      mockFrom.mockReturnValue(builder);
+
+      await service.getServiceRecord('sr1');
+
+      expect(builder.eq).toHaveBeenCalledWith('user_id', 'user-abc');
     });
   });
 
