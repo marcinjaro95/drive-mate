@@ -457,21 +457,21 @@ No data migration required. The `ai_schedule` column defaults to NULL for all ex
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly (npx supabase db reset)
-- [x] 1.2 Type-check passes (npx tsc --noEmit)
-- [x] 1.3 Existing tests still pass (npm test)
+- [x] 1.1 Migration applies cleanly (npx supabase db reset) — b453c7f
+- [x] 1.2 Type-check passes (npx tsc --noEmit) — b453c7f
+- [x] 1.3 Existing tests still pass (npm test) — b453c7f
 
 #### Manual
 
-- [x] 1.4 ai_schedule column visible in Supabase Studio as nullable JSONB with default NULL
-- [x] 1.5 No TypeScript errors on vehicle.model.ts or vehicle.service.ts
+- [x] 1.4 ai_schedule column visible in Supabase Studio as nullable JSONB with default NULL — b453c7f
+- [x] 1.5 No TypeScript errors on vehicle.model.ts or vehicle.service.ts — b453c7f
 
 ### Phase 2: AiScheduleService
 
 #### Automated
 
-- [ ] 2.1 All AiScheduleService specs green (npm test)
-- [ ] 2.2 Type-check passes (npx tsc --noEmit)
+- [x] 2.1 All AiScheduleService specs green (npm test)
+- [x] 2.2 Type-check passes (npx tsc --noEmit)
 
 ### Phase 3: Dashboard Shell + Routing + VehicleListComponent
 
