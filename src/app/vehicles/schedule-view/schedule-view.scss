@@ -31,3 +31,42 @@
   background-color: #4caf50 !important;
   color: #fff !important;
 }
+
+.mark-done-form {
+  padding-top: 16px;
+
+  mat-form-field {
+    display: block;
+    width: 100%;
+  }
+
+  .save-error {
+    color: #f44336;
+    font-size: 14px;
+    margin: 4px 0 8px;
+  }
+}
+
+.mark-done-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.regen-prompt,
+.mileage-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin-top: 16px;
+  border-radius: 4px;
+}
+
+.regen-prompt {
+  background-color: #fff8e1;
+}
+
+.mileage-warning {
+  background-color: #fce4ec;
+}
