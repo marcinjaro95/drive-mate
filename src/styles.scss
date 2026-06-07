@@ -60,3 +60,9 @@ body {
   margin: 0 auto;
   padding: var(--space-md);
 }
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-xl) 0;
+}

@@ -177,6 +177,10 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
     }
   }
 
+  urgencyClass(urgency: string): string {
+    return 'urgency-chip chip-' + urgency.replace('_', '-');
+  }
+
   ngOnDestroy(): void {
     this.abortController?.abort();
   }

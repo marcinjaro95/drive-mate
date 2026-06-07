@@ -48,11 +48,11 @@
     </mat-card>
   } @else {
     <div class="schedule-list">
-      @for (item of scheduleItems(); track $index) {
+      @for (item of scheduleItems(); track item.item) {
         <mat-card class="schedule-card">
           <mat-card-header>
             <mat-card-title>{{ item.item }}</mat-card-title>
-            <mat-chip [class]="'urgency-chip chip-' + item.urgency.replace('_', '-')">
+            <mat-chip [class]="urgencyClass(item.urgency)">
               {{ item.urgency }}
             </mat-chip>
           </mat-card-header>
