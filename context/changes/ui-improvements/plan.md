@@ -437,27 +437,27 @@ Manually verify every screen at 375px viewport width. Run through the visual con
 
 #### Automated
 
-- [x] 4.1 Build succeeds: `npm run build`
+- [x] 4.1 Build succeeds: `npm run build` — 3beb614
 
 #### Manual
 
-- [x] 4.2 Vehicle list cards have consistent padding and a visible hover shadow
-- [x] 4.3 Vehicle list content constrained to max-width on wide viewports
-- [x] 4.4 Add-car form fields span full width; error color matches theme
+- [x] 4.2 Vehicle list cards have consistent padding and a visible hover shadow — 3beb614
+- [x] 4.3 Vehicle list content constrained to max-width on wide viewports — 3beb614
+- [x] 4.4 Add-car form fields span full width; error color matches theme — 3beb614
 
 ### Phase 5: Schedule View Polish
 
 #### Automated
 
-- [ ] 5.1 Build succeeds: `npm run build`
-- [ ] 5.2 `grep -c '#[0-9a-fA-F]' src/app/vehicles/schedule-view/schedule-view.scss` returns 0
+- [x] 5.1 Build succeeds: `npm run build`
+- [x] 5.2 `grep -c '#[0-9a-fA-F]' src/app/vehicles/schedule-view/schedule-view.scss` returns 0
 
 #### Manual
 
-- [ ] 5.3 Urgency chips show correct colors after token migration
-- [ ] 5.4 Regen and mileage-warning banners display with rounded corners
-- [ ] 5.5 Schedule cards have padding consistent with vehicle-list cards
-- [ ] 5.6 Mark-as-done and banner dismiss work without functional regression
+- [x] 5.3 Urgency chips show correct colors after token migration
+- [x] 5.4 Regen and mileage-warning banners display with rounded corners
+- [x] 5.5 Schedule cards have padding consistent with vehicle-list cards
+- [x] 5.6 Mark-as-done and banner dismiss work without functional regression
 
 ### Phase 6: Mobile + Consistency Verification
 

@@ -1,10 +1,10 @@
 .skeleton-bar {
-  background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+  background: linear-gradient(90deg, var(--color-skeleton-base) 25%, var(--color-skeleton-shine) 50%, var(--color-skeleton-base) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   height: 14px;
-  border-radius: 4px;
-  margin-bottom: 8px;
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--space-sm);
 
   &.short {
     width: 60%;
@@ -17,23 +17,53 @@
   }
 }
 
+.back-link {
+  margin-bottom: var(--space-md);
+}
+
+.vehicle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+
+  h2 {
+    margin: 0 0 var(--space-xs);
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.urgency-chip {
+  margin-left: auto;
+}
+
 .chip-overdue {
-  background-color: #f44336 !important;
-  color: #fff !important;
+  background-color: var(--color-overdue) !important;
+  color: var(--color-overdue-text) !important;
 }
 
 .chip-due-soon {
-  background-color: #ff9800 !important;
-  color: #fff !important;
+  background-color: var(--color-due-soon) !important;
+  color: var(--color-due-soon-text) !important;
 }
 
 .chip-upcoming {
-  background-color: #4caf50 !important;
-  color: #fff !important;
+  background-color: var(--color-upcoming) !important;
+  color: var(--color-upcoming-text) !important;
 }
 
 .mark-done-form {
-  padding-top: 16px;
+  padding-top: var(--space-md);
 
   mat-form-field {
     display: block;
@@ -41,32 +71,32 @@
   }
 
   .save-error {
-    color: #f44336;
-    font-size: 14px;
-    margin: 4px 0 8px;
+    color: var(--color-overdue);
+    font-size: var(--text-sm);
+    margin: var(--space-xs) 0 var(--space-sm);
   }
 }
 
 .mark-done-actions {
   display: flex;
-  gap: 8px;
-  margin-top: 8px;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
 }
 
 .regen-prompt,
 .mileage-warning {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  margin-top: 16px;
-  border-radius: 4px;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  margin-top: var(--space-md);
+  border-radius: var(--border-radius-sm);
 }
 
 .regen-prompt {
-  background-color: #fff8e1;
+  background-color: var(--color-regen-bg);
 }
 
 .mileage-warning {
-  background-color: #fce4ec;
+  background-color: var(--color-warning-bg);
 }

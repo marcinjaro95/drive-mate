@@ -1,3 +1,4 @@
+<div class="page-content">
 <div class="back-link">
   <a routerLink="/dashboard">← My cars</a>
 </div>
@@ -6,8 +7,10 @@
   @let v = vehicle();
   @if (v) {
     <div class="vehicle-header">
-      <h2>{{ v.year }} {{ v.make }} {{ v.model }}</h2>
-      <p>{{ v.engine_capacity }}L · {{ v.fuel_type }}</p>
+      <div>
+        <h2>{{ v.year }} {{ v.make }} {{ v.model }}</h2>
+        <p>{{ v.engine_capacity }}L · {{ v.fuel_type }}</p>
+      </div>
       <button mat-stroked-button color="warn" (click)="openDeleteDialog()">Delete car</button>
     </div>
   }
@@ -125,3 +128,4 @@
     }
   }
 }
+</div>
