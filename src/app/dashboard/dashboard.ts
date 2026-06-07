@@ -7,6 +7,7 @@ import { AuthService } from '../core/auth/auth.service';
   selector: 'app-dashboard',
   imports: [MatButtonModule, RouterOutlet],
   templateUrl: './dashboard.html',
+  styleUrl: './dashboard.scss',
 })
 export class DashboardComponent {
   private readonly auth = inject(AuthService);

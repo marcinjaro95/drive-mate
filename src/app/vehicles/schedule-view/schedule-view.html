@@ -1,3 +1,7 @@
+<div class="back-link">
+  <a routerLink="/dashboard">← My cars</a>
+</div>
+
 @if (!isLoading()) {
   @let v = vehicle();
   @if (v) {
@@ -121,7 +125,3 @@
     }
   }
 }
-
-<div class="back-link">
-  <a routerLink="/dashboard">← My cars</a>
-</div>

@@ -1,0 +1,20 @@
+.dashboard-header {
+  background: var(--mat-sys-primary);
+  color: #fff;
+  height: 56px;
+  padding: 0 var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .app-name {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+}
+
+.dashboard-main {
+  padding: var(--space-md);
+}

@@ -401,25 +401,25 @@ Manually verify every screen at 375px viewport width. Run through the visual con
 
 #### Automated
 
-- [x] 1.1 Build succeeds with zero errors: `npm run build`
+- [x] 1.1 Build succeeds with zero errors: `npm run build` — cd0d709
 
 #### Manual
 
-- [x] 1.2 Primary buttons show deep blue (not indigo) on all screens
-- [x] 1.3 CSS custom properties visible under `:root` in Chrome DevTools
+- [x] 1.2 Primary buttons show deep blue (not indigo) on all screens — cd0d709
+- [x] 1.3 CSS custom properties visible under `:root` in Chrome DevTools — cd0d709
 
 ### Phase 2: Navigation Shell Enhancement
 
 #### Automated
 
-- [ ] 2.1 Build succeeds: `npm run build`
+- [x] 2.1 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 2.2 Dashboard header shows colored background with DriveMate branding
-- [ ] 2.3 Schedule view: "← My cars" appears above the vehicle name
-- [ ] 2.4 Add-vehicle page: "← My cars" link appears at the top before the form
-- [ ] 2.5 Both back-links navigate correctly to /dashboard
+- [x] 2.2 Dashboard header shows colored background with DriveMate branding
+- [x] 2.3 Schedule view: "← My cars" appears above the vehicle name
+- [x] 2.4 Add-vehicle page: "← My cars" link appears at the top before the form
+- [x] 2.5 Both back-links navigate correctly to /dashboard
 
 ### Phase 3: Auth Pages
 
