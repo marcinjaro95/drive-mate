@@ -449,26 +449,26 @@ Manually verify every screen at 375px viewport width. Run through the visual con
 
 #### Automated
 
-- [x] 5.1 Build succeeds: `npm run build`
-- [x] 5.2 `grep -c '#[0-9a-fA-F]' src/app/vehicles/schedule-view/schedule-view.scss` returns 0
+- [x] 5.1 Build succeeds: `npm run build` — fd36a0c
+- [x] 5.2 `grep -c '#[0-9a-fA-F]' src/app/vehicles/schedule-view/schedule-view.scss` returns 0 — fd36a0c
 
 #### Manual
 
-- [x] 5.3 Urgency chips show correct colors after token migration
-- [x] 5.4 Regen and mileage-warning banners display with rounded corners
-- [x] 5.5 Schedule cards have padding consistent with vehicle-list cards
-- [x] 5.6 Mark-as-done and banner dismiss work without functional regression
+- [x] 5.3 Urgency chips show correct colors after token migration — fd36a0c
+- [x] 5.4 Regen and mileage-warning banners display with rounded corners — fd36a0c
+- [x] 5.5 Schedule cards have padding consistent with vehicle-list cards — fd36a0c
+- [x] 5.6 Mark-as-done and banner dismiss work without functional regression — fd36a0c
 
 ### Phase 6: Mobile + Consistency Verification
 
 #### Automated
 
-- [ ] 6.1 Build succeeds: `npm run build`
-- [ ] 6.2 `grep -rn '#[0-9a-fA-F]\{3,6\}' src/app/**/*.scss` returns empty (excluding styles.scss)
-- [ ] 6.3 Existing tests pass: `npm test`
+- [x] 6.1 Build succeeds: `npm run build`
+- [x] 6.2 `grep -rn '#[0-9a-fA-F]\{3,6\}' src/app/**/*.scss` returns empty (excluding styles.scss)
+- [x] 6.3 Existing tests pass: `npm test`
 
 #### Manual
 
-- [ ] 6.4 All 5 screens verified at 375px — no horizontal scroll on any
-- [ ] 6.5 Visual consistency checklist passes: consistent buttons, tokens, page-content wrappers
-- [ ] 6.6 App looks visually coherent across all screens
+- [x] 6.4 All 5 screens verified at 375px — no horizontal scroll on any
+- [x] 6.5 Visual consistency checklist passes: consistent buttons, tokens, page-content wrappers
+- [x] 6.6 App looks visually coherent across all screens
