@@ -308,28 +308,28 @@ None — single-row Supabase delete with no client-side caching layer to invalid
 
 #### Automated
 
-- [x] 1.1 npm run build compiles without errors
+- [x] 1.1 npm run build compiles without errors — b4c09cb
 
 #### Manual
 
-- [x] 1.2 Dialog renders correctly when opened and shows title, message, Cancel and Delete buttons
-- [x] 1.3 Cancel closes the dialog immediately
+- [x] 1.2 Dialog renders correctly when opened and shows title, message, Cancel and Delete buttons — b4c09cb
+- [x] 1.3 Cancel closes the dialog immediately — b4c09cb
 
 ### Phase 2: Delete on VehicleListComponent
 
 #### Automated
 
-- [ ] 2.1 npm run build compiles without errors
-- [ ] 2.2 npm test passes (no regressions)
+- [x] 2.1 npm run build compiles without errors
+- [x] 2.2 npm test passes (no regressions)
 
 #### Manual
 
-- [ ] 2.3 Delete button appears on each vehicle card
-- [ ] 2.4 Clicking Delete opens the confirmation dialog with correct vehicle name and cascade warning
-- [ ] 2.5 Clicking card body still navigates into the vehicle
-- [ ] 2.6 Confirming deletes the car and removes the card immediately from the list
-- [ ] 2.7 Cancelling closes the dialog; the car remains
-- [ ] 2.8 A service error keeps the dialog open and shows the error message
+- [x] 2.3 Delete button appears on each vehicle card
+- [x] 2.4 Clicking Delete opens the confirmation dialog with correct vehicle name and cascade warning
+- [x] 2.5 Clicking card body still navigates into the vehicle
+- [x] 2.6 Confirming deletes the car and removes the card immediately from the list
+- [x] 2.7 Cancelling closes the dialog; the car remains
+- [x] 2.8 A service error keeps the dialog open and shows the error message
 
 ### Phase 3: Delete on ScheduleViewComponent
 
