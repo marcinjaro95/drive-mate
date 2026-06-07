@@ -13,6 +13,7 @@ import type { Vehicle } from '../../core/models/vehicle.model';
   selector: 'app-vehicle-list',
   imports: [DecimalPipe, MatCardModule, MatButtonModule, MatProgressSpinnerModule, MatDialogModule],
   templateUrl: './vehicle-list.html',
+  styleUrl: './vehicle-list.scss',
 })
 export class VehicleListComponent implements OnInit {
   private readonly vehicleService = inject(VehicleService);

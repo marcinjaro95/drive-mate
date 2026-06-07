@@ -425,25 +425,25 @@ Manually verify every screen at 375px viewport width. Run through the visual con
 
 #### Automated
 
-- [x] 3.1 Build succeeds: `npm run build`
+- [x] 3.1 Build succeeds: `npm run build` — 7c7d714
 
 #### Manual
 
-- [x] 3.2 Login page: DriveMate wordmark visible above "Sign in" in brand color
-- [x] 3.3 Signup page: DriveMate wordmark visible above "Sign up" in brand color
-- [x] 3.4 Auth form layout unchanged — centered, full-height, usable
+- [x] 3.2 Login page: DriveMate wordmark visible above "Sign in" in brand color — 7c7d714
+- [x] 3.3 Signup page: DriveMate wordmark visible above "Sign up" in brand color — 7c7d714
+- [x] 3.4 Auth form layout unchanged — centered, full-height, usable — 7c7d714
 
 ### Phase 4: Vehicle Pages
 
 #### Automated
 
-- [ ] 4.1 Build succeeds: `npm run build`
+- [x] 4.1 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 4.2 Vehicle list cards have consistent padding and a visible hover shadow
-- [ ] 4.3 Vehicle list content constrained to max-width on wide viewports
-- [ ] 4.4 Add-car form fields span full width; error color matches theme
+- [x] 4.2 Vehicle list cards have consistent padding and a visible hover shadow
+- [x] 4.3 Vehicle list content constrained to max-width on wide viewports
+- [x] 4.4 Add-car form fields span full width; error color matches theme
 
 ### Phase 5: Schedule View Polish
 

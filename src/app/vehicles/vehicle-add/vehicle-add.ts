@@ -18,6 +18,7 @@ import { VehicleService } from '../../core/vehicles/vehicle.service';
     MatButtonModule,
   ],
   templateUrl: './vehicle-add.html',
+  styleUrl: './vehicle-add.scss',
 })
 export class VehicleAddComponent {
   private readonly fb = inject(FormBuilder);

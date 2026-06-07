@@ -1,0 +1,36 @@
+.vehicle-add-container {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--space-md);
+}
+
+mat-form-field {
+  display: block;
+  width: 100%;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: var(--space-md);
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.form-error {
+  color: var(--mat-sys-error);
+  font-size: var(--text-sm);
+}
+
+.page-nav {
+  margin-bottom: var(--space-sm);
+
+  a {
+    color: var(--mat-sys-primary);
+    text-decoration: none;
+  }
+}

@@ -1,0 +1,30 @@
+.vehicle-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.vehicle-card {
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--space-xl) var(--space-md);
+}
+
+.add-car-row {
+  margin-top: var(--space-md);
+  display: flex;
+  justify-content: center;
+}
+
+.error-message {
+  color: var(--mat-sys-error);
+  padding: var(--space-md);
+}
