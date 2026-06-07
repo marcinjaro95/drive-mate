@@ -507,16 +507,16 @@ No data migration required. The `ai_schedule` column defaults to NULL for all ex
 
 #### Automated
 
-- [x] 5.1 Type-check passes (npx tsc --noEmit)
-- [x] 5.2 npm test passes with no regressions
+- [x] 5.1 Type-check passes (npx tsc --noEmit) — f4cfea6
+- [x] 5.2 npm test passes with no regressions — f4cfea6
 
 #### Manual
 
-- [x] 5.3 Fresh add: skeleton cards appear during AI generation
-- [x] 5.4 Schedule renders with ≥ 5 items each with non-empty source
-- [x] 5.5 Each item shows name, colour-coded urgency chip, next-due info, source citation
-- [x] 5.6 Items without source do not appear
-- [x] 5.7 All-filtered warning card appears with Regenerate button when appropriate
-- [x] 5.8 Network error shows error card; "Try again" succeeds after network restored
-- [x] 5.9 Navigating away and back loads schedule instantly from DB (no AI call)
-- [x] 5.10 Vehicle header shows correct year/make/model/fuel type/engine capacity
+- [x] 5.3 Fresh add: skeleton cards appear during AI generation — f4cfea6
+- [x] 5.4 Schedule renders with ≥ 5 items each with non-empty source — f4cfea6
+- [x] 5.5 Each item shows name, colour-coded urgency chip, next-due info, source citation — f4cfea6
+- [x] 5.6 Items without source do not appear — f4cfea6
+- [x] 5.7 All-filtered warning card appears with Regenerate button when appropriate — f4cfea6
+- [x] 5.8 Network error shows error card; "Try again" succeeds after network restored — f4cfea6
+- [x] 5.9 Navigating away and back loads schedule instantly from DB (no AI call) — f4cfea6
+- [x] 5.10 Vehicle header shows correct year/make/model/fuel type/engine capacity — f4cfea6
