@@ -193,8 +193,8 @@ None. `service_records` table and RLS policies are already deployed.
 
 #### Automated
 
-- [x] 1.1 Build passes without errors: `npm run build`
-- [x] 1.2 TypeScript strict check passes: `npx tsc --noEmit`
+- [x] 1.1 Build passes without errors: `npm run build` — e853132
+- [x] 1.2 TypeScript strict check passes: `npx tsc --noEmit` — e853132
 
 #### Manual
 
@@ -211,4 +211,4 @@ None. `service_records` table and RLS policies are already deployed.
 
 #### Automated
 
-- [ ] 2.1 All tests pass: `npm test`
+- [x] 2.1 All tests pass: `npm test`

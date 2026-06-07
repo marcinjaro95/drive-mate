@@ -100,6 +100,22 @@ describe('ServiceRecordService', () => {
         }),
       ).rejects.toEqual(pgError);
     });
+
+    it('accepts mileage: 0 as a valid boundary value', async () => {
+      const record = makeRecord({ mileage: 0 });
+      const builder = createMockBuilder({ data: record, error: null });
+      mockFrom.mockReturnValue(builder);
+
+      const result = await service.createServiceRecord({
+        vehicle_id: 'v1',
+        service_date: '2026-06-04',
+        mileage: 0,
+        label: 'Oil change',
+        notes: null,
+      });
+
+      expect(result.mileage).toBe(0);
+    });
   });
 
   describe('getServiceRecord', () => {
