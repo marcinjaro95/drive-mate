@@ -31,7 +31,7 @@ export class VehicleService {
     return data as Vehicle | null;
   }
 
-  async createVehicle(payload: Omit<NewVehicle, 'user_id'>): Promise<Vehicle> {
+  async createVehicle(payload: Omit<NewVehicle, 'user_id' | 'ai_schedule'>): Promise<Vehicle> {
     const user = this.auth.currentUser();
     if (!user) throw new Error('Unauthenticated');
     const user_id = user.id;

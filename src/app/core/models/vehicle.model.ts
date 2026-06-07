@@ -1,3 +1,5 @@
+import type { ScheduleItem } from './schedule-item.model';
+
 export interface Vehicle {
   id: string;
   user_id: string;
@@ -8,6 +10,7 @@ export interface Vehicle {
   fuel_type: string;
   vin: string | null;
   current_mileage: number | null;
+  ai_schedule: ScheduleItem[] | null;
   created_at: string;
   updated_at: string;
 }
