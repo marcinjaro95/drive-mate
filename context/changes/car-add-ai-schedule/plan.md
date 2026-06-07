@@ -477,31 +477,31 @@ No data migration required. The `ai_schedule` column defaults to NULL for all ex
 
 #### Automated
 
-- [x] 3.1 Type-check passes (npx tsc --noEmit)
-- [x] 3.2 npm test passes with no regressions
+- [x] 3.1 Type-check passes (npx tsc --noEmit) — 3540404
+- [x] 3.2 npm test passes with no regressions — 3540404
 
 #### Manual
 
-- [x] 3.3 /dashboard shows vehicle list component (empty state on fresh account)
-- [x] 3.4 "Add your first car" button navigates to /dashboard/vehicles/new
-- [x] 3.5 Browser back from /dashboard/vehicles/new returns to /dashboard
-- [x] 3.6 Sign-out works from the header on any child route
+- [x] 3.3 /dashboard shows vehicle list component (empty state on fresh account) — 3540404
+- [x] 3.4 "Add your first car" button navigates to /dashboard/vehicles/new — 3540404
+- [x] 3.5 Browser back from /dashboard/vehicles/new returns to /dashboard — 3540404
+- [x] 3.6 Sign-out works from the header on any child route — 3540404
 
 ### Phase 4: Vehicle Add Form
 
 #### Automated
 
-- [ ] 4.1 Type-check passes (npx tsc --noEmit)
+- [x] 4.1 Type-check passes (npx tsc --noEmit)
 
 #### Manual
 
-- [ ] 4.2 Form renders all six fields with correct labels
-- [ ] 4.3 Empty required fields show inline validation errors on submit
-- [ ] 4.4 current_mileage accepts blank and positive integer; rejects negative values
-- [ ] 4.5 fuel_type select shows exactly five options
-- [ ] 4.6 Valid submit creates vehicle in DB and navigates to /dashboard/vehicles/<uuid>
-- [ ] 4.7 Cancel link returns to /dashboard
-- [ ] 4.8 New car appears in vehicle list on /dashboard
+- [x] 4.2 Form renders all six fields with correct labels
+- [x] 4.3 Empty required fields show inline validation errors on submit
+- [x] 4.4 current_mileage accepts blank and positive integer; rejects negative values
+- [x] 4.5 fuel_type select shows exactly five options
+- [x] 4.6 Valid submit creates vehicle in DB and navigates to /dashboard/vehicles/<uuid>
+- [x] 4.7 Cancel link returns to /dashboard
+- [x] 4.8 New car appears in vehicle list on /dashboard
 
 ### Phase 5: Schedule View Component
 
