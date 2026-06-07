@@ -463,12 +463,12 @@ Manually verify every screen at 375px viewport width. Run through the visual con
 
 #### Automated
 
-- [x] 6.1 Build succeeds: `npm run build`
-- [x] 6.2 `grep -rn '#[0-9a-fA-F]\{3,6\}' src/app/**/*.scss` returns empty (excluding styles.scss)
-- [x] 6.3 Existing tests pass: `npm test`
+- [x] 6.1 Build succeeds: `npm run build` — 76ec403
+- [x] 6.2 `grep -rn '#[0-9a-fA-F]\{3,6\}' src/app/**/*.scss` returns empty (excluding styles.scss) — 76ec403
+- [x] 6.3 Existing tests pass: `npm test` — 76ec403
 
 #### Manual
 
-- [x] 6.4 All 5 screens verified at 375px — no horizontal scroll on any
-- [x] 6.5 Visual consistency checklist passes: consistent buttons, tokens, page-content wrappers
-- [x] 6.6 App looks visually coherent across all screens
+- [x] 6.4 All 5 screens verified at 375px — no horizontal scroll on any — 76ec403
+- [x] 6.5 Visual consistency checklist passes: consistent buttons, tokens, page-content wrappers — 76ec403
+- [x] 6.6 App looks visually coherent across all screens — 76ec403
