@@ -319,31 +319,31 @@ None — single-row Supabase delete with no client-side caching layer to invalid
 
 #### Automated
 
-- [x] 2.1 npm run build compiles without errors
-- [x] 2.2 npm test passes (no regressions)
+- [x] 2.1 npm run build compiles without errors — b2e3638
+- [x] 2.2 npm test passes (no regressions) — b2e3638
 
 #### Manual
 
-- [x] 2.3 Delete button appears on each vehicle card
-- [x] 2.4 Clicking Delete opens the confirmation dialog with correct vehicle name and cascade warning
-- [x] 2.5 Clicking card body still navigates into the vehicle
-- [x] 2.6 Confirming deletes the car and removes the card immediately from the list
-- [x] 2.7 Cancelling closes the dialog; the car remains
-- [x] 2.8 A service error keeps the dialog open and shows the error message
+- [x] 2.3 Delete button appears on each vehicle card — b2e3638
+- [x] 2.4 Clicking Delete opens the confirmation dialog with correct vehicle name and cascade warning — b2e3638
+- [x] 2.5 Clicking card body still navigates into the vehicle — b2e3638
+- [x] 2.6 Confirming deletes the car and removes the card immediately from the list — b2e3638
+- [x] 2.7 Cancelling closes the dialog; the car remains — b2e3638
+- [x] 2.8 A service error keeps the dialog open and shows the error message — b2e3638
 
 ### Phase 3: Delete on ScheduleViewComponent
 
 #### Automated
 
-- [ ] 3.1 npm run build compiles without errors
-- [ ] 3.2 npm test passes
+- [x] 3.1 npm run build compiles without errors
+- [x] 3.2 npm test passes
 
 #### Manual
 
-- [ ] 3.3 Delete car button appears in the vehicle header on the schedule-view page
-- [ ] 3.4 Dialog opens with correct vehicle name and cascade warning
-- [ ] 3.5 Confirming deletes the car and navigates to /dashboard; car absent from list
-- [ ] 3.6 Cancelling keeps the user on the schedule-view page
+- [x] 3.3 Delete car button appears in the vehicle header on the schedule-view page
+- [x] 3.4 Dialog opens with correct vehicle name and cascade warning
+- [x] 3.5 Confirming deletes the car and navigates to /dashboard; car absent from list
+- [x] 3.6 Cancelling keeps the user on the schedule-view page
 
 ### Phase 4: Tests
 
