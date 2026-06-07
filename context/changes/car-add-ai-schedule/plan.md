@@ -470,22 +470,22 @@ No data migration required. The `ai_schedule` column defaults to NULL for all ex
 
 #### Automated
 
-- [x] 2.1 All AiScheduleService specs green (npm test)
-- [x] 2.2 Type-check passes (npx tsc --noEmit)
+- [x] 2.1 All AiScheduleService specs green (npm test) — 3c1fd51
+- [x] 2.2 Type-check passes (npx tsc --noEmit) — 3c1fd51
 
 ### Phase 3: Dashboard Shell + Routing + VehicleListComponent
 
 #### Automated
 
-- [ ] 3.1 Type-check passes (npx tsc --noEmit)
-- [ ] 3.2 npm test passes with no regressions
+- [x] 3.1 Type-check passes (npx tsc --noEmit)
+- [x] 3.2 npm test passes with no regressions
 
 #### Manual
 
-- [ ] 3.3 /dashboard shows vehicle list component (empty state on fresh account)
-- [ ] 3.4 "Add your first car" button navigates to /dashboard/vehicles/new
-- [ ] 3.5 Browser back from /dashboard/vehicles/new returns to /dashboard
-- [ ] 3.6 Sign-out works from the header on any child route
+- [x] 3.3 /dashboard shows vehicle list component (empty state on fresh account)
+- [x] 3.4 "Add your first car" button navigates to /dashboard/vehicles/new
+- [x] 3.5 Browser back from /dashboard/vehicles/new returns to /dashboard
+- [x] 3.6 Sign-out works from the header on any child route
 
 ### Phase 4: Vehicle Add Form
 

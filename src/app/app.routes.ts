@@ -17,6 +17,21 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () => import('./dashboard/dashboard').then(m => m.DashboardComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./vehicles/vehicle-list/vehicle-list').then(m => m.VehicleListComponent),
+            pathMatch: 'full',
+          },
+          {
+            path: 'vehicles/new',
+            loadComponent: () => import('./vehicles/vehicle-add/vehicle-add').then(m => m.VehicleAddComponent),
+          },
+          {
+            path: 'vehicles/:id',
+            loadComponent: () => import('./vehicles/schedule-view/schedule-view').then(m => m.ScheduleViewComponent),
+          },
+        ],
       },
       {
         path: '',
