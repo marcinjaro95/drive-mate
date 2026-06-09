@@ -52,7 +52,7 @@ Extend `ScheduleViewComponent` with the full "Mark as done" interaction: expand/
 
 **File**: `src/app/vehicles/schedule-view/schedule-view.ts`
 
-**Intent**: Add `ServiceRecordService`, `FormBuilder`, `MatDialog`, and `MatSnackBar` injections, the `markDoneForm` reactive group, four new signals, and three new methods (`openMarkDone`, `cancelMarkDone`, `saveMarkDone`). Update `generateSchedule()` to fetch service records before the AI call. Add `ReactiveFormsModule`, `MatFormFieldModule`, `MatInputModule`, `MatDialogModule`, and `MatSnackBarModule` to the component's `imports` array.
+**Intent**: Add `ServiceRecordService`, `FormBuilder`, and `MatDialog` injections, the `markDoneForm` reactive group, four new signals, and three new methods (`openMarkDone`, `cancelMarkDone`, `saveMarkDone`). Update `generateSchedule()` to fetch service records before the AI call. Add `ReactiveFormsModule`, `MatFormFieldModule`, `MatInputModule`, and `MatDialogModule` to the component's `imports` array.
 
 **Contract**:
 
@@ -82,8 +82,7 @@ Mark-done form (field `fb = inject(FormBuilder)` initialised before the form):
    - On success: update `vehicle` signal with the returned value.
    - On failure (catch): set `mileageSyncWarning(true)`.
 6. Set `expandedItem(null)`, `isSaving(false)`.
-7. Show `MatSnackBar` with message `"${item.item} recorded — ${service_date}, ${mileage} km"`, no action, duration 4000 ms.
-8. Open `ConfirmDialogComponent` via `MatDialog` with: `title: 'Regenerate schedule?'`, `message: 'Service recorded. The AI schedule may be outdated — regenerate now to reflect the latest service history.'`, `confirmLabel: 'Regenerate'`, `onConfirm: async () => { await this.generateSchedule(); }`. "Cancel" in the dialog dismisses without regenerating.
+7. Open `ConfirmDialogComponent` via `MatDialog` with: `title: 'Regenerate schedule?'`, `message: 'Service recorded. The AI schedule may be outdated — regenerate now to reflect the latest service history.'`, `confirmLabel: 'Regenerate'`, `onConfirm: async () => { await this.generateSchedule(); }`. "Cancel" in the dialog dismisses without regenerating.
 
 #### 2. AiScheduleService
 
@@ -154,7 +153,6 @@ After the `</div>` closing the `schedule-list`:
 - Form pre-fills today's date and the vehicle's current mileage (or blank if no mileage on record)
 - Submitting with an empty date or mileage shows a validation error and does not call the service
 - Successful save: a new `service_records` row appears in Supabase; vehicle `current_mileage` updates if the entered mileage is higher
-- Snackbar appears immediately after save with message `"${label} recorded — ${date}, ${mileage} km"` and auto-dismisses after 4 s
 - Regen dialog opens after save; "Regenerate" triggers `generateSchedule()` and closes the dialog; "Cancel" closes without regenerating
 - After clicking "Regenerate", the outgoing request to `/api/ai` includes the saved service record(s) in the prompt body (verify in browser DevTools → Network)
 - If vehicle mileage update fails (simulate via network tab), record is saved and mileage sync warning appears
@@ -188,6 +186,80 @@ Review `service-record.service.spec.ts` for gaps in the data shape used by the m
 
 ---
 
+---
+
+## Phase 3: Session-persistent "Saved ✓" state
+
+### Overview
+
+After a successful save, replace the "Mark as done" button with a static non-interactive "Saved ✓" label for that card for the remainder of the page visit. State is component-scoped — navigating away and back resets it. Includes the `track $index` fix from impl-review F6.
+
+### Changes Required:
+
+#### 1. Component class
+
+**File**: `src/app/vehicles/schedule-view/schedule-view.ts`
+
+**Intent**: Add a `savedItems` signal and mutate it at the end of each successful `saveMarkDone()` call so the template knows which schedule items were completed this session.
+
+**Contract**: Add `savedItems = signal<Set<string>>(new Set())` alongside the existing four signals. In `saveMarkDone()`, after `this.expandedItem.set(null)`, append:
+
+```ts
+this.savedItems.update(s => new Set([...s, item.item]));
+```
+
+`item` is already a local snapshot at the top of `saveMarkDone()` — use that local, not `this.expandedItem()`.
+
+#### 2. Template
+
+**File**: `src/app/vehicles/schedule-view/schedule-view.html`
+
+**Intent**: Split the single-condition `mat-card-actions` block into two branches — "Saved ✓" for completed items, "Mark as done" for the rest. Fix the tracking key.
+
+**Contract**:
+
+- Line 51: `track item.item` → `track $index`
+- Lines 106–110: Replace the single `@if (expandedItem()?.item !== item.item)` block with:
+
+```html
+@if (savedItems().has(item.item)) {
+  <mat-card-actions>
+    <span class="saved-label">Saved ✓</span>
+  </mat-card-actions>
+} @else if (expandedItem()?.item !== item.item) {
+  <mat-card-actions>
+    <button mat-button (click)="openMarkDone(item)">Mark as done</button>
+  </mat-card-actions>
+}
+```
+
+#### 3. Component styles
+
+**File**: `src/app/vehicles/schedule-view/schedule-view.scss`
+
+**Intent**: Style `.saved-label` to match the padding and visual weight of the adjacent `mat-button` without appearing interactive.
+
+**Contract**: `.saved-label` — `padding: 0 8px; font-size: 14px; color: var(--mat-sys-primary);`
+
+### Success Criteria:
+
+#### Automated Verification:
+
+- Build passes without errors: `npm run build`
+- TypeScript strict check passes: `npx tsc --noEmit`
+
+#### Manual Verification:
+
+- After a successful save, the card immediately shows "Saved ✓" — no "Mark as done" button
+- The "Saved ✓" label is non-interactive (no cursor change, no hover ripple)
+- Other unsaved cards retain their "Mark as done" button
+- Saving a second item in the same session marks both cards
+- Navigating away and back resets state — all cards show "Mark as done" again
+
+**Implementation Note**: After automated verification passes, pause here for manual testing confirmation.
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests:
@@ -201,11 +273,12 @@ Review `service-record.service.spec.ts` for gaps in the data shape used by the m
 3. Leave date or mileage empty, click Save — verify required validation message, no service call
 4. Fill both fields and save — verify `service_records` row in Supabase, vehicle `current_mileage` updated
 5. Save a second record with lower mileage — verify `current_mileage` is NOT decreased
-6. Verify snackbar appears immediately after save with the label, date, and mileage; auto-dismisses after ~4 s
-7. Verify regen dialog opens after save; "Regenerate" triggers AI call and closes dialog; "Cancel" closes without regenerating
+6. Verify regen dialog opens after save; "Regenerate" triggers AI call and closes dialog; "Cancel" closes without regenerating
 8. After clicking "Regenerate", open DevTools → Network and confirm the `/api/ai` request body contains the "Service history" section with the newly saved record
 9. Fill notes and save — verify `notes` column populated in Supabase
-8. Click Cancel — verify no row created, form closes
+10. Click Cancel — verify no row created, form closes
+11. After a successful save, card shows "Saved ✓" — "Mark as done" is gone for that card
+12. Navigate away and back — "Saved ✓" state is gone; card shows "Mark as done" again
 
 ## Migration Notes
 
@@ -239,8 +312,7 @@ None. `service_records` table and RLS policies are already deployed.
 - [ ] 1.5 Form pre-fills today's date and vehicle's current mileage
 - [ ] 1.6 Empty date/mileage shows validation error; no service call fired
 - [ ] 1.7 Successful save creates ServiceRecord row in Supabase and updates current_mileage
-- [ ] 1.8 Snackbar appears after save with label, date, and mileage; auto-dismisses after ~4 s
-- [ ] 1.9 Regen dialog opens after save; Regenerate triggers AI call and closes dialog; Cancel closes without regenerating
+- [ ] 1.8 Regen dialog opens after save; Regenerate triggers AI call and closes dialog; Cancel closes without regenerating
 - [ ] 1.10 Mileage sync failure shows non-blocking warning; record still saved
 - [ ] 1.11 Cancel closes form without saving
 - [ ] 1.12 After Regenerate, /api/ai request body contains "Service history" with saved record(s) (verified in DevTools Network)
@@ -250,3 +322,18 @@ None. `service_records` table and RLS policies are already deployed.
 #### Automated
 
 - [ ] 2.1 All tests pass: `npm test`
+
+### Phase 3: Session-persistent "Saved ✓" state
+
+#### Automated
+
+- [x] 3.1 Build passes without errors: `npm run build`
+- [x] 3.2 TypeScript strict check passes: `npx tsc --noEmit`
+
+#### Manual
+
+- [ ] 3.3 After successful save, card shows "Saved ✓" instead of "Mark as done"
+- [ ] 3.4 "Saved ✓" label is non-interactive
+- [ ] 3.5 Other unsaved cards retain "Mark as done"
+- [ ] 3.6 Saving two items in one session marks both cards
+- [ ] 3.7 Navigating away and back resets state — all cards show "Mark as done"
