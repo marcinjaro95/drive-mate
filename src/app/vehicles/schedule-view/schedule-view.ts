@@ -7,7 +7,6 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatButtonModule} from '@angular/material/button';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
-import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import {VehicleService} from '../../core/vehicles/vehicle.service';
 import {AiScheduleService} from '../../core/ai-schedule/ai-schedule.service';
 import {ConfirmDialogComponent} from '../../shared/confirm-dialog/confirm-dialog';
@@ -30,7 +29,6 @@ import type {ServiceRecord} from '../../core/models/service-record.model';
     MatInputModule,
     ReactiveFormsModule,
     MatDialogModule,
-    MatSnackBarModule,
     RouterModule,
   ],
   templateUrl: './schedule-view.html',
@@ -44,7 +42,6 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
-  private readonly snackBar = inject(MatSnackBar);
 
   private abortController: AbortController | null = null;
 
@@ -58,6 +55,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
   isSaving = signal(false);
   saveError = signal<string | null>(null);
   mileageSyncWarning = signal(false);
+  savedItems = signal<Set<string>>(new Set());
 
   markDoneForm = this.fb.group({
     service_date: ['', Validators.required],
@@ -184,11 +182,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
       }
 
       this.expandedItem.set(null);
-      this.snackBar.open(
-        `${item.item} recorded — ${service_date}, ${mileage} km`,
-        undefined,
-        { duration: 4000 },
-      );
+      this.savedItems.update(s => new Set([...s, item.item]));
       this.dialog.open(ConfirmDialogComponent, {
         data: {
           title: 'Regenerate schedule?',

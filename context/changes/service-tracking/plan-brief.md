@@ -26,6 +26,9 @@ Each schedule card shows a "Mark as done" button. Clicking it expands an inline 
 | Schedule regen | `ConfirmDialogComponent` via `MatDialog`, not auto | Avoids a surprise AI API call on every mark-done; dialog forces an explicit user choice (Regenerate / Cancel) |
 | Error handling | Record-first, non-blocking mileage warning | Service record is the primary data; a failed odometer update is recoverable |
 | Testing | Service layer spec only | Component already tested manually; existing ServiceRecordService spec is near-complete |
+| Saved state key | item label (`item.item`) | Already the de-facto item identifier in the component; template check is trivial (`savedItems().has(item.item)`) |
+| Saved state scope | Component-scoped signal | Ephemeral by design — resets on navigation; no extra infrastructure needed |
+| Saved UX | Static "Saved ✓" label, no re-mark | Clear confirmation; re-marking would risk duplicate records; FR-008 handles corrections |
 
 ## Scope
 
@@ -56,9 +59,10 @@ Changes span `ScheduleViewComponent` (`.ts`, `.html`, `.scss`), `AiScheduleServi
 | --- | --- | --- |
 | 1. Inline mark-done form | Full user-facing interaction in `ScheduleViewComponent` | Two-call save (record + mileage) needs careful error handling to avoid silent failures |
 | 2. Spec coverage | `ServiceRecordService` spec verified and gap-filled | Minor — mostly verification; spec is already broad |
+| 3. Session-persistent "Saved ✓" | Cards show "Saved ✓" after save for the rest of the page visit | None — single signal + template branch |
 
 **Prerequisites:** Car-add-ai-schedule change must be merged (schedule view must exist and load items)
-**Estimated effort:** ~1 session across 2 phases
+**Estimated effort:** ~1 session across 3 phases (Phases 1 & 2 already implemented)
 
 ## Open Risks & Assumptions
 
