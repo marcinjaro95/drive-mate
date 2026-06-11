@@ -6,6 +6,7 @@ export interface ServiceRecord {
   mileage: number;
   label: string;
   notes: string | null;
+  schedule_item_id: string | null;
   created_at: string;
   updated_at: string;
 }

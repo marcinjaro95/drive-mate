@@ -14,6 +14,7 @@ const makeRecord = (overrides: Partial<ServiceRecord> = {}): ServiceRecord => ({
   mileage: 50000,
   label: 'Oil change',
   notes: null,
+  schedule_item_id: null,
   created_at: '2026-06-04T00:00:00Z',
   updated_at: '2026-06-04T00:00:00Z',
   ...overrides,
@@ -66,6 +67,7 @@ describe('ServiceRecordService', () => {
         mileage: 50000,
         label: 'Oil change',
         notes: null,
+        schedule_item_id: null,
       });
 
       const insertedPayload = builder.insert.mock.calls[0][0];
@@ -82,6 +84,7 @@ describe('ServiceRecordService', () => {
         mileage: 50000,
         label: 'Oil change',
         notes: null,
+        schedule_item_id: null,
       });
 
       expect(result).toEqual(record);
@@ -98,6 +101,7 @@ describe('ServiceRecordService', () => {
           mileage: 50000,
           label: 'Oil change',
           notes: null,
+          schedule_item_id: null,
         }),
       ).rejects.toEqual(pgError);
     });
@@ -113,6 +117,7 @@ describe('ServiceRecordService', () => {
         mileage: 0,
         label: 'Oil change',
         notes: null,
+        schedule_item_id: null,
       });
 
       expect(result.mileage).toBe(0);

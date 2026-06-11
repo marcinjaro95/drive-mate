@@ -162,6 +162,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
         await this.serviceRecordService.createServiceRecord({
           vehicle_id: vehicle.id,
           label: item.item,
+          schedule_item_id: null,
           service_date: service_date!,
           mileage: mileage!,
           notes: notes || null,

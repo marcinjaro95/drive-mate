@@ -22,6 +22,7 @@ const makeVehicle = (overrides: Partial<Vehicle> = {}): Vehicle => ({
 });
 
 const makeItem = (overrides: Partial<ScheduleItem> = {}): ScheduleItem => ({
+  id: 'test-item-id',
   item: 'Oil change',
   interval_km: 10000,
   next_due_km: 55000,
