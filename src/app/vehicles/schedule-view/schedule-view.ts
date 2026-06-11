@@ -79,24 +79,40 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
     }
     this.isLoading.set(false);
 
+    let loadedRecords: ServiceRecord[] = [];
+    try {
+      loadedRecords = await this.serviceRecordService.getServiceRecords(this.vehicle()!.id);
+    } catch {
+      // non-blocking — done state will be empty; user can still mark items done
+    }
+    this.savedItems.set(
+      new Set(
+        loadedRecords
+          .map(r => r.schedule_item_id)
+          .filter((id): id is string => id !== null)
+      )
+    );
+
     if (this.vehicle()!.ai_schedule?.length) {
       this.scheduleItems.set(this.vehicle()!.ai_schedule!);
       return;
     }
-    await this.generateSchedule();
+    await this.generateSchedule(loadedRecords);
   }
 
-  async generateSchedule(): Promise<void> {
+  async generateSchedule(preloadedRecords?: ServiceRecord[]): Promise<void> {
     this.abortController?.abort();
     this.abortController = new AbortController();
     this.isGenerating.set(true);
     this.error.set(null);
     try {
-      let serviceRecords: ServiceRecord[] = [];
-      try {
-        serviceRecords = await this.serviceRecordService.getServiceRecords(this.vehicle()!.id);
-      } catch {
-        // non-blocking — proceed with empty history
+      let serviceRecords: ServiceRecord[] = preloadedRecords ?? [];
+      if (!preloadedRecords) {
+        try {
+          serviceRecords = await this.serviceRecordService.getServiceRecords(this.vehicle()!.id);
+        } catch {
+          // non-blocking
+        }
       }
       const items = await this.aiScheduleService.generateAndSave(
         this.vehicle()!,
@@ -162,7 +178,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
         await this.serviceRecordService.createServiceRecord({
           vehicle_id: vehicle.id,
           label: item.item,
-          schedule_item_id: null,
+          schedule_item_id: item.id,
           service_date: service_date!,
           mileage: mileage!,
           notes: notes || null,
@@ -183,7 +199,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
       }
 
       this.expandedItem.set(null);
-      this.savedItems.update(s => new Set([...s, item.item]));
+      this.savedItems.update(s => new Set([...s, item.id]));
       this.dialog.open(ConfirmDialogComponent, {
         data: {
           title: 'Regenerate schedule?',

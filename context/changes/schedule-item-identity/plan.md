@@ -351,15 +351,15 @@ ignores null entries. Existing `ai_schedule` JSONB items receive backfilled UUID
 
 #### Automated
 
-- [x] 2.1 All AiScheduleService specs green including UUID assertion (npm test)
-- [x] 2.2 Type-check passes (npx tsc --noEmit)
+- [x] 2.1 All AiScheduleService specs green including UUID assertion (npm test) — 3f8a019
+- [x] 2.2 Type-check passes (npx tsc --noEmit) — 3f8a019
 
 ### Phase 3: ScheduleView — Cross-session Done State
 
 #### Automated
 
-- [ ] 3.1 Type-check passes (npx tsc --noEmit)
-- [ ] 3.2 npm test passes with no regressions
+- [x] 3.1 Type-check passes (npx tsc --noEmit)
+- [x] 3.2 npm test passes with no regressions
 
 #### Manual
 
