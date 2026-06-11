@@ -70,6 +70,7 @@ describe('AiScheduleService', () => {
     expect(result).toHaveLength(2);
     expect(result[0].item).toBe('Oil change');
     expect(result[1].item).toBe('Tyre rotation');
+    expect(result.every(i => typeof i.id === 'string' && i.id.length > 0)).toBe(true);
   });
 
   it('excludes items where source is an empty string', async () => {
@@ -126,7 +127,9 @@ describe('AiScheduleService', () => {
 
     await service.generateAndSave(makeVehicle());
 
-    expect(mockUpdateVehicle).toHaveBeenCalledWith('v1', { ai_schedule: [items[0]] });
+    expect(mockUpdateVehicle).toHaveBeenCalledWith('v1', {
+      ai_schedule: [expect.objectContaining({ item: items[0].item, source: items[0].source })],
+    });
   });
 
   describe('buildPrompt', () => {

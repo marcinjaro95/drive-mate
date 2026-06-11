@@ -337,22 +337,22 @@ ignores null entries. Existing `ai_schedule` JSONB items receive backfilled UUID
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly (npx supabase db reset)
-- [x] 1.2 Type-check passes (npx tsc --noEmit)
-- [x] 1.3 Existing tests still pass (npm test)
+- [x] 1.1 Migration applies cleanly (npx supabase db reset) — b64d81d
+- [x] 1.2 Type-check passes (npx tsc --noEmit) — b64d81d
+- [x] 1.3 Existing tests still pass (npm test) — b64d81d
 
 #### Manual
 
-- [x] 1.4 schedule_item_id column visible in Supabase Studio on service_records as nullable uuid
-- [x] 1.5 Existing ai_schedule JSONB items now carry id UUIDs (inspect via SQL or Studio)
-- [x] 1.6 No TypeScript errors on schedule-item.model.ts or service-record.model.ts
+- [x] 1.4 schedule_item_id column visible in Supabase Studio on service_records as nullable uuid — b64d81d
+- [x] 1.5 Existing ai_schedule JSONB items now carry id UUIDs (inspect via SQL or Studio) — b64d81d
+- [x] 1.6 No TypeScript errors on schedule-item.model.ts or service-record.model.ts — b64d81d
 
 ### Phase 2: AiScheduleService — UUID Injection
 
 #### Automated
 
-- [ ] 2.1 All AiScheduleService specs green including UUID assertion (npm test)
-- [ ] 2.2 Type-check passes (npx tsc --noEmit)
+- [x] 2.1 All AiScheduleService specs green including UUID assertion (npm test)
+- [x] 2.2 Type-check passes (npx tsc --noEmit)
 
 ### Phase 3: ScheduleView — Cross-session Done State
 

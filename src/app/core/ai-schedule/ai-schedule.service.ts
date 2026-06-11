@@ -24,9 +24,11 @@ export class AiScheduleService {
     const parsed: { items: ScheduleItem[] } = JSON.parse(envelope.choices[0].message.content);
     if (!Array.isArray(parsed?.items)) throw new Error('AI response missing items array');
     const VALID_URGENCY = new Set(['overdue', 'due_soon', 'upcoming']);
-    const filtered = parsed.items.filter(
-      (i) => typeof i.source === 'string' && i.source.trim().length > 0 && VALID_URGENCY.has(i.urgency),
-    );
+    const filtered = parsed.items
+      .filter(
+        (i) => typeof i.source === 'string' && i.source.trim().length > 0 && VALID_URGENCY.has(i.urgency),
+      )
+      .map((i) => ({ ...i, id: crypto.randomUUID() }));
     await this.vehicleService.updateVehicle(vehicle.id, { ai_schedule: filtered });
     return filtered;
   }
