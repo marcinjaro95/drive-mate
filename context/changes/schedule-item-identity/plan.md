@@ -358,13 +358,13 @@ ignores null entries. Existing `ai_schedule` JSONB items receive backfilled UUID
 
 #### Automated
 
-- [x] 3.1 Type-check passes (npx tsc --noEmit)
-- [x] 3.2 npm test passes with no regressions
+- [x] 3.1 Type-check passes (npx tsc --noEmit) — d7ea6cf
+- [x] 3.2 npm test passes with no regressions — d7ea6cf
 
 #### Manual
 
-- [ ] 3.3 Mark item done → navigate away and back → item still shown as done
-- [ ] 3.4 New service record has schedule_item_id UUID set in Supabase Studio
-- [ ] 3.5 Sign out and back in → done state persists on vehicle schedule
-- [ ] 3.6 Regenerate schedule → old service_record schedule_item_ids intact; new schedule starts with clean done state
-- [ ] 3.7 Vehicle with no service records loads schedule with empty done state and no error
+- [x] 3.3 Mark item done → navigate away and back → item still shown as done — d7ea6cf
+- [x] 3.4 New service record has schedule_item_id UUID set in Supabase Studio — d7ea6cf
+- [x] 3.5 Sign out and back in → done state persists on vehicle schedule — d7ea6cf
+- [x] 3.6 Regenerate schedule → old service_record schedule_item_ids intact; new schedule starts with clean done state — d7ea6cf
+- [x] 3.7 Vehicle with no service records loads schedule with empty done state and no error — d7ea6cf

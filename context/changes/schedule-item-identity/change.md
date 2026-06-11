@@ -1,7 +1,7 @@
 ---
 change_id: schedule-item-identity
 title: Schedule Item Identity + Traceability
-status: implementing
+status: implemented
 created: 2026-06-11
 updated: 2026-06-11
 impl_reviewed: null
