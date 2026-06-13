@@ -257,25 +257,25 @@ New `describe('ScheduleViewComponent — generation flow', ...)` block — 8 tes
 
 #### Automated
 
-- [x] 1.1 All 24 service tests pass: `npm test -- --reporter=verbose`
-- [x] 1.2 TypeScript compilation clean: `npx tsc --noEmit`
+- [x] 1.1 All 24 service tests pass: `npm test -- --reporter=verbose` — fe809ef
+- [x] 1.2 TypeScript compilation clean: `npx tsc --noEmit` — fe809ef
 
 #### Manual
 
-- [ ] 1.3 Each new test reviewed — throw-message tests assert correct string; filter tests assert correct count and surviving item identity
+- [x] 1.3 Each new test reviewed — throw-message tests assert correct string; filter tests assert correct count and surviving item identity
 
 ### Phase 2: Component Generation-Flow Tests
 
 #### Automated
 
-- [ ] 2.1 All 11 component tests pass: `npm test -- --reporter=verbose`
-- [ ] 2.2 TypeScript compilation clean: `npx tsc --noEmit`
-- [ ] 2.3 Lint clean: `npx eslint src/app/vehicles/schedule-view/schedule-view.spec.ts`
+- [x] 2.1 All 11 component tests pass: `npm test -- --reporter=verbose`
+- [x] 2.2 TypeScript compilation clean: `npx tsc --noEmit`
+- [x] 2.3 Lint clean: `npx eslint src/app/vehicles/schedule-view/schedule-view.spec.ts`
 
 #### Manual
 
-- [ ] 2.4 Both describe blocks visible in test output; 8 generation-flow tests in their own block
-- [ ] 2.5 AbortError test uses `DOMException` (not `new Error`); test is not timing-sensitive
+- [x] 2.4 Both describe blocks visible in test output; 8 generation-flow tests in their own block
+- [x] 2.5 AbortError test uses `DOMException` (not `new Error`); test is not timing-sensitive
 
 ### Phase 3: Cookbook Update
 
