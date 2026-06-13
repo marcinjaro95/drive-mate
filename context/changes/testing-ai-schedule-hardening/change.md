@@ -1,7 +1,7 @@
 ---
 change_id: testing-ai-schedule-hardening
 title: Testing ai schedule hardening
-status: implementing
+status: implemented
 created: 2026-06-13
 updated: 2026-06-13
 archived_at: null

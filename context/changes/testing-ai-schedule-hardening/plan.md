@@ -281,5 +281,5 @@ New `describe('ScheduleViewComponent — generation flow', ...)` block — 8 tes
 
 #### Manual
 
-- [x] 3.1 §6.1 and §6.4 replaced with concrete patterns; readable without referring to this plan
-- [x] 3.2 §3 Phase 1 status reads `complete`
+- [x] 3.1 §6.1 and §6.4 replaced with concrete patterns; readable without referring to this plan — c98902f
+- [x] 3.2 §3 Phase 1 status reads `complete` — c98902f
