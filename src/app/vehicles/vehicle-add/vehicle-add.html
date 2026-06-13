@@ -4,6 +4,29 @@
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline">
+      <mat-label>VIN — optional (auto-fills fields below)</mat-label>
+      <input matInput formControlName="vin" type="text" maxlength="17" />
+      @if (form.controls.vin.touched && form.controls.vin.hasError('pattern')) {
+        <mat-error>VIN must be 17 characters (letters A–H, J–N, P–R, Z and digits)</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="vin-actions">
+      <button
+        mat-button
+        type="button"
+        [disabled]="form.controls.vin.invalid || !form.controls.vin.value || isDecoding()"
+        (click)="decodeVin()"
+      >
+        {{ isDecoding() ? 'Decoding…' : 'Decode' }}
+      </button>
+    </div>
+
+    @if (decodeError()) {
+      <p class="form-error">{{ decodeError() }}</p>
+    }
+
+    <mat-form-field appearance="outline">
       <mat-label>Make</mat-label>
       <input matInput formControlName="make" type="text" />
       @if (form.controls.make.touched && form.controls.make.hasError('required')) {

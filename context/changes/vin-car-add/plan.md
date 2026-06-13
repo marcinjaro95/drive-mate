@@ -207,21 +207,21 @@ Add a `VinDecoderService` that calls `/api/vin`, then update `VehicleAddComponen
 
 #### Automated
 
-- [x] 1.1 Build compiles without TypeScript errors: `npm run build`
-- [x] 1.2 Missing-key guard returns 500 + JSON (matches OPENROUTER_API_KEY pattern)
+- [x] 1.1 Build compiles without TypeScript errors: `npm run build` — 26d1d60
+- [x] 1.2 Missing-key guard returns 500 + JSON (matches OPENROUTER_API_KEY pattern) — 26d1d60
 
 #### Manual
 
-- [x] 1.3 Known EU VIN returns all five fields via `wrangler dev`
-- [x] 1.4 US-only VIN returns partial result (NHTSA fallback)
-- [x] 1.5 Unknown VIN returns `{ error: "not_found" }`
-- [x] 1.6 AutoRef.eu displacement field key confirmed from live response; mapping correct
+- [x] 1.3 Known EU VIN returns all five fields via `wrangler dev` — 26d1d60
+- [x] 1.4 US-only VIN returns partial result (NHTSA fallback) — 26d1d60
+- [x] 1.5 Unknown VIN returns `{ error: "not_found" }` — 26d1d60
+- [x] 1.6 AutoRef.eu displacement field key confirmed from live response; mapping correct — 26d1d60
 
 ### Phase 2: Angular — VinDecoderService + form UI
 
 #### Automated
 
-- [ ] 2.1 `npm run build` compiles without TypeScript or template errors
+- [x] 2.1 `npm run build` compiles without TypeScript or template errors
 
 #### Manual
 
