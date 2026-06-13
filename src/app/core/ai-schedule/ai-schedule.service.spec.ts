@@ -71,6 +71,7 @@ describe('AiScheduleService', () => {
     expect(result[0].item).toBe('Oil change');
     expect(result[1].item).toBe('Tyre rotation');
     expect(result.every(i => typeof i.id === 'string' && i.id.length > 0)).toBe(true);
+    expect(result[0].id).toMatch(/^[0-9a-f-]{36}$/);
   });
 
   it('excludes items where source is an empty string', async () => {
@@ -128,7 +129,7 @@ describe('AiScheduleService', () => {
     await service.generateAndSave(makeVehicle());
 
     expect(mockUpdateVehicle).toHaveBeenCalledWith('v1', {
-      ai_schedule: [expect.objectContaining({ item: items[0].item, source: items[0].source })],
+      ai_schedule: [expect.objectContaining({ item: items[0].item, source: items[0].source, id: expect.stringMatching(/^[0-9a-f-]{36}$/) })],
     });
   });
 

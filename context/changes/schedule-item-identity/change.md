@@ -4,7 +4,7 @@ title: Schedule Item Identity + Traceability
 status: impl_reviewed
 created: 2026-06-11
 updated: 2026-06-11
-impl_reviewed: null
+impl_reviewed: 2026-06-13
 archived_at: null
 ---
 
