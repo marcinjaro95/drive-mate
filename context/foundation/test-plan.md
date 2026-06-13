@@ -69,7 +69,7 @@ orchestrator updates Status as artifacts appear on disk.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|------------|-----------------|----------------|------------|--------|---------------|
-| 1 | AI schedule flow hardening | Prove the core generation loop is resilient to malformed responses and always enforces source attribution | #1, #2 | unit + component | change opened | testing-ai-schedule-hardening |
+| 1 | AI schedule flow hardening | Prove the core generation loop is resilient to malformed responses and always enforces source attribution | #1, #2 | unit + component | complete | testing-ai-schedule-hardening |
 | 2 | Auth & ownership enforcement | Verify route guard covers all protected routes; verify RLS enforces per-user isolation at the DB; verify app-layer ownership on schedule generation | #3, #4, #5 | Angular router integration + Supabase integration (local) | not started | — |
 | 3 | CI test gate | Wire `npm test` to run on every PR so the floor from Phases 1+2 cannot regress silently | cross-cutting | CI gate | not started | — |
 
@@ -124,7 +124,61 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.1 Adding a unit or component test
 
-TBD — see §3 Phase 1 for AI schedule resilience and source attribution guardrail patterns.
+**Service unit tests** (`src/app/core/ai-schedule/ai-schedule.service.spec.ts`)
+
+Extend the existing `describe('AiScheduleService', ...)` block. Use the
+`vi.stubGlobal('fetch', ...)` + `makeEnvelope()` helpers that are already in
+the file. For a guard path (throws on bad shape):
+
+```ts
+it('rejects when <shape>', async () => {
+  vi.stubGlobal('fetch', () =>
+    Promise.resolve({ ok: true, json: () => Promise.resolve(<envelope>) }),
+  );
+  await expect(service.generateAndSave('v1', makeVehicle())).rejects.toThrow(
+    '<message substring>',
+  );
+});
+```
+
+For a filter path (bad item is dropped):
+
+```ts
+it('drops item when <condition>', async () => {
+  vi.stubGlobal('fetch', makeFetch([makeItem(<bad props>), makeItem()]));
+  const result = await service.generateAndSave('v1', makeVehicle());
+  expect(result).toHaveLength(1);
+  expect(result[0].item).toBe(makeItem().item); // valid item survives
+});
+```
+
+**Component tests** (`src/app/vehicles/schedule-view/schedule-view.spec.ts`)
+
+The file uses **two sibling describe blocks**:
+
+- `describe('ScheduleViewComponent — delete flow', ...)` — existing tests; `detectChanges()` is called in `beforeEach` and tests operate synchronously.
+- `describe('ScheduleViewComponent — generation flow', ...)` — async generation tests; `detectChanges()` is **not** called in `beforeEach`. Each test configures the `generateAndSave` spy, then triggers the async path with:
+
+  ```ts
+  fixture.detectChanges();          // triggers ngOnInit
+  await fixture.whenStable();       // waits for all async resolution
+  fixture.detectChanges();          // flushes signal changes to the DOM
+  ```
+
+For intermediate/synchronous states (e.g. `isGenerating` skeleton), do **not**
+trigger `ngOnInit`. Mutate the signal directly and call `detectChanges()` once:
+
+```ts
+component.isGenerating.set(true);
+fixture.detectChanges();
+expect(fixture.nativeElement.querySelector('.skeleton-container')).not.toBeNull();
+```
+
+The generation-flow `beforeEach` provides: `provideRouter([])`,
+`provideAnimationsAsync()`, an `ActivatedRoute` stub with
+`{ snapshot: { params: { id: 'v1' } } }`, a `VehicleService` mock returning
+`makeVehicle({ ai_schedule: null })` (forces generation), and an
+`AiScheduleService` mock with `generateAndSave: generateAndSaveSpy`.
 
 ### 6.2 Adding an Angular router / guard integration test
 
@@ -136,7 +190,59 @@ TBD — see §3 Phase 2 for cross-user data isolation and local Supabase test se
 
 ### 6.4 Adding a test for a new AI schedule response shape
 
-TBD — see §3 Phase 1 for malformed-response and schema-mismatch test patterns.
+**File**: `src/app/core/ai-schedule/ai-schedule.service.spec.ts`
+**Block**: extend the existing `describe('AiScheduleService', ...)`.
+
+Two categories of shape variation:
+
+**Envelope-level** (the outer object returned by `fetch`): the inner content
+is irrelevant because the guard fires before parsing. Stub `fetch` with the
+raw shape and assert the guard's throw message:
+
+```ts
+it('rejects when choices is <shape>', async () => {
+  vi.stubGlobal('fetch', () =>
+    Promise.resolve({ ok: true, json: () => Promise.resolve({ choices: <shape> }) }),
+  );
+  await expect(service.generateAndSave('v1', makeVehicle())).rejects.toThrow(
+    'AI proxy returned unexpected response shape',
+  );
+});
+```
+
+Use this for: `choices: null`, `choices: []` (empty), `choices: undefined`,
+or any future OpenRouter envelope variation that breaks the `choices[0]` path.
+
+**Inner-content** (the JSON parsed from `choices[0].message.content`): the
+envelope is valid; the items payload is malformed. Use `makeEnvelope()` to
+produce a valid outer envelope and pass the bad items value as its argument:
+
+```ts
+it('rejects when items is <shape>', async () => {
+  vi.stubGlobal('fetch', makeFetch(makeEnvelope(<bad-items>)));
+  await expect(service.generateAndSave('v1', makeVehicle())).rejects.toThrow(
+    'AI response missing items array',
+  );
+});
+```
+
+Use this for: `items: null`, `items: {}`, `items: 'string'`, or any future
+schema where `items` is present but not an array.
+
+**Filter paths** (valid envelope + valid items, but individual items have bad
+fields): pair the bad item with a `makeItem()` fallback and assert the
+survivor:
+
+```ts
+it('drops item with <bad field>', async () => {
+  vi.stubGlobal('fetch', makeFetch([makeItem({ <field>: <bad value> }), makeItem()]));
+  const result = await service.generateAndSave('v1', makeVehicle());
+  expect(result).toHaveLength(1);
+});
+```
+
+Use this for: `source: null`, `source: '   '`, `urgency: 'unknown'`, or any
+future field the service's filter predicate guards against.
 
 ---
 

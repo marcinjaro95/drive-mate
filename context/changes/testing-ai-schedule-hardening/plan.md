@@ -262,24 +262,24 @@ New `describe('ScheduleViewComponent — generation flow', ...)` block — 8 tes
 
 #### Manual
 
-- [x] 1.3 Each new test reviewed — throw-message tests assert correct string; filter tests assert correct count and surviving item identity
+- [x] 1.3 Each new test reviewed — throw-message tests assert correct string; filter tests assert correct count and surviving item identity — 0e27b49
 
 ### Phase 2: Component Generation-Flow Tests
 
 #### Automated
 
-- [x] 2.1 All 11 component tests pass: `npm test -- --reporter=verbose`
-- [x] 2.2 TypeScript compilation clean: `npx tsc --noEmit`
-- [x] 2.3 Lint clean: `npx eslint src/app/vehicles/schedule-view/schedule-view.spec.ts`
+- [x] 2.1 All 11 component tests pass: `npm test -- --reporter=verbose` — 0e27b49
+- [x] 2.2 TypeScript compilation clean: `npx tsc --noEmit` — 0e27b49
+- [x] 2.3 Lint clean: `npx eslint src/app/vehicles/schedule-view/schedule-view.spec.ts` — 0e27b49
 
 #### Manual
 
-- [x] 2.4 Both describe blocks visible in test output; 8 generation-flow tests in their own block
-- [x] 2.5 AbortError test uses `DOMException` (not `new Error`); test is not timing-sensitive
+- [x] 2.4 Both describe blocks visible in test output; 8 generation-flow tests in their own block — 0e27b49
+- [x] 2.5 AbortError test uses `DOMException` (not `new Error`); test is not timing-sensitive — 0e27b49
 
 ### Phase 3: Cookbook Update
 
 #### Manual
 
-- [ ] 3.1 §6.1 and §6.4 replaced with concrete patterns; readable without referring to this plan
-- [ ] 3.2 §3 Phase 1 status reads `complete`
+- [x] 3.1 §6.1 and §6.4 replaced with concrete patterns; readable without referring to this plan
+- [x] 3.2 §3 Phase 1 status reads `complete`
