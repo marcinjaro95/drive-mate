@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-13 (Phase 2 complete; Phase 3 change opened)
+> Last updated: 2026-06-14 (all phases complete)
 
 ---
 
@@ -71,7 +71,7 @@ orchestrator updates Status as artifacts appear on disk.
 | --- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------------------- | ------------- | ---------------------------------- |
 | 1   | AI schedule flow hardening   | Prove the core generation loop is resilient to malformed responses and always enforces source attribution                                           | #1, #2        | unit + component                                          | complete      | testing-ai-schedule-hardening      |
 | 2   | Auth & ownership enforcement | Verify route guard covers all protected routes; verify RLS enforces per-user isolation at the DB; verify app-layer ownership on schedule generation | #3, #4, #5    | Angular router integration + Supabase integration (local) | complete      | testing-auth-ownership-enforcement |
-| 3   | CI test gate                 | Wire `npm test` to run on every PR so the floor from Phases 1+2 cannot regress silently                                                             | cross-cutting | CI gate                                                   | change opened | testing-ci-test-gate               |
+| 3   | CI test gate                 | Wire `npm test` to run on every PR so the floor from Phases 1+2 cannot regress silently                                                             | cross-cutting | CI gate                                                   | complete      | testing-ci-test-gate               |
 
 ---
 
