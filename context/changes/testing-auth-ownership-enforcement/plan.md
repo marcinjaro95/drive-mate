@@ -457,24 +457,24 @@ new migrations.
 
 #### Automated
 
-- [ ] 2.1 `npm test` passes with zero failures (14 existing + 2 new ownership tests)
-- [ ] 2.2 TypeScript compiles without errors
+- [x] 2.1 `npm test` passes with zero failures (14 existing + 2 new ownership tests) — ced4f3e
+- [x] 2.2 TypeScript compiles without errors — ced4f3e
 
 #### Manual
 
-- [ ] 2.3 Rejection test asserts both the throw message AND that `fetch` was never called
-- [ ] 2.4 Normal schedule generation flow works end-to-end in the running app
+- [x] 2.3 Rejection test asserts both the throw message AND that `fetch` was never called — ced4f3e
+- [x] 2.4 Normal schedule generation flow works end-to-end in the running app — ced4f3e
 
 ### Phase 3: RLS Integration Tests
 
 #### Automated
 
-- [ ] 3.1 `npm run supabase:start` completes without error
-- [ ] 3.2 `npm run test:integration` passes (all 12 cross-user + own-user cases green)
-- [ ] 3.3 `npm test` does not pick up the integration spec (still passes, no new failures)
+- [x] 3.1 `npm run supabase:start` completes without error
+- [x] 3.2 `npm run test:integration` passes (all 12 cross-user + own-user cases green)
+- [x] 3.3 `npm test` does not pick up the integration spec (still passes, no new failures)
 
 #### Manual
 
-- [ ] 3.4 Policy-removal regression test: comment out `vehicles_select` policy, reset and rerun
+- [x] 3.4 Policy-removal regression test: comment out `vehicles_select` policy, reset and rerun
       integration tests — cross-user SELECT for `vehicles` fails
-- [ ] 3.5 Restore policy, rerun — all tests green again
+- [x] 3.5 Restore policy, rerun — all tests green again

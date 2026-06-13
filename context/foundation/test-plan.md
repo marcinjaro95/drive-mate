@@ -249,7 +249,94 @@ This works because the `await router.navigateByUrl(...)` call is not awaited bef
 
 ### 6.3 Adding a Supabase RLS integration test
 
-TBD — see §3 Phase 2 for cross-user data isolation and local Supabase test session patterns.
+**File**: `tests/integration/rls.spec.ts` — extend existing `describe` blocks or add a new one.
+
+**Run command**: `npm run test:integration` (requires `npm run supabase:start` first).
+
+**One-time setup** — create `.env.test.local` in the repo root (gitignored by `.env.*.local`):
+
+```
+SUPABASE_URL=http://127.0.0.1:54321
+SUPABASE_ANON_KEY=<anon key from `supabase status`>
+SUPABASE_SERVICE_ROLE_KEY=<service_role key from `supabase status`>
+```
+
+Vitest loads this file automatically (mode `test` → `.env.test.local`) via `vitest.integration.config.ts`.
+
+**Client distinction** — this is the critical rule:
+
+| Client | Key used | RLS enforced? | Use for |
+|--------|----------|---------------|---------|
+| `serviceClient` | `SUPABASE_SERVICE_ROLE_KEY` | **No** | `beforeAll`/`afterAll` provisioning and cleanup only |
+| `clientA`, `clientB` | `SUPABASE_ANON_KEY` + user JWT in `Authorization` | **Yes** | All assertion queries |
+
+Never use `serviceClient` for the assertion queries — it bypasses RLS and would make every test pass regardless of policy state.
+
+**`beforeAll` provisioning pattern**:
+
+```ts
+// 1. Service-role client for admin operations
+const serviceClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+  auth: { autoRefreshToken: false, persistSession: false },
+});
+
+// 2. Create test users via admin API (email_confirm: true skips confirmation email)
+const { data: { user: userA } } = await serviceClient.auth.admin.createUser({
+  email: 'user-a@rls-test.local',
+  password: 'TestPass123!',
+  email_confirm: true,
+});
+
+// 3. Sign in via anon client to get a user-scoped session token
+const tempA = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { autoRefreshToken: false, persistSession: false },
+});
+const { data: { session } } = await tempA.auth.signInWithPassword({
+  email: 'user-a@rls-test.local',
+  password: 'TestPass123!',
+});
+
+// 4. Build the RLS-enforced client — anon key as apikey, user JWT as Authorization
+const clientA = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { autoRefreshToken: false, persistSession: false },
+  global: { headers: { Authorization: `Bearer ${session!.access_token}` } },
+});
+```
+
+**Assertion patterns**:
+
+```ts
+// Cross-user SELECT — RLS USING clause silently filters the row out
+const { data } = await clientB.from('vehicles').select().eq('id', rowOwnedByA);
+expect(data).toHaveLength(0);
+
+// Cross-user INSERT — RLS WITH CHECK clause returns an error
+const { error } = await clientB.from('vehicles').insert({ user_id: userA.id, ... });
+expect(error).not.toBeNull();
+
+// Cross-user UPDATE / DELETE — USING clause matches 0 rows; use .select() to get count
+const { data } = await clientB.from('vehicles').update({ make: 'Hacked' }).eq('id', rowId).select();
+expect(data).toHaveLength(0);
+
+// Own-user SELECT — should succeed
+const { data } = await clientA.from('vehicles').select().eq('id', rowOwnedByA);
+expect(data).toHaveLength(1);
+
+// Own-user INSERT — should succeed
+const { error } = await clientA.from('vehicles').insert({ user_id: userA.id, ... });
+expect(error).toBeNull();
+```
+
+**`afterAll` cleanup** — use `serviceClient` to delete test rows by `user_id`, then delete the test users:
+
+```ts
+await serviceClient.from('vehicles').delete().eq('user_id', userAId);
+await serviceClient.auth.admin.deleteUser(userAId);
+```
+
+`service_records.vehicle_id` has `ON DELETE CASCADE` — deleting a vehicle also removes its records.
+
+**Config file** (`vitest.integration.config.ts`) uses `loadEnv('test', cwd, '')` from Vite to load `.env.test.local` and passes the result to `test.env`, making vars available in `process.env` for node-environment workers. Do not extend or merge with the Angular builder's config — integration tests must run in isolation via `npm run test:integration`, not `npm test`.
 
 ### 6.4 Adding a test for a new AI schedule response shape
 
