@@ -221,14 +221,14 @@ Add a `VinDecoderService` that calls `/api/vin`, then update `VehicleAddComponen
 
 #### Automated
 
-- [x] 2.1 `npm run build` compiles without TypeScript or template errors
+- [x] 2.1 `npm run build` compiles without TypeScript or template errors — 7985bfe
 
 #### Manual
 
-- [ ] 2.2 Valid EU VIN → Decode fills make/model/year/engine_capacity/fuel_type
-- [ ] 2.3 LPG VIN → fuel_type stays blank; other fields fill
-- [ ] 2.4 NHTSA-only partial decode → no error shown; form submittable
-- [ ] 2.5 Both providers miss → inline error message shown; fields untouched
-- [ ] 2.6 16-char VIN → Decode button disabled
-- [ ] 2.7 Submit without decoding → `vin: null` saved correctly
-- [ ] 2.8 Submit after decode → VIN string saved alongside vehicle fields in Supabase
+- [x] 2.2 Valid EU VIN → Decode fills make/model/year/engine_capacity/fuel_type — 7985bfe
+- [x] 2.3 LPG VIN → fuel_type stays blank; other fields fill — 7985bfe
+- [x] 2.4 NHTSA-only partial decode → no error shown; form submittable — 7985bfe
+- [x] 2.5 Both providers miss → inline error message shown; fields untouched — 7985bfe
+- [x] 2.6 16-char VIN → Decode button disabled — 7985bfe
+- [x] 2.7 Submit without decoding → `vin: null` saved correctly — 7985bfe
+- [x] 2.8 Submit after decode → VIN string saved alongside vehicle fields in Supabase — 7985bfe
