@@ -1,7 +1,7 @@
 ---
 change_id: testing-auth-ownership-enforcement
 title: Auth and ownership enforcement tests — route guard, RLS, and app-layer ownership
-status: implementing
+status: implemented
 created: 2026-06-13
 updated: 2026-06-13
 archived_at: null

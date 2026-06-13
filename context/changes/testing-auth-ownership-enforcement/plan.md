@@ -469,12 +469,12 @@ new migrations.
 
 #### Automated
 
-- [x] 3.1 `npm run supabase:start` completes without error
-- [x] 3.2 `npm run test:integration` passes (all 12 cross-user + own-user cases green)
-- [x] 3.3 `npm test` does not pick up the integration spec (still passes, no new failures)
+- [x] 3.1 `npm run supabase:start` completes without error — f308fe0
+- [x] 3.2 `npm run test:integration` passes (all 12 cross-user + own-user cases green) — f308fe0
+- [x] 3.3 `npm test` does not pick up the integration spec (still passes, no new failures) — f308fe0
 
 #### Manual
 
 - [x] 3.4 Policy-removal regression test: comment out `vehicles_select` policy, reset and rerun
-      integration tests — cross-user SELECT for `vehicles` fails
-- [x] 3.5 Restore policy, rerun — all tests green again
+      integration tests — cross-user SELECT for `vehicles` fails — f308fe0
+- [x] 3.5 Restore policy, rerun — all tests green again — f308fe0
