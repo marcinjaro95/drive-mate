@@ -79,9 +79,12 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
     }
     this.isLoading.set(false);
 
+    const vehicleForInit = this.vehicle();
+    if (!vehicleForInit) return;
+
     let loadedRecords: ServiceRecord[] = [];
     try {
-      loadedRecords = await this.serviceRecordService.getServiceRecords(this.vehicle()!.id);
+      loadedRecords = await this.serviceRecordService.getServiceRecords(vehicleForInit.id);
     } catch {
       // non-blocking — done state will be empty; user can still mark items done
     }
@@ -93,8 +96,8 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
       )
     );
 
-    if (this.vehicle()!.ai_schedule?.length) {
-      this.scheduleItems.set(this.vehicle()!.ai_schedule!);
+    if (vehicleForInit.ai_schedule?.length) {
+      this.scheduleItems.set(vehicleForInit.ai_schedule!);
       return;
     }
     await this.generateSchedule(loadedRecords);

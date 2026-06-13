@@ -21,6 +21,9 @@ export class AiScheduleService {
     });
     if (!httpRes.ok) throw new Error(`AI proxy error: ${httpRes.status}`);
     const envelope = await httpRes.json();
+    if (!Array.isArray(envelope?.choices) || !envelope.choices[0]) {
+      throw new Error(`AI proxy returned unexpected response shape: ${JSON.stringify(envelope).slice(0, 200)}`);
+    }
     const parsed: { items: ScheduleItem[] } = JSON.parse(envelope.choices[0].message.content);
     if (!Array.isArray(parsed?.items)) throw new Error('AI response missing items array');
     const VALID_URGENCY = new Set(['overdue', 'due_soon', 'upcoming']);

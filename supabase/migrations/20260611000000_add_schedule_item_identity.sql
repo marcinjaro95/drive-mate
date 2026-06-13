@@ -1,3 +1,6 @@
+-- Rollback: ALTER TABLE service_records DROP COLUMN schedule_item_id;
+-- (ai_schedule id keys added by the backfill are harmless to leave in place)
+
 -- Stable UUID column for tracing a service record back to the schedule item that prompted it.
 -- Nullable: records predating this migration and manually created records have no linked item.
 ALTER TABLE service_records ADD COLUMN schedule_item_id uuid DEFAULT NULL;

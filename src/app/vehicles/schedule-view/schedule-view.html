@@ -48,7 +48,7 @@
     </mat-card>
   } @else {
     <div class="schedule-list">
-      @for (item of scheduleItems(); track $index) {
+      @for (item of scheduleItems(); track item.id) {
         <mat-card class="schedule-card">
           <mat-card-header>
             <mat-card-title>{{ item.item }}</mat-card-title>
@@ -64,7 +64,7 @@
             }
             <small>Source: {{ item.source }}</small>
 
-            @if (expandedItem()?.item === item.item) {
+            @if (expandedItem()?.id === item.id) {
               <div class="mark-done-form">
                 <form [formGroup]="markDoneForm">
                   <mat-form-field appearance="outline">
@@ -107,7 +107,7 @@
             <mat-card-actions>
               <span class="saved-label">Saved ✓</span>
             </mat-card-actions>
-          } @else if (expandedItem()?.item !== item.item) {
+          } @else if (expandedItem()?.id !== item.id) {
             <mat-card-actions>
               <button mat-button (click)="openMarkDone(item)">Mark as done</button>
             </mat-card-actions>
