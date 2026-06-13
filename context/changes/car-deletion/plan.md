@@ -68,9 +68,11 @@ Create the shared dialog component and its template. No existing files are modif
 **Intent**: Standalone Angular component that accepts a title, message, and async `onConfirm` callback; renders Cancel and Delete buttons; handles loading and error state internally.
 
 **Contract**: Inject `MAT_DIALOG_DATA` typed as:
+
 ```ts
 { title: string; message: string; confirmLabel?: string; onConfirm: () => Promise<void> }
 ```
+
 Inject `MatDialogRef<ConfirmDialogComponent>`. Declare two signals: `isDeleting = signal(false)` and `error = signal<string | null>(null)`. The confirm handler sets `isDeleting(true)`, calls `data.onConfirm()`, on success calls `dialogRef.close()`, on error sets `error` to the message and resets `isDeleting(false)`. The cancel handler calls `dialogRef.close()` immediately (disabled while `isDeleting()`). Imports: `MatDialogModule`, `MatButtonModule`, `MatProgressSpinnerModule`.
 
 #### 2. Dialog template
@@ -80,6 +82,7 @@ Inject `MatDialogRef<ConfirmDialogComponent>`. Declare two signals: `isDeleting 
 **Intent**: Render the dialog header, body (message + conditional error), and action buttons with correct disabled/loading states.
 
 **Contract**: Structure:
+
 - `<h2 mat-dialog-title>` — `data.title`
 - `<mat-dialog-content>` — `data.message` paragraph; when `error()` is non-null, a second paragraph styled as an error
 - `<mat-dialog-actions align="end">` — "Cancel" flat button (disabled when `isDeleting()`); confirm button labeled `data.confirmLabel ?? 'Delete'`, `color="warn"`, disabled when `isDeleting()`; when `isDeleting()` the button shows a `<mat-progress-spinner mode="indeterminate" diameter="20">` instead of the label
@@ -114,6 +117,7 @@ Add a delete button to each vehicle card and wire it through the confirm dialog.
 **Intent**: Inject `MatDialog`, add a `deleteCar` method that stops click propagation, opens the confirm dialog, and passes a callback that deletes the vehicle and removes it from the signal.
 
 **Contract**: Add `inject(MatDialog)` to existing injections. Add `MatDialogModule` to the component `imports` array. Add method:
+
 ```ts
 deleteCar(event: MouseEvent, vehicle: Vehicle): void {
   event.stopPropagation();
@@ -137,6 +141,7 @@ deleteCar(event: MouseEvent, vehicle: Vehicle): void {
 **Intent**: Add a "Delete" action button inside each vehicle card that calls `deleteCar` with the click event (for propagation stop) and the vehicle object.
 
 **Contract**: Inside each `<mat-card>`, after the `@if (v.current_mileage !== null)` block, add:
+
 ```html
 <mat-card-actions>
   <button mat-stroked-button color="warn" (click)="deleteCar($event, v)">Delete</button>
@@ -178,6 +183,7 @@ Add a "Delete car" button to the vehicle detail page. On confirm, the vehicle is
 **Intent**: Inject `MatDialog`, add an `openDeleteDialog` method that opens the confirm dialog with a callback that deletes the vehicle and navigates away.
 
 **Contract**: Add `inject(MatDialog)` to existing injections. Add `MatDialogModule` to component `imports`. Add method:
+
 ```ts
 openDeleteDialog(): void {
   const v = this.vehicle();
@@ -202,6 +208,7 @@ openDeleteDialog(): void {
 **Intent**: Add a "Delete car" button to the vehicle header area, visible when the vehicle is loaded.
 
 **Contract**: Inside the `@if (v)` block in the `vehicle-header` div, add after the `<p>` line:
+
 ```html
 <button mat-stroked-button color="warn" (click)="openDeleteDialog()">Delete car</button>
 ```
@@ -239,6 +246,7 @@ Write Vitest specs for the delete flow in both host components. Cover: dialog op
 **Intent**: Verify that `deleteCar` opens the dialog with the correct vehicle title in `data`, that `onConfirm` removes the vehicle from the list signal, and that a service error thrown inside `onConfirm` propagates to the caller (so the dialog can display it).
 
 **Contract**: Configure `TestBed` with `provideAnimationsAsync()` and `provideRouter([])`. Stub `MatDialog` with a spy on `open` that returns a mock `MatDialogRef`. Test cases:
+
 1. `deleteCar(mouseEvent, vehicle)` calls `dialog.open` with `data.title` containing the vehicle's make and model
 2. Capturing and calling the `data.onConfirm` callback invokes `vehicleService.deleteVehicle(vehicle.id)`
 3. After `onConfirm` resolves, `component.vehicles()` no longer contains the deleted vehicle
@@ -251,6 +259,7 @@ Write Vitest specs for the delete flow in both host components. Cover: dialog op
 **Intent**: Verify that `openDeleteDialog` opens the dialog with correct vehicle data, that `onConfirm` calls `deleteVehicle` and navigates, and that a service error propagates.
 
 **Contract**: Same stub pattern as above. Test cases:
+
 1. `openDeleteDialog()` calls `dialog.open` with `data.title` containing the vehicle's make and model
 2. Calling `data.onConfirm` invokes `vehicleService.deleteVehicle(vehicle.id)` and `router.navigate(['/dashboard'])`
 3. When `vehicleService.deleteVehicle` rejects, `onConfirm()` rejects

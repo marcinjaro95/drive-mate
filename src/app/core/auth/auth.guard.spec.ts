@@ -35,7 +35,9 @@ describe('authGuard', () => {
 
   it('waits for auth.initialized before deciding — unauthenticated visitor is redirected after init resolves', async () => {
     let resolveInit!: () => void;
-    const initialized = new Promise<void>(r => { resolveInit = r; });
+    const initialized = new Promise<void>((r) => {
+      resolveInit = r;
+    });
     const router = setupGuardTest({ initialized, authenticated: false });
 
     const nav = router.navigateByUrl('/dashboard');

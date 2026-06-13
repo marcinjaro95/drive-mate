@@ -27,6 +27,7 @@ Apply a consistent visual design across all DriveMate screens. Deliver a custom 
 Every DriveMate screen uses a unified design language: deep-blue M3 Material theme, shared CSS token vocabulary, consistent card padding, typography scale, and button hierarchy. Breadcrumb navigation appears at the top of deep-link pages. Auth pages carry a DriveMate wordmark. All screens pass a visual-consistency checklist at both desktop and 375px mobile.
 
 ### Verify by:
+
 - Running `npm run build` with zero errors after each phase
 - Navigating each route manually and confirming visual coherence
 - Opening each screen at 375px in Chrome DevTools with no horizontal scroll
@@ -69,6 +70,7 @@ Remove the prebuilt indigo-pink theme. Define an Angular Material M3 custom them
 **Intent**: Define the custom M3 theme and every shared design token that all components will reference. This file becomes the single source of truth for colors, spacing, and typography scale.
 
 **Contract**:
+
 - Open with `@use '@angular/material' as mat;`
 - Define a light M3 theme using `mat.define-theme()` with `mat.$blue-palette` as the primary (deep-blue family, closest to `#1565C0`). Consult `node_modules/@angular/material/_index.scss` for the exact mixin signatures current to Angular Material 21.
 - Apply the theme to the `html` selector using the appropriate M3 apply mixin (`mat.theme()` or `mat.all-component-themes()` — verify against Angular Material 21 API).
@@ -113,6 +115,7 @@ Add a styled SCSS file for the dashboard shell. Move the `← My cars` back-link
 **Intent**: The dashboard header currently has no custom styling — it renders with no background, no padding, and generic font sizing. This file establishes the branded navigation bar.
 
 **Contract**:
+
 - Style `.dashboard-header` with a solid background using the M3 primary surface token (`var(--mat-sys-primary)` or equivalent M3 token for the header surface), white text for `.app-name`, `height: 56px`, horizontal padding of `var(--space-md)`, and `display: flex; align-items: center; justify-content: space-between`.
 - Style `.dashboard-main` with `padding: var(--space-md)`.
 - Add `styleUrl: './dashboard.scss'` to the `@Component` decorator in `dashboard.ts`.
@@ -171,6 +174,7 @@ Add a DriveMate wordmark above the sign-in and sign-up forms. Migrate both auth 
 **Intent**: Replace magic number spacing and font sizes with token references. Add styles for the new brand elements.
 
 **Contract**:
+
 - Replace `margin-bottom: 1.5rem` → `margin-bottom: var(--space-lg)` in `h1`
 - Replace `margin-top: 1.5rem` → `margin-top: var(--space-lg)` in `.auth-link`
 - Replace both `font-size: 0.875rem` occurrences → `font-size: var(--text-sm)` (`.error` and `.auth-link`)
@@ -222,6 +226,7 @@ Create SCSS files for vehicle-list and vehicle-add (neither currently exists). A
 **Intent**: The vehicle list has no custom styles — all visual treatment falls through to Material defaults, producing an unpolished appearance with no layout control or visual hierarchy.
 
 **Contract**:
+
 - `.vehicle-list`: `display: flex; flex-direction: column; gap: var(--space-md);`
 - `.vehicle-card`: `cursor: pointer; transition: box-shadow 0.2s ease;` with a `:hover` rule adding a raised shadow (use `box-shadow: 0 4px 8px rgba(0,0,0,0.12)`)
 - `.empty-state`: `text-align: center; padding: var(--space-xl) var(--space-md);`
@@ -245,6 +250,7 @@ Add `styleUrl: './vehicle-list.scss'` to the `@Component` decorator in `vehicle-
 **Intent**: The add-car form currently has no SCSS — fields render without consistent width or spacing, and the form floats without max-width containment.
 
 **Contract**:
+
 - `.vehicle-add-container`: `max-width: var(--content-max-width); margin: 0 auto; padding: var(--space-md);`
 - `mat-form-field`: `display: block; width: 100%;`
 - `h2`: `margin-top: 0; margin-bottom: var(--space-md);`
@@ -285,6 +291,7 @@ Migrate all hardcoded hex values in schedule-view.scss to CSS custom properties.
 **Intent**: Eliminate the eight hardcoded hex values (chip colors, banner backgrounds, save-error color) by replacing them with the CSS custom properties defined in Phase 1. This validates the token system end-to-end.
 
 **Contract**:
+
 - `.chip-overdue`: `background-color: var(--color-overdue) !important; color: var(--color-overdue-text) !important`
 - `.chip-due-soon`: `background-color: var(--color-due-soon) !important; color: var(--color-due-soon-text) !important`
 - `.chip-upcoming`: `background-color: var(--color-upcoming) !important; color: var(--color-upcoming-text) !important`
@@ -343,6 +350,7 @@ Manually verify every screen at 375px viewport width. Run through the visual con
 **Intent**: Confirm the token system is applied uniformly before closing the change.
 
 **Contract**: Verify the following across all five screens:
+
 - All primary-action buttons use `mat-raised-button color="primary"` (or the M3 equivalent if it changed)
 - All secondary/cancel buttons use `mat-button` or `mat-stroked-button`
 - No raw hex values in any component SCSS file outside of `styles.scss` (`grep -rn '#[0-9a-fA-F]\{3,6\}' src/app/**/*.scss`)

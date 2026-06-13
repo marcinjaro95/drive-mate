@@ -1,5 +1,5 @@
 ---
-project: "DriveMate"
+project: 'DriveMate'
 context_type: greenfield
 created: 2026-05-23
 updated: 2026-05-23
@@ -7,33 +7,33 @@ checkpoint:
   current_phase: 8
   phases_completed: [1, 2, 3, 4, 5, 6, 7]
   gray_areas_resolved:
-    - topic: "pain type"
+    - topic: 'pain type'
       decision: "data trapped in PDFs/manuals + decision paralysis (don't know what to prioritise)"
-    - topic: "differentiator insight"
-      decision: "AI that speaks to a non-mechanic — translates raw service data into approachable, human-readable guidance"
-    - topic: "primary persona"
-      decision: "everyday private car owner, one or two cars, non-mechanic"
-    - topic: "auth model"
-      decision: "email + password or OAuth; server-side account; cross-device sync"
-    - topic: "role model"
-      decision: "flat — every user sees only their own cars; no sharing, no admin for MVP"
-    - topic: "MVP scope"
-      decision: "VIN lookup + AI-generated schedule + service tracking; AI chat moved to v2"
-    - topic: "timeline"
-      decision: "3 weeks after-hours; within threshold, no acknowledgment block needed"
-    - topic: "product type"
-      decision: "web-app"
-    - topic: "target scale"
-      decision: "medium (dozens to ~100 users at launch)"
-    - topic: "deadline"
-      decision: "no hard deadline; after-hours work only"
+    - topic: 'differentiator insight'
+      decision: 'AI that speaks to a non-mechanic — translates raw service data into approachable, human-readable guidance'
+    - topic: 'primary persona'
+      decision: 'everyday private car owner, one or two cars, non-mechanic'
+    - topic: 'auth model'
+      decision: 'email + password or OAuth; server-side account; cross-device sync'
+    - topic: 'role model'
+      decision: 'flat — every user sees only their own cars; no sharing, no admin for MVP'
+    - topic: 'MVP scope'
+      decision: 'VIN lookup + AI-generated schedule + service tracking; AI chat moved to v2'
+    - topic: 'timeline'
+      decision: '3 weeks after-hours; within threshold, no acknowledgment block needed'
+    - topic: 'product type'
+      decision: 'web-app'
+    - topic: 'target scale'
+      decision: 'medium (dozens to ~100 users at launch)'
+    - topic: 'deadline'
+      decision: 'no hard deadline; after-hours work only'
   frs_drafted: 8
   quality_check_status: accepted
 ---
 
 ## Vision & Problem Statement
 
-A private car owner knows their car needs servicing — they just don't know *what*, *when*, or *why*. The answer exists: it's buried in a PDF manual, scattered across model-specific forums, or locked in the head of a mechanic they haven't called yet. The gap isn't the information — it's access to it at the moment it's needed.
+A private car owner knows their car needs servicing — they just don't know _what_, _when_, or _why_. The answer exists: it's buried in a PDF manual, scattered across model-specific forums, or locked in the head of a mechanic they haven't called yet. The gap isn't the information — it's access to it at the moment it's needed.
 
 DriveMate's insight: existing reminder apps hand the owner a raw maintenance table. That's still a mechanic's read. DriveMate goes one step further — it speaks to the person, not the car. A natural-language AI layer translates the manufacturer schedule and the car's service history into a clear, actionable answer: "your next job is X, here's why, here's what to expect."
 
@@ -49,12 +49,15 @@ Moment they reach for DriveMate: standing at the workshop counter being quoted a
 ## Success Criteria
 
 ### Primary
+
 - User adds a car (via VIN or manually) and receives a personalised maintenance schedule in under 2 minutes.
 
 ### Secondary
+
 - Service history accumulates into a simple readable record as the user marks services done — giving a hint of the long-term value of keeping records.
 
 ### Guardrails
+
 - A user must never be able to see or access another user's car data. A single data-isolation bug kills trust permanently.
 - The app must never display a maintenance item without a traceable source (manufacturer schedule or service record). AI hallucinating intervals is worse than showing nothing.
 
@@ -67,6 +70,7 @@ Moment they reach for DriveMate: standing at the workshop counter being quoted a
 - **Then** they see a personalised maintenance schedule for that car within 2 minutes
 
 #### Acceptance Criteria
+
 - Schedule lists at least the top 5 upcoming service items with estimated mileage or date
 - VIN path auto-fills make, model, year, engine capacity, and fuel type if the lookup succeeds
 - Manual path requires all 5 fields before proceeding
@@ -75,27 +79,35 @@ Moment they reach for DriveMate: standing at the workshop counter being quoted a
 ## Functional Requirements
 
 ### Vehicle management
+
 - FR-001: User can add a car by entering its VIN. Priority: must-have
+
   > Socrates: Counter-argument considered: "VIN lookup depends on an external API that may be unreliable or costly for MVP." Resolution: kept. VIN is the core differentiator — without it the schedule is only as accurate as what the user remembers about their car.
 
 - FR-002: User can add a car manually (make, model, year, engine capacity, fuel type). Priority: must-have
+
   > Socrates: Counter-argument considered: "5 fields adds friction; make/model/year alone might be enough." Resolution: kept. Capacity and fuel type are load-bearing for schedule accuracy — a generic 2.0 petrol schedule is wrong for a 1.6 diesel.
 
 - FR-003: User can delete a car record and all associated service history. Priority: must-have
+
   > Socrates: Counter-argument considered: "Delete is one-way — accidental delete loses all history; soft-delete is safer." Resolution: kept as must-have (GDPR + user autonomy require it). Implementation note: a confirmation step is non-negotiable; soft-delete vs hard-delete is an open question for downstream design.
 
 - FR-004: App fetches basic vehicle data from a VIN lookup. Priority: must-have
   > Socrates: Counter-argument considered: "VIN data quality varies by market; EU/Polish VINs may return incomplete data from free APIs." Resolution: kept. VIN lookup is the core differentiator. API reliability for Polish-market vehicles should be validated before committing to a specific provider — see Open Questions.
 
 ### Maintenance schedule
+
 - FR-005: User can view an AI-generated maintenance schedule for their car. Priority: must-have
   > Socrates: Counter-argument considered: "AI may hallucinate intervals, leading to real maintenance harm; a static manufacturer table has higher credibility." Resolution: kept. The guardrail "no maintenance item shown without a traceable source" is the mitigation — hallucination risk is real but manageable with source attribution, not by dropping AI.
 
 ### Service tracking
+
 - FR-006: User can mark a scheduled service item as done, recording the date and mileage. Priority: must-have
+
   > Socrates: Counter-argument considered: "Requiring both date AND mileage adds friction — users often don't know exact mileage at service time." Resolution: kept. Both fields are load-bearing for schedule recalculation (next-due date). One could be made optional — deferred to implementation.
 
 - FR-007: User can view their service records as a date-sorted list. Priority: nice-to-have
+
   > Socrates: Counter-argument accepted: "A visual timeline is v2; a simple date-sorted list is sufficient for MVP and faster to build." Resolution: downgraded to nice-to-have and FR reworded from 'chronological timeline' to 'date-sorted list'.
 
 - FR-008: User can edit a previously saved service record. Priority: nice-to-have
@@ -143,16 +155,17 @@ Unauthenticated state: all routes gated behind auth. An unauthenticated visitor 
 
 All five greenfield elements present at hand-off:
 
-| Element | Status |
-|---|---|
-| Access Control | present |
-| Business Logic (one-sentence rule) | present |
-| Project artifacts | present |
-| Timeline-cost acknowledged | present (3 weeks — within threshold) |
-| Non-Goals | present |
+| Element                            | Status                               |
+| ---------------------------------- | ------------------------------------ |
+| Access Control                     | present                              |
+| Business Logic (one-sentence rule) | present                              |
+| Project artifacts                  | present                              |
+| Timeline-cost acknowledged         | present (3 weeks — within threshold) |
+| Non-Goals                          | present                              |
 
 quality_check_status: accepted
 
 ## Forward: tech-stack
+
 - At ~10 000 users, AI schedule calls per model/year combination would repeat heavily — a per-model-variant cache layer becomes load-bearing at that scale. Worth noting for stack selection.
 - VIN lookup reliability for Polish-market (EU) vehicles: free API options vary significantly in data completeness. Specific API validation is a prerequisite before committing; see Open Questions.

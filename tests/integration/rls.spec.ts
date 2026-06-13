@@ -72,7 +72,8 @@ beforeAll(async () => {
     email: USER_A_EMAIL,
     password: TEST_PASSWORD,
   });
-  if (signInA || !sessA.session) throw new Error(`Failed to sign in as User A: ${signInA?.message}`);
+  if (signInA || !sessA.session)
+    throw new Error(`Failed to sign in as User A: ${signInA?.message}`);
   clientA = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { autoRefreshToken: false, persistSession: false },
     global: { headers: { Authorization: `Bearer ${sessA.session.access_token}` } },
@@ -86,7 +87,8 @@ beforeAll(async () => {
     email: USER_B_EMAIL,
     password: TEST_PASSWORD,
   });
-  if (signInB || !sessB.session) throw new Error(`Failed to sign in as User B: ${signInB?.message}`);
+  if (signInB || !sessB.session)
+    throw new Error(`Failed to sign in as User B: ${signInB?.message}`);
   clientB = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { autoRefreshToken: false, persistSession: false },
     global: { headers: { Authorization: `Bearer ${sessB.session.access_token}` } },
@@ -95,7 +97,14 @@ beforeAll(async () => {
   // Insert User A's vehicle using clientA so auth.uid() = userAId (INSERT RLS checks this)
   const { data: vehicle, error: vehicleErr } = await clientA
     .from('vehicles')
-    .insert({ user_id: userAId, make: 'Toyota', model: 'Corolla', year: 2020, engine_capacity: 2.0, fuel_type: 'gasoline' })
+    .insert({
+      user_id: userAId,
+      make: 'Toyota',
+      model: 'Corolla',
+      year: 2020,
+      engine_capacity: 2.0,
+      fuel_type: 'gasoline',
+    })
     .select('id')
     .single();
   if (vehicleErr || !vehicle) throw new Error(`Failed to insert vehicle: ${vehicleErr?.message}`);
@@ -104,10 +113,17 @@ beforeAll(async () => {
   // Insert User A's service record using clientA
   const { data: record, error: recordErr } = await clientA
     .from('service_records')
-    .insert({ vehicle_id: vehicleAId, user_id: userAId, service_date: '2026-01-01', mileage: 10000, label: 'Oil change' })
+    .insert({
+      vehicle_id: vehicleAId,
+      user_id: userAId,
+      service_date: '2026-01-01',
+      mileage: 10000,
+      label: 'Oil change',
+    })
     .select('id')
     .single();
-  if (recordErr || !record) throw new Error(`Failed to insert service record: ${recordErr?.message}`);
+  if (recordErr || !record)
+    throw new Error(`Failed to insert service record: ${recordErr?.message}`);
   serviceRecordAId = record.id;
 });
 

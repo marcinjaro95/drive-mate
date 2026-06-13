@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from '../supabase.service';
 import { AuthService } from '../auth/auth.service';
-import type { ServiceRecord, NewServiceRecord, ServiceRecordUpdate } from '../models/service-record.model';
+import type {
+  ServiceRecord,
+  NewServiceRecord,
+  ServiceRecordUpdate,
+} from '../models/service-record.model';
 
 @Injectable({ providedIn: 'root' })
 export class ServiceRecordService {
@@ -10,7 +14,10 @@ export class ServiceRecordService {
     private readonly auth: AuthService,
   ) {}
 
-  async getServiceRecords(vehicleId: string, options: { limit?: number; offset?: number } = {}): Promise<ServiceRecord[]> {
+  async getServiceRecords(
+    vehicleId: string,
+    options: { limit?: number; offset?: number } = {},
+  ): Promise<ServiceRecord[]> {
     const { limit = 100, offset = 0 } = options;
     const { data, error } = await this.supabase.client
       .from('service_records')

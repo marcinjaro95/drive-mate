@@ -16,20 +16,21 @@ An unauthenticated visitor is redirected to `/login` regardless of which URL the
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-|---|---|---|
-| Auth methods | Email+password only | Unblocks all downstream work now; OAuth is a follow-up change |
-| Scope | Sign-in / sign-up / sign-out only | Profile/account management belongs with FR-003 (car delete / GDPR) |
-| Auth state | Signals-based `AuthService` | Matches the signals-first pattern already in `app.ts`; avoids RxJS on the auth path |
-| Auth UI | Custom Angular components + Angular Material | Full style control; no external auth-UI library dependency |
-| Post-auth redirect | `/dashboard` always | Simple and predictable; intended-URL tracking is out of MVP scope |
-| Error display | Inline below submit button | Zero extra infrastructure; standard accessible form UX |
-| Email confirmation | Disable in Supabase dashboard | Removes an entire UI state and callback route from MVP scope |
-| Testing | `AuthService` unit tests only | Covers the riskiest state-transition logic; UI forms verified manually |
+| Decision           | Choice                                       | Why (1 sentence)                                                                    |
+| ------------------ | -------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Auth methods       | Email+password only                          | Unblocks all downstream work now; OAuth is a follow-up change                       |
+| Scope              | Sign-in / sign-up / sign-out only            | Profile/account management belongs with FR-003 (car delete / GDPR)                  |
+| Auth state         | Signals-based `AuthService`                  | Matches the signals-first pattern already in `app.ts`; avoids RxJS on the auth path |
+| Auth UI            | Custom Angular components + Angular Material | Full style control; no external auth-UI library dependency                          |
+| Post-auth redirect | `/dashboard` always                          | Simple and predictable; intended-URL tracking is out of MVP scope                   |
+| Error display      | Inline below submit button                   | Zero extra infrastructure; standard accessible form UX                              |
+| Email confirmation | Disable in Supabase dashboard                | Removes an entire UI state and callback route from MVP scope                        |
+| Testing            | `AuthService` unit tests only                | Covers the riskiest state-transition logic; UI forms verified manually              |
 
 ## Scope
 
 **In scope:**
+
 - Install `@supabase/supabase-js` + Angular Material
 - `SupabaseService` singleton (typed Supabase client)
 - `AuthService` with signals and `signIn` / `signUp` / `signOut`
@@ -40,6 +41,7 @@ An unauthenticated visitor is redirected to `/login` regardless of which URL the
 - Vitest unit tests for `AuthService`
 
 **Out of scope:**
+
 - OAuth (Google or other)
 - Email confirmation callback route
 - Password reset / magic-link
@@ -53,12 +55,12 @@ An unauthenticated visitor is redirected to `/login` regardless of which URL the
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. Dependencies & Supabase client | Packages installed, `SupabaseService` created, animations wired | `ng add @angular/material` is interactive — must be run manually with correct choices |
-| 2. AuthService + auth guard | Reactive session signals, route protection, full route tree | Auth init race on page refresh (mitigated by `initialized` Promise) |
-| 3. Auth UI components | Working login/signup forms, dashboard placeholder, end-to-end flow | Angular Material import paths — verify against installed version |
-| 4. AuthService unit tests | `AuthService` signal transitions verified against mocked Supabase | Mocking `onAuthStateChange` (callback-based) in Vitest requires a controllable fake |
+| Phase                             | What it delivers                                                   | Key risk                                                                              |
+| --------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| 1. Dependencies & Supabase client | Packages installed, `SupabaseService` created, animations wired    | `ng add @angular/material` is interactive — must be run manually with correct choices |
+| 2. AuthService + auth guard       | Reactive session signals, route protection, full route tree        | Auth init race on page refresh (mitigated by `initialized` Promise)                   |
+| 3. Auth UI components             | Working login/signup forms, dashboard placeholder, end-to-end flow | Angular Material import paths — verify against installed version                      |
+| 4. AuthService unit tests         | `AuthService` signal transitions verified against mocked Supabase  | Mocking `onAuthStateChange` (callback-based) in Vitest requires a controllable fake   |
 
 **Prerequisites:** "Confirm email" must be disabled in the Supabase project's Authentication settings before Phase 3 manual testing.
 **Estimated effort:** ~1 session across 4 phases.

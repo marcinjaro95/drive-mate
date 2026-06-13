@@ -8,7 +8,7 @@ package_manager: npm
 cwd_strategy: subdir-then-move
 bootstrapper_confidence: verified
 phase_3_status: ok
-audit_command: "npm audit --json"
+audit_command: 'npm audit --json'
 ---
 
 ## Hand-off
@@ -43,10 +43,10 @@ hints:
 
 ## Pre-scaffold verification
 
-| Signal      | Value                                      | Severity | Notes                                                       |
-| ----------- | ------------------------------------------ | -------- | ----------------------------------------------------------- |
-| npm package | @angular/cli v21.2.12 published 2026-05-21 | fresh    | resolved from cmd_template (`npx @angular/cli new`)         |
-| GitHub repo | not run                                    | —        | docs_url is https://angular.dev (not a GitHub repo URL)     |
+| Signal      | Value                                      | Severity | Notes                                                   |
+| ----------- | ------------------------------------------ | -------- | ------------------------------------------------------- |
+| npm package | @angular/cli v21.2.12 published 2026-05-21 | fresh    | resolved from cmd_template (`npx @angular/cli new`)     |
+| GitHub repo | not run                                    | —        | docs_url is https://angular.dev (not a GitHub repo URL) |
 
 ## Scaffold log
 
@@ -67,6 +67,7 @@ hints:
 **Temp dir cleanup**: deleted (`bootstrap-scaffold-temp/` removed after move-up)
 
 **Files scaffolded** (as reported by Angular CLI):
+
 - `angular.json`
 - `package.json`
 - `README.md`
@@ -89,6 +90,7 @@ hints:
 - `public/favicon.ico`
 
 **Preserved from cwd** (conflict matrix applied, all protected):
+
 - `CLAUDE.md`
 - `context/` (protected verbatim)
 - `idea-notes.md`
@@ -107,21 +109,21 @@ Clean tree — no advisories found.
 
 ## Hints recorded but not acted on
 
-| Hint                    | Value                                                                  |
-| ----------------------- | ---------------------------------------------------------------------- |
-| bootstrapper_confidence | verified                                                               |
-| quality_override        | false                                                                  |
-| path_taken              | custom                                                                 |
+| Hint                    | Value                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------------------------ |
+| bootstrapper_confidence | verified                                                                                               |
+| quality_override        | false                                                                                                  |
+| path_taken              | custom                                                                                                 |
 | self_check_answers      | typed: true, from_official_starter: true, conventions: true, docs_current: true, can_judge_agent: true |
-| team_size               | solo                                                                   |
-| deployment_target       | cloudflare-pages                                                       |
-| ci_provider             | github-actions                                                         |
-| ci_default_flow         | auto-deploy-on-merge                                                   |
-| has_auth                | true                                                                   |
-| has_payments            | false                                                                  |
-| has_realtime            | false                                                                  |
-| has_ai                  | true                                                                   |
-| has_background_jobs     | false                                                                  |
+| team_size               | solo                                                                                                   |
+| deployment_target       | cloudflare-pages                                                                                       |
+| ci_provider             | github-actions                                                                                         |
+| ci_default_flow         | auto-deploy-on-merge                                                                                   |
+| has_auth                | true                                                                                                   |
+| has_payments            | false                                                                                                  |
+| has_realtime            | false                                                                                                  |
+| has_ai                  | true                                                                                                   |
+| has_background_jobs     | false                                                                                                  |
 
 No automated action was taken on any of these hints in v1. A future M1L4 skill ("Memory Architecture") will act on `deployment_target`, `ci_provider`, `ci_default_flow`, and the `has_*` feature flags to generate `CLAUDE.md` and `AGENTS.md`.
 
@@ -130,6 +132,7 @@ No automated action was taken on any of these hints in v1. A future M1L4 skill (
 Next: a future skill will set up agent context (CLAUDE.md, AGENTS.md). For now, your project is scaffolded and verified — happy hacking.
 
 Useful manual steps in the meantime:
+
 - `git init` has already been run by the Angular CLI; check `.git/` is in the right state and add your remote with `git remote add origin <your-repo-url>`.
 - Review any `.scaffold` siblings the conflict policy created and decide which version to keep — there are none in this run.
 - Run `npm start` (or `ng serve`) to confirm the scaffold runs locally before adding the Supabase and Cloudflare integration layers.

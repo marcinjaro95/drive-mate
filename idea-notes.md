@@ -3,6 +3,7 @@
 ### Główny problem
 
 Właściciele samochodów często nie wiedzą:
+
 - co i kiedy wymienić,
 - jakie są zalecenia producenta,
 - gdzie trzymać historię serwisową auta.

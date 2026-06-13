@@ -7,7 +7,9 @@ function corsHeaders(request: Request): Record<string, string> {
   const origin = request.headers.get('Origin');
   return {
     'Access-Control-Allow-Origin':
-      origin && ALLOWED_ORIGINS.has(origin) ? origin : 'https://drive-mate.marcinjaro95.workers.dev',
+      origin && ALLOWED_ORIGINS.has(origin)
+        ? origin
+        : 'https://drive-mate.marcinjaro95.workers.dev',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
@@ -99,9 +101,7 @@ async function tryAutoRef(vin: string, apiKey: string): Promise<VinDecodeResult 
 async function tryNhtsa(vin: string): Promise<VinDecodeResult | null> {
   let resp: Response;
   try {
-    resp = await fetch(
-      `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/${vin}?format=json`,
-    );
+    resp = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/${vin}?format=json`);
   } catch {
     return null;
   }
@@ -116,8 +116,7 @@ async function tryNhtsa(vin: string): Promise<VinDecodeResult | null> {
   }
 
   const results = data.Results ?? [];
-  const find = (name: string) =>
-    results.find((r) => r.Variable === name)?.Value ?? null;
+  const find = (name: string) => results.find((r) => r.Variable === name)?.Value ?? null;
 
   const make = find('Make');
   const model = find('Model');
@@ -210,7 +209,7 @@ async function handleAI(request: Request, env: Env): Promise<Response> {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${env.OPENROUTER_API_KEY}`,
+      Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
       'HTTP-Referer': 'https://drive-mate.workers.dev',
       'X-Title': 'DriveMate',
     },

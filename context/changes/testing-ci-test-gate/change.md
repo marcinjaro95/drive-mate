@@ -1,10 +1,9 @@
 ---
-change_id: ui-improvements
-title: UI improvements
-status: impl_reviewed
-created: 2026-06-07
-updated: 2026-06-07
-
+change_id: testing-ci-test-gate
+title: Testing ci test gate
+status: implementing
+created: 2026-06-13
+updated: 2026-06-14
 archived_at: null
 ---
 

@@ -3,8 +3,7 @@ import { AuthService } from './auth.service';
 import { SupabaseService } from '../supabase.service';
 import { AuthError, Session, User } from '@supabase/supabase-js';
 
-const makeUser = (id = 'user-1'): User =>
-  ({ id, email: 'test@example.com' }) as User;
+const makeUser = (id = 'user-1'): User => ({ id, email: 'test@example.com' }) as User;
 
 const makeSession = (user: User): Session =>
   ({ user, access_token: 'tok', refresh_token: 'rtok' }) as Session;
@@ -46,10 +45,7 @@ describe('AuthService', () => {
     mockSupabase = makeMockSupabase();
 
     TestBed.configureTestingModule({
-      providers: [
-        AuthService,
-        { provide: SupabaseService, useValue: mockSupabase },
-      ],
+      providers: [AuthService, { provide: SupabaseService, useValue: mockSupabase }],
     });
 
     service = TestBed.inject(AuthService);
@@ -63,10 +59,7 @@ describe('AuthService', () => {
       mockSupabase = makeMockSupabase();
       mockSupabase._setGetSessionResult(new Promise(() => {}));
       TestBed.configureTestingModule({
-        providers: [
-          AuthService,
-          { provide: SupabaseService, useValue: mockSupabase },
-        ],
+        providers: [AuthService, { provide: SupabaseService, useValue: mockSupabase }],
       });
       service = TestBed.inject(AuthService);
 
@@ -83,10 +76,7 @@ describe('AuthService', () => {
       );
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [
-          AuthService,
-          { provide: SupabaseService, useValue: mockSupabase },
-        ],
+        providers: [AuthService, { provide: SupabaseService, useValue: mockSupabase }],
       });
       service = TestBed.inject(AuthService);
 

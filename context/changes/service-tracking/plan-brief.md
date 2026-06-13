@@ -16,23 +16,24 @@ Each schedule card shows a "Mark as done" button. Clicking it expands an inline 
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-| --- | --- | --- |
-| Scope | FR-006 only | History list (FR-007) and edit (FR-008) deferred to keep this change focused and shippable |
-| Form UX | Inline expansion inside the card | Keeps user in context without a modal; simpler state than a separate route |
-| Mileage | Required | Both fields are load-bearing for future schedule recalculation accuracy |
-| Mileage sync | Auto-update if higher | Vehicle odometer stays current automatically; matches the AI schedule's expectation |
-| Save feedback | `MatSnackBar` (4 s) | Instant, non-blocking confirmation of what was recorded before the regen dialog opens |
-| Schedule regen | `ConfirmDialogComponent` via `MatDialog`, not auto | Avoids a surprise AI API call on every mark-done; dialog forces an explicit user choice (Regenerate / Cancel) |
-| Error handling | Record-first, non-blocking mileage warning | Service record is the primary data; a failed odometer update is recoverable |
-| Testing | Service layer spec only | Component already tested manually; existing ServiceRecordService spec is near-complete |
-| Saved state key | item label (`item.item`) | Already the de-facto item identifier in the component; template check is trivial (`savedItems().has(item.item)`) |
-| Saved state scope | Component-scoped signal | Ephemeral by design — resets on navigation; no extra infrastructure needed |
-| Saved UX | Static "Saved ✓" label, no re-mark | Clear confirmation; re-marking would risk duplicate records; FR-008 handles corrections |
+| Decision          | Choice                                             | Why (1 sentence)                                                                                                 |
+| ----------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Scope             | FR-006 only                                        | History list (FR-007) and edit (FR-008) deferred to keep this change focused and shippable                       |
+| Form UX           | Inline expansion inside the card                   | Keeps user in context without a modal; simpler state than a separate route                                       |
+| Mileage           | Required                                           | Both fields are load-bearing for future schedule recalculation accuracy                                          |
+| Mileage sync      | Auto-update if higher                              | Vehicle odometer stays current automatically; matches the AI schedule's expectation                              |
+| Save feedback     | `MatSnackBar` (4 s)                                | Instant, non-blocking confirmation of what was recorded before the regen dialog opens                            |
+| Schedule regen    | `ConfirmDialogComponent` via `MatDialog`, not auto | Avoids a surprise AI API call on every mark-done; dialog forces an explicit user choice (Regenerate / Cancel)    |
+| Error handling    | Record-first, non-blocking mileage warning         | Service record is the primary data; a failed odometer update is recoverable                                      |
+| Testing           | Service layer spec only                            | Component already tested manually; existing ServiceRecordService spec is near-complete                           |
+| Saved state key   | item label (`item.item`)                           | Already the de-facto item identifier in the component; template check is trivial (`savedItems().has(item.item)`) |
+| Saved state scope | Component-scoped signal                            | Ephemeral by design — resets on navigation; no extra infrastructure needed                                       |
+| Saved UX          | Static "Saved ✓" label, no re-mark                 | Clear confirmation; re-marking would risk duplicate records; FR-008 handles corrections                          |
 
 ## Scope
 
 **In scope:**
+
 - "Mark as done" button + inline form per schedule card in `ScheduleViewComponent`
 - `ServiceRecordService.createServiceRecord()` call on save
 - Conditional `VehicleService.updateVehicle()` for mileage sync
@@ -44,6 +45,7 @@ Each schedule card shows a "Mark as done" button. Clicking it expands an inline 
 - ServiceRecordService spec gap-fill
 
 **Out of scope:**
+
 - FR-007: service history list
 - FR-008: edit service record
 - New routes
@@ -55,11 +57,11 @@ Changes span `ScheduleViewComponent` (`.ts`, `.html`, `.scss`), `AiScheduleServi
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Inline mark-done form | Full user-facing interaction in `ScheduleViewComponent` | Two-call save (record + mileage) needs careful error handling to avoid silent failures |
-| 2. Spec coverage | `ServiceRecordService` spec verified and gap-filled | Minor — mostly verification; spec is already broad |
-| 3. Session-persistent "Saved ✓" | Cards show "Saved ✓" after save for the rest of the page visit | None — single signal + template branch |
+| Phase                           | What it delivers                                               | Key risk                                                                               |
+| ------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| 1. Inline mark-done form        | Full user-facing interaction in `ScheduleViewComponent`        | Two-call save (record + mileage) needs careful error handling to avoid silent failures |
+| 2. Spec coverage                | `ServiceRecordService` spec verified and gap-filled            | Minor — mostly verification; spec is already broad                                     |
+| 3. Session-persistent "Saved ✓" | Cards show "Saved ✓" after save for the rest of the page visit | None — single signal + template branch                                                 |
 
 **Prerequisites:** Car-add-ai-schedule change must be merged (schedule view must exist and load items)
 **Estimated effort:** ~1 session across 3 phases (Phases 1 & 2 already implemented)

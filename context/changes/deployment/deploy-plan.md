@@ -9,6 +9,7 @@ DriveMate is an Angular 21 SPA skeleton (zero features implemented) that needs i
 **Deployed URL:** `https://drive-mate.workers.dev` (custom domain addable later)
 
 **Current state (2026-05-23):**
+
 - ✅ Wrangler v4 installed
 - ✅ `wrangler login` completed (account: `1045124760937fe73c7eaa433bffe98d`)
 - ✅ `wrangler.toml` — Workers config with `[assets]` + Smart Placement + `workers_dev = true`
@@ -32,42 +33,47 @@ DriveMate is an Angular 21 SPA skeleton (zero features implemented) that needs i
 
 ## Files Created / Modified
 
-| File | Status | Notes |
-|---|---|---|
-| `package.json` | ✅ done | `wrangler ^4.94.0` in devDependencies |
-| `wrangler.toml` | ✅ done | Workers config: `main`, `[assets]`, Smart Placement |
-| `.gitignore` | ✅ done | `.env`, `.dev.vars` entries added |
-| `src/index.html` | ✅ done | Title: `DriveMate` |
-| `src/environments/environment.ts` | ✅ done | Dev Supabase config (real values) |
-| `src/environments/environment.prod.ts` | ✅ done | Prod Supabase config (real values) |
-| `angular.json` | ✅ done | `fileReplacements` in production build config |
-| `.dev.vars` | ✅ done | Local wrangler secret placeholder (gitignored) |
-| `functions/tsconfig.json` | ✅ done | Workers types scope |
-| `functions/worker.ts` | ✅ done | Main Worker: `/api/ai` proxy + ASSETS fallthrough |
-| `functions/api/ai.ts` | ✅ removed | Was Pages Function format — replaced by `worker.ts` |
+| File                                   | Status     | Notes                                               |
+| -------------------------------------- | ---------- | --------------------------------------------------- |
+| `package.json`                         | ✅ done    | `wrangler ^4.94.0` in devDependencies               |
+| `wrangler.toml`                        | ✅ done    | Workers config: `main`, `[assets]`, Smart Placement |
+| `.gitignore`                           | ✅ done    | `.env`, `.dev.vars` entries added                   |
+| `src/index.html`                       | ✅ done    | Title: `DriveMate`                                  |
+| `src/environments/environment.ts`      | ✅ done    | Dev Supabase config (real values)                   |
+| `src/environments/environment.prod.ts` | ✅ done    | Prod Supabase config (real values)                  |
+| `angular.json`                         | ✅ done    | `fileReplacements` in production build config       |
+| `.dev.vars`                            | ✅ done    | Local wrangler secret placeholder (gitignored)      |
+| `functions/tsconfig.json`              | ✅ done    | Workers types scope                                 |
+| `functions/worker.ts`                  | ✅ done    | Main Worker: `/api/ai` proxy + ASSETS fallthrough   |
+| `functions/api/ai.ts`                  | ✅ removed | Was Pages Function format — replaced by `worker.ts` |
 
 ---
 
 ## Phase 0 — Prerequisites ✅ DONE
 
 ### 0.1 — Local tooling ✅
+
 - Node.js 22.18.0
 - npm 11.15.0
 - Wrangler 4.94.0
 - Git 2.46.2
 
 ### 0.2 — Cloudflare account ✅
+
 - Account ID: `1045124760937fe73c7eaa433bffe98d`
 - `wrangler login` completed (OAuth)
 
 ### 0.3 — Supabase project ✅
+
 - Project URL: `https://hftjmsmkmfiasseubjpz.supabase.co`
 - Anon key filled in environment files
 
 ### 0.4 — OpenRouter account ✅
+
 - Account exists; API key on hand (goes into Phase 6)
 
 ### 0.5 — GitHub repository ✅
+
 - Repository exists; `master` branch is current
 
 ---
@@ -83,6 +89,7 @@ DriveMate is an Angular 21 SPA skeleton (zero features implemented) that needs i
 ## Phase 2 — Core Config Files ✅ DONE
 
 ### `wrangler.toml`
+
 ```toml
 name = "drive-mate"
 main = "functions/worker.ts"
@@ -116,6 +123,7 @@ mode = "smart"
 ## Phase 4 — Worker (`functions/worker.ts`) ✅ DONE
 
 Single Worker entry point at `functions/worker.ts`:
+
 - **`/api/ai` POST** — OpenRouter streaming proxy (injects `OPENROUTER_API_KEY`)
 - **`/api/ai` OPTIONS** — CORS preflight
 - **Everything else** — `env.ASSETS.fetch(request)` → serves SPA, falls back to `index.html` for SPA routes
@@ -142,6 +150,7 @@ If auto-deploy on push is desired, connect the repo from Workers & Pages → Cre
 `OPENROUTER_API_KEY` secret is set. Verified: `npx wrangler secret list` shows it. Proxy tested and returns valid responses.
 
 ### Supabase vars (build-time, baked into JS bundle)
+
 Already in `src/environments/environment.prod.ts` (committed). Compiled into the bundle at build time — no additional steps needed.
 
 ---

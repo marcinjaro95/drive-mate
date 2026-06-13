@@ -60,6 +60,7 @@ Install the two missing packages (`@supabase/supabase-js` and Angular Material),
 **Contract**: Run `npm install @supabase/supabase-js @angular/animations@<same-version-as-@angular/core>`, then run `ng add @angular/material` — select the `indigo-pink` prebuilt theme, enable global typography, and use async animations.
 
 After `ng add`, verify all three schematic outputs were applied (the Angular 21 schematic has a known bug that silently skips file mutations — apply manually if missing):
+
 - `angular.json` styles array includes `@angular/material/prebuilt-themes/indigo-pink.css`
 - `src/index.html` has Roboto + Material Icons `<link>` tags
 - `src/app/app.config.ts` imports and calls `provideAnimationsAsync()`
@@ -107,12 +108,14 @@ Build the reactive authentication layer: a signals-based `AuthService` that brid
 **Intent**: Centralize all Supabase auth operations and expose reactive session state as Angular signals so any component or guard can read the current user without subscribing to observables or calling Supabase directly.
 
 **Contract**: `@Injectable({ providedIn: 'root' })` class that injects `SupabaseService` and exposes:
+
 - `currentUser: Signal<User | null>` — writable signal, updated only by `onAuthStateChange`
 - `isAuthenticated: Signal<boolean>` — computed from `currentUser`
 - `isLoading: Signal<boolean>` — true until the first `getSession()` call resolves
 - `initialized: Promise<void>` — resolves when `getSession()` completes and `isLoading` is set to false
 
 Constructor calls `getSession()` once to hydrate initial state, then registers `onAuthStateChange` to keep `currentUser` updated on all subsequent events. Methods:
+
 - `signIn(email: string, password: string): Promise<AuthError | null>` — calls `signInWithPassword`; returns the error or null
 - `signUp(email: string, password: string): Promise<AuthError | null>` — calls `supabase.auth.signUp`; returns the error or null
 - `signOut(): Promise<void>` — calls `supabase.auth.signOut`
@@ -130,6 +133,7 @@ None of the three methods update `currentUser` directly — the `onAuthStateChan
 **Intent**: Define the full route tree — public auth routes and a protected shell that covers all future feature routes.
 
 **Contract**:
+
 ```
 /login         → LoginComponent         (public, no guard)
 /signup        → SignupComponent        (public, no guard)
@@ -137,6 +141,7 @@ None of the three methods update `currentUser` directly — the `onAuthStateChan
   /dashboard   → DashboardComponent
   / (empty)    → redirectTo 'dashboard', pathMatch: 'full'
 ```
+
 `LoginComponent`, `SignupComponent`, and `DashboardComponent` are the components created in Phase 3. Use `loadComponent` with lazy `import()` for all three routes. Because TypeScript resolves dynamic import paths at build time, create minimal stub files (`src/app/auth/login/login.ts`, `src/app/auth/signup/signup.ts`, `src/app/dashboard/dashboard.ts`) now so Phase 2's build criterion passes. Phase 3 replaces the stubs with full implementations — no separate Phase 3.5 import step is needed.
 
 ### Success Criteria:
@@ -229,6 +234,7 @@ Write Vitest unit tests for `AuthService` that verify signal state transitions u
 **Intent**: Make `npm test` functional before writing any spec. `tsconfig.spec.json` already references `vitest/globals` but no test target exists and the runner packages are absent.
 
 **Contract**: Run `npm install --save-dev vitest happy-dom`. Add a `test` target to `angular.json` under the project's `architect` block:
+
 ```json
 "test": {
   "builder": "@angular/build:unit-test",
@@ -238,6 +244,7 @@ Write Vitest unit tests for `AuthService` that verify signal state transitions u
   }
 }
 ```
+
 Verify with `npm test` (no spec files yet — should exit with "no tests found" or similar, not an error).
 
 #### 1. `src/app/core/auth/auth.service.spec.ts` (new file)

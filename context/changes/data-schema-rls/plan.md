@@ -11,6 +11,7 @@ The Supabase project (`drive-mate`) is live with credentials wired in `src/envir
 ## Desired End State
 
 After this plan:
+
 - Two tables (`vehicles`, `service_records`) exist in Supabase with RLS enabled; every SELECT/INSERT/UPDATE/DELETE is scoped to `auth.uid()` — a user can never read or touch another user's rows.
 - TypeScript interfaces in `src/app/core/models/` allow all downstream slices to write typed Supabase queries without reinventing the schema.
 - `VehicleService` and `ServiceRecordService` provide a typed CRUD API that injects `user_id` automatically from auth state; feature components never call `supabase.client` directly.
@@ -39,7 +40,7 @@ Three sequential phases following the data-layer hierarchy: (1) SQL schema first
 
 - **`user_id` denormalization on `service_records`**: The table carries its own `user_id` column (not just `vehicle_id`) as deliberate denormalization. This keeps RLS policies on `service_records` self-contained — no JOIN to `vehicles` is needed in the policy expression. It also provides a second isolation layer if vehicle cascade is ever bypassed. The service layer must always stamp `user_id` from `auth.currentUser()`, never from call arguments.
 
-- **RLS INSERT vs UPDATE syntax**: `INSERT` policies use `WITH CHECK (user_id = auth.uid())`, not `USING`. `UPDATE` policies require *both* `USING (user_id = auth.uid())` (which rows can be touched) *and* `WITH CHECK (user_id = auth.uid())` (what new values are allowed). Using only `USING` on an `UPDATE` leaves the `WITH CHECK` wide open.
+- **RLS INSERT vs UPDATE syntax**: `INSERT` policies use `WITH CHECK (user_id = auth.uid())`, not `USING`. `UPDATE` policies require _both_ `USING (user_id = auth.uid())` (which rows can be touched) _and_ `WITH CHECK (user_id = auth.uid())` (what new values are allowed). Using only `USING` on an `UPDATE` leaves the `WITH CHECK` wide open.
 
 ---
 
@@ -174,7 +175,7 @@ export interface ServiceRecord {
   id: string;
   vehicle_id: string;
   user_id: string;
-  service_date: string;   // ISO date string, e.g. '2026-06-04'
+  service_date: string; // ISO date string, e.g. '2026-06-04'
   mileage: number;
   label: string;
   notes: string | null;
@@ -229,6 +230,7 @@ deleteVehicle(id: string): Promise<void>
 **Intent**: Verify `user_id` injection behaviour and error propagation using mocked Supabase and auth dependencies. No real DB required.
 
 **Contract**: Mock `SupabaseService` so `.client.from('vehicles')` returns a controllable spy chain. Key test cases:
+
 - `createVehicle` inserts a row containing `user_id` taken from `AuthService.currentUser().id`, not from the caller's payload.
 - When Supabase returns `{ data: null, error: { message: '…' } }`, the method throws the error.
 - `getVehicles` returns a typed `Vehicle[]` on success.

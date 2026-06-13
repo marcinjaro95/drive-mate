@@ -1,21 +1,21 @@
-import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
-import {DecimalPipe} from '@angular/common';
-import {ActivatedRoute, Router, RouterModule} from '@angular/router';
-import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatCardModule} from '@angular/material/card';
-import {MatChipsModule} from '@angular/material/chips';
-import {MatButtonModule} from '@angular/material/button';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatDialog, MatDialogModule} from '@angular/material/dialog';
-import {VehicleService} from '../../core/vehicles/vehicle.service';
-import {AiScheduleService} from '../../core/ai-schedule/ai-schedule.service';
-import {ConfirmDialogComponent} from '../../shared/confirm-dialog/confirm-dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {ServiceRecordService} from '../../core/service-records/service-record.service';
-import type {Vehicle} from '../../core/models/vehicle.model';
-import type {ScheduleItem} from '../../core/models/schedule-item.model';
-import type {ServiceRecord} from '../../core/models/service-record.model';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { VehicleService } from '../../core/vehicles/vehicle.service';
+import { AiScheduleService } from '../../core/ai-schedule/ai-schedule.service';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { ServiceRecordService } from '../../core/service-records/service-record.service';
+import type { Vehicle } from '../../core/models/vehicle.model';
+import type { ScheduleItem } from '../../core/models/schedule-item.model';
+import type { ServiceRecord } from '../../core/models/service-record.model';
 
 @Component({
   selector: 'app-schedule-view',
@@ -90,10 +90,8 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
     }
     this.savedItems.set(
       new Set(
-        loadedRecords
-          .map(r => r.schedule_item_id)
-          .filter((id): id is string => id !== null)
-      )
+        loadedRecords.map((r) => r.schedule_item_id).filter((id): id is string => id !== null),
+      ),
     );
 
     if (vehicleForInit.ai_schedule?.length) {
@@ -193,7 +191,9 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
 
       if (mileage! > (vehicle.current_mileage ?? 0)) {
         try {
-          const updated = await this.vehicleService.updateVehicle(vehicle.id, { current_mileage: mileage! });
+          const updated = await this.vehicleService.updateVehicle(vehicle.id, {
+            current_mileage: mileage!,
+          });
           this.vehicle.set(updated);
         } catch {
           this.mileageSyncWarning.set(true);
@@ -202,14 +202,16 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
       }
 
       this.expandedItem.set(null);
-      this.savedItems.update(s => new Set([...s, item.id]));
+      this.savedItems.update((s) => new Set([...s, item.id]));
       this.dialog.open(ConfirmDialogComponent, {
         data: {
           title: 'Regenerate schedule?',
           message:
             'Service recorded. The AI schedule may be outdated — regenerate now to reflect the latest service history.',
           confirmLabel: 'Regenerate',
-          onConfirm: async () => { await this.generateSchedule(); },
+          onConfirm: async () => {
+            await this.generateSchedule();
+          },
         },
       });
     } finally {

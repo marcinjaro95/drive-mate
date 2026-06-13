@@ -16,26 +16,28 @@ Two tables exist in Supabase with RLS active: every row is scoped to the owning 
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-|---|---|---|---|
-| Migration delivery | Supabase CLI files in repo | Reproducible, version-controlled schema history — `supabase db push` applies to remote | Plan |
-| VIN column | Nullable `text` on `vehicles` now | S-03 (VIN lookup) can populate it later without a schema migration | Plan |
-| Delete strategy | Hard delete + `ON DELETE CASCADE` | Simpler than soft-delete; FR-003 compliance; confirmation dialog is S-04's responsibility | Plan |
-| Mileage in service_records | `NOT NULL` | Both date and mileage feed schedule recalculation; friction is worth accuracy | Plan |
-| Service record extra fields | `label text NOT NULL` + `notes text` | Aligns with AI schedule item labels (S-01); notes for freeform user comments | Plan |
-| Current mileage | `current_mileage integer` (nullable) on `vehicles` | Schedule needs a "now" reference without scanning all service records | Plan |
-| Types location | `src/app/core/models/` | Consistent with existing `core/` pattern (auth service, supabase service) | Plan |
-| Service scope | Schema + RLS + types + Angular services | S-01 can focus on UI + AI logic without building a data layer | Plan |
+| Decision                    | Choice                                             | Why (1 sentence)                                                                          | Source |
+| --------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------ |
+| Migration delivery          | Supabase CLI files in repo                         | Reproducible, version-controlled schema history — `supabase db push` applies to remote    | Plan   |
+| VIN column                  | Nullable `text` on `vehicles` now                  | S-03 (VIN lookup) can populate it later without a schema migration                        | Plan   |
+| Delete strategy             | Hard delete + `ON DELETE CASCADE`                  | Simpler than soft-delete; FR-003 compliance; confirmation dialog is S-04's responsibility | Plan   |
+| Mileage in service_records  | `NOT NULL`                                         | Both date and mileage feed schedule recalculation; friction is worth accuracy             | Plan   |
+| Service record extra fields | `label text NOT NULL` + `notes text`               | Aligns with AI schedule item labels (S-01); notes for freeform user comments              | Plan   |
+| Current mileage             | `current_mileage integer` (nullable) on `vehicles` | Schedule needs a "now" reference without scanning all service records                     | Plan   |
+| Types location              | `src/app/core/models/`                             | Consistent with existing `core/` pattern (auth service, supabase service)                 | Plan   |
+| Service scope               | Schema + RLS + types + Angular services            | S-01 can focus on UI + AI logic without building a data layer                             | Plan   |
 
 ## Scope
 
 **In scope:**
+
 - `supabase/migrations/20260604000000_init_schema.sql` — full DDL + RLS + indexes + `updated_at` trigger
 - `src/app/core/models/vehicle.model.ts` + `service-record.model.ts` — interfaces + mutation helpers
 - `src/app/core/vehicles/vehicle.service.ts` + spec
 - `src/app/core/service-records/service-record.service.ts` + spec
 
 **Out of scope:**
+
 - UI components (S-01)
 - VIN lookup integration (S-03)
 - AI schedule generation (S-01)
@@ -50,11 +52,11 @@ SQL migration → TypeScript types → Angular services, each layer depending on
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. SQL Schema & RLS | `vehicles` + `service_records` tables live in Supabase with RLS active | RLS policy syntax error (INSERT needs `WITH CHECK`, not `USING`) |
-| 2. TypeScript Types | Typed interfaces + mutation helpers in `core/models/` | Column name mismatch between SQL and TS |
-| 3. Angular Services | `VehicleService` + `ServiceRecordService` with CRUD + Vitest specs | Supabase mock complexity in tests; `user_id` injection accidentally accepted from callers |
+| Phase               | What it delivers                                                       | Key risk                                                                                  |
+| ------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1. SQL Schema & RLS | `vehicles` + `service_records` tables live in Supabase with RLS active | RLS policy syntax error (INSERT needs `WITH CHECK`, not `USING`)                          |
+| 2. TypeScript Types | Typed interfaces + mutation helpers in `core/models/`                  | Column name mismatch between SQL and TS                                                   |
+| 3. Angular Services | `VehicleService` + `ServiceRecordService` with CRUD + Vitest specs     | Supabase mock complexity in tests; `user_id` injection accidentally accepted from callers |
 
 **Prerequisites:** F-01 (auth scaffold) complete — ✓ done. Supabase CLI installed and `supabase link --project-ref hftjmsmkmfiasseubjpz` run once.
 

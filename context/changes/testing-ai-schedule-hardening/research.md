@@ -4,7 +4,7 @@ researcher: Marcin Jarosz
 git_commit: 12a602af982c5b505b8950d50fff7ee6aca40644
 branch: master
 repository: drive-mate
-topic: "AI schedule flow hardening — Phase 1 research (Risks #1 and #2)"
+topic: 'AI schedule flow hardening — Phase 1 research (Risks #1 and #2)'
 tags: [research, codebase, ai-schedule, source-attribution, schedule-view, vitest, testing]
 status: complete
 last_updated: 2026-06-13
@@ -79,7 +79,7 @@ const httpRes = await fetch('/api/ai', {
   headers: { 'Content-Type': 'application/json' },
   signal,
   body: JSON.stringify({
-    model: 'gpt-oss-120b:free',       // OpenRouter free-tier OSS model
+    model: 'gpt-oss-120b:free', // OpenRouter free-tier OSS model
     messages: [{ role: 'user', content: this.buildPrompt(vehicle, serviceRecords) }],
     response_format: { type: 'json_object' },
   }),
@@ -95,7 +95,9 @@ wired for cancellation.
 if (!httpRes.ok) throw new Error(`AI proxy error: ${httpRes.status}`);
 const envelope = await httpRes.json();
 if (!Array.isArray(envelope?.choices) || !envelope.choices[0]) {
-  throw new Error(`AI proxy returned unexpected response shape: ${JSON.stringify(envelope).slice(0, 200)}`);
+  throw new Error(
+    `AI proxy returned unexpected response shape: ${JSON.stringify(envelope).slice(0, 200)}`,
+  );
 }
 const parsed: { items: ScheduleItem[] } = JSON.parse(envelope.choices[0].message.content);
 if (!Array.isArray(parsed?.items)) throw new Error('AI response missing items array');
@@ -115,21 +117,22 @@ non-array values are all caught. The `!envelope.choices[0]` guard catches an emp
 const VALID_URGENCY = new Set(['overdue', 'due_soon', 'upcoming']);
 const filtered = parsed.items
   .filter(
-    (i) => typeof i.source === 'string' && i.source.trim().length > 0 && VALID_URGENCY.has(i.urgency),
+    (i) =>
+      typeof i.source === 'string' && i.source.trim().length > 0 && VALID_URGENCY.has(i.urgency),
   )
   .map((i) => ({ ...i, id: crypto.randomUUID() }));
 ```
 
 The predicate handles all six source shapes:
 
-| Source shape | `typeof i.source === 'string'` | `.trim().length > 0` | Result |
-|---|---|---|---|
-| `"Toyota manual"` | true | true | **kept** |
-| `""` | true | false | dropped |
-| `"   "` (whitespace) | true | false | dropped |
-| missing property (undefined) | false | — | dropped |
-| `null` | false | — | dropped |
-| `42` (number) | false | — | dropped |
+| Source shape                 | `typeof i.source === 'string'` | `.trim().length > 0` | Result   |
+| ---------------------------- | ------------------------------ | -------------------- | -------- |
+| `"Toyota manual"`            | true                           | true                 | **kept** |
+| `""`                         | true                           | false                | dropped  |
+| `"   "` (whitespace)         | true                           | false                | dropped  |
+| missing property (undefined) | false                          | —                    | dropped  |
+| `null`                       | false                          | —                    | dropped  |
+| `42` (number)                | false                          | —                    | dropped  |
 
 The predicate is **inline** (not extracted). UUID injection (`crypto.randomUUID()`) happens here,
 not in the LLM output — per the `schedule-item-identity` change.
@@ -139,14 +142,14 @@ filtered, the array is empty and the component shows the "filtered" empty-state 
 
 #### Error throw catalogue (complete)
 
-| Trigger | Line | Error type | Message |
-|---|---|---|---|
-| HTTP non-2xx | 22 | `Error` | `AI proxy error: ${status}` |
-| `choices` null/non-array/empty | 25 | `Error` | `AI proxy returned unexpected response shape: ...` |
-| `message.content` not valid JSON | 27 | `SyntaxError` (native) | varies |
-| `parsed.items` not an array | 28 | `Error` | `AI response missing items array` |
-| Network failure | 11 | `TypeError` (native) | varies |
-| AbortSignal cancel | 11 | `AbortError` (native) | varies |
+| Trigger                          | Line | Error type             | Message                                            |
+| -------------------------------- | ---- | ---------------------- | -------------------------------------------------- |
+| HTTP non-2xx                     | 22   | `Error`                | `AI proxy error: ${status}`                        |
+| `choices` null/non-array/empty   | 25   | `Error`                | `AI proxy returned unexpected response shape: ...` |
+| `message.content` not valid JSON | 27   | `SyntaxError` (native) | varies                                             |
+| `parsed.items` not an array      | 28   | `Error`                | `AI response missing items array`                  |
+| Network failure                  | 11   | `TypeError` (native)   | varies                                             |
+| AbortSignal cancel               | 11   | `AbortError` (native)  | varies                                             |
 
 All non-abort errors propagate to the caller (component). `AbortError` is absorbed at the component
 level (schedule-view.ts:127).
@@ -172,6 +175,7 @@ trying to persist. The `getVehicle` call in the component also lacks an explicit
 ### 2. ScheduleViewComponent — State and Template Map
 
 **Files**:
+
 - `src/app/vehicles/schedule-view/schedule-view.ts`
 - `src/app/vehicles/schedule-view/schedule-view.html`
 - `src/app/vehicles/schedule-view/schedule-view.scss`
@@ -181,18 +185,18 @@ https://github.com/marcinjaro95/drive-mate/blob/12a602af982c5b505b8950d50fff7ee6
 
 #### Signal inventory (lines 48–58 of schedule-view.ts)
 
-| Signal | Type | Purpose |
-|---|---|---|
-| `vehicle` | `signal<Vehicle \| null>` | Loaded vehicle |
-| `scheduleItems` | `signal<ScheduleItem[]>` | Filtered items from service |
-| `isLoading` | `signal<boolean>` | Vehicle fetch in progress |
-| `isGenerating` | `signal<boolean>` | AI generation in progress |
-| `error` | `signal<string \| null>` | Error from generation (or vehicle load) |
-| `expandedItem` | `signal<ScheduleItem \| null>` | Which item's mark-done form is open |
-| `isSaving` | `signal<boolean>` | Mark-done save in progress |
-| `saveError` | `signal<string \| null>` | Error from service record save |
-| `mileageSyncWarning` | `signal<boolean>` | Mileage update failed but record saved |
-| `savedItems` | `signal<Set<string>>` | Item IDs marked done (UUID-keyed) |
+| Signal               | Type                           | Purpose                                 |
+| -------------------- | ------------------------------ | --------------------------------------- |
+| `vehicle`            | `signal<Vehicle \| null>`      | Loaded vehicle                          |
+| `scheduleItems`      | `signal<ScheduleItem[]>`       | Filtered items from service             |
+| `isLoading`          | `signal<boolean>`              | Vehicle fetch in progress               |
+| `isGenerating`       | `signal<boolean>`              | AI generation in progress               |
+| `error`              | `signal<string \| null>`       | Error from generation (or vehicle load) |
+| `expandedItem`       | `signal<ScheduleItem \| null>` | Which item's mark-done form is open     |
+| `isSaving`           | `signal<boolean>`              | Mark-done save in progress              |
+| `saveError`          | `signal<string \| null>`       | Error from service record save          |
+| `mileageSyncWarning` | `signal<boolean>`              | Mileage update failed but record saved  |
+| `savedItems`         | `signal<Set<string>>`          | Item IDs marked done (UUID-keyed)       |
 
 #### Service call pattern (schedule-view.ts `ngOnInit`)
 
@@ -203,21 +207,23 @@ https://github.com/marcinjaro95/drive-mate/blob/12a602af982c5b505b8950d50fff7ee6
 
 #### Template control-flow (schedule-view.html lines 6–126)
 
-| Block | Condition | Renders |
-|---|---|---|
-| Loading spinner | `isLoading()` | `<mat-progress-spinner>` |
-| Generation skeleton | `isGenerating()` | 5 shimmer placeholder cards |
-| **Error state** | `error()` truthy | Error message + "Try again" button |
-| Empty state | `scheduleItems().length === 0` (no error) | "All items filtered..." + "Regenerate" |
-| Item list | otherwise | `<mat-card>` per item |
+| Block               | Condition                                 | Renders                                |
+| ------------------- | ----------------------------------------- | -------------------------------------- |
+| Loading spinner     | `isLoading()`                             | `<mat-progress-spinner>`               |
+| Generation skeleton | `isGenerating()`                          | 5 shimmer placeholder cards            |
+| **Error state**     | `error()` truthy                          | Error message + "Try again" button     |
+| Empty state         | `scheduleItems().length === 0` (no error) | "All items filtered..." + "Regenerate" |
+| Item list           | otherwise                                 | `<mat-card>` per item                  |
 
 **Error state markup (lines 35–41)**:
+
 ```html
 <div class="error-state">
   <p>{{ error() }}</p>
   <button mat-raised-button color="primary" (click)="retry()">Try again</button>
 </div>
 ```
+
 Calls `retry()` which re-invokes `generateSchedule()`.
 
 #### Source attribution rendering (line 65)
@@ -264,13 +270,13 @@ validation happens in the service, not the worker.
 export type Urgency = 'overdue' | 'due_soon' | 'upcoming';
 
 export interface ScheduleItem {
-  id: string;           // UUID — injected by service (crypto.randomUUID()), NOT from LLM
+  id: string; // UUID — injected by service (crypto.randomUUID()), NOT from LLM
   item: string;
   interval_km: number | null;
   next_due_km: number | null;
   next_due_date: string | null;
   urgency: Urgency;
-  source: string;       // mandatory post-filter
+  source: string; // mandatory post-filter
 }
 ```
 
@@ -285,25 +291,25 @@ practice — never leave it empty`.
 
 #### ai-schedule.service.spec.ts (17 tests)
 
-| Test | Status |
-|---|---|
-| Returns filtered `ScheduleItem[]` with UUIDs on valid response | ✅ |
-| Excludes items where `source` is `""` | ✅ |
-| Excludes items where `source` property is missing | ✅ |
-| Throws `SyntaxError` when `message.content` is not valid JSON | ✅ |
-| Throws `'AI proxy error: 500'` on HTTP 500 | ✅ |
-| Persists filtered items via `updateVehicle` | ✅ |
-| Prompt contains make, model, year, engine_capacity, fuel_type | ✅ |
+| Test                                                           | Status |
+| -------------------------------------------------------------- | ------ |
+| Returns filtered `ScheduleItem[]` with UUIDs on valid response | ✅     |
+| Excludes items where `source` is `""`                          | ✅     |
+| Excludes items where `source` property is missing              | ✅     |
+| Throws `SyntaxError` when `message.content` is not valid JSON  | ✅     |
+| Throws `'AI proxy error: 500'` on HTTP 500                     | ✅     |
+| Persists filtered items via `updateVehicle`                    | ✅     |
+| Prompt contains make, model, year, engine_capacity, fuel_type  | ✅     |
 
 **Not covered:**
 
-| Case | Why it matters |
-|---|---|
-| `choices` is `null` / `[]` / non-array | Line 24 guard added in impl-review (F2) but no spec asserts it |
-| `parsed.items` is `null` or `{}` (object, not array) | Line 28 guard added in impl-review (F2) but no spec |
-| `source: null` | Implementation covers it (`typeof null !== 'string'`), but no spec |
-| `source: '   '` (whitespace-only) | Implementation covers it (`.trim().length > 0`), but no spec |
-| Urgency invalid value (e.g., `'unknown'`) | `VALID_URGENCY` Set rejects it but no spec |
+| Case                                                 | Why it matters                                                     |
+| ---------------------------------------------------- | ------------------------------------------------------------------ |
+| `choices` is `null` / `[]` / non-array               | Line 24 guard added in impl-review (F2) but no spec asserts it     |
+| `parsed.items` is `null` or `{}` (object, not array) | Line 28 guard added in impl-review (F2) but no spec                |
+| `source: null`                                       | Implementation covers it (`typeof null !== 'string'`), but no spec |
+| `source: '   '` (whitespace-only)                    | Implementation covers it (`.trim().length > 0`), but no spec       |
+| Urgency invalid value (e.g., `'unknown'`)            | `VALID_URGENCY` Set rejects it but no spec                         |
 
 #### schedule-view.spec.ts (3 tests — delete flow only)
 

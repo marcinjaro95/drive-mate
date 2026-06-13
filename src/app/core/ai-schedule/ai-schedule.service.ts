@@ -12,7 +12,11 @@ export class AiScheduleService {
     private readonly auth: AuthService,
   ) {}
 
-  async generateAndSave(vehicle: Vehicle, signal?: AbortSignal, serviceRecords: ServiceRecord[] = []): Promise<ScheduleItem[]> {
+  async generateAndSave(
+    vehicle: Vehicle,
+    signal?: AbortSignal,
+    serviceRecords: ServiceRecord[] = [],
+  ): Promise<ScheduleItem[]> {
     const currentUserId = this.auth.currentUser()?.id;
     if (!currentUserId || vehicle.user_id !== currentUserId) {
       throw new Error('Vehicle does not belong to the current user');
@@ -30,14 +34,19 @@ export class AiScheduleService {
     if (!httpRes.ok) throw new Error(`AI proxy error: ${httpRes.status}`);
     const envelope = await httpRes.json();
     if (!Array.isArray(envelope?.choices) || !envelope.choices[0]) {
-      throw new Error(`AI proxy returned unexpected response shape: ${JSON.stringify(envelope).slice(0, 200)}`);
+      throw new Error(
+        `AI proxy returned unexpected response shape: ${JSON.stringify(envelope).slice(0, 200)}`,
+      );
     }
     const parsed: { items: ScheduleItem[] } = JSON.parse(envelope.choices[0].message.content);
     if (!Array.isArray(parsed?.items)) throw new Error('AI response missing items array');
     const VALID_URGENCY = new Set(['overdue', 'due_soon', 'upcoming']);
     const filtered = parsed.items
       .filter(
-        (i) => typeof i.source === 'string' && i.source.trim().length > 0 && VALID_URGENCY.has(i.urgency),
+        (i) =>
+          typeof i.source === 'string' &&
+          i.source.trim().length > 0 &&
+          VALID_URGENCY.has(i.urgency),
       )
       .map((i) => ({ ...i, id: crypto.randomUUID() }));
     await this.vehicleService.updateVehicle(vehicle.id, { ai_schedule: filtered });
@@ -45,16 +54,21 @@ export class AiScheduleService {
   }
 
   private buildPrompt(vehicle: Vehicle, serviceRecords: ServiceRecord[] = []): string {
-    const mileageNote = vehicle.current_mileage != null
-      ? `Current mileage: ${vehicle.current_mileage} km.`
-      : 'Current mileage is unknown.';
+    const mileageNote =
+      vehicle.current_mileage != null
+        ? `Current mileage: ${vehicle.current_mileage} km.`
+        : 'Current mileage is unknown.';
 
-    const historySection = serviceRecords.length > 0
-      ? `\nService history (${serviceRecords.length} record${serviceRecords.length > 1 ? 's' : ''}):\n` +
-        serviceRecords.map(r =>
-          `- ${r.label} (${r.service_date}, ${r.mileage != null ? r.mileage + ' km' : 'mileage unknown'}${r.notes ? ', ' + r.notes : ''})`
-        ).join('\n')
-      : '\nNo service history.';
+    const historySection =
+      serviceRecords.length > 0
+        ? `\nService history (${serviceRecords.length} record${serviceRecords.length > 1 ? 's' : ''}):\n` +
+          serviceRecords
+            .map(
+              (r) =>
+                `- ${r.label} (${r.service_date}, ${r.mileage != null ? r.mileage + ' km' : 'mileage unknown'}${r.notes ? ', ' + r.notes : ''})`,
+            )
+            .join('\n')
+        : '\nNo service history.';
 
     return `You are a vehicle maintenance expert. Generate a maintenance schedule for the following vehicle:
 

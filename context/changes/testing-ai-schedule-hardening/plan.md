@@ -107,7 +107,8 @@ Add 8 new tests in a `describe('ScheduleViewComponent — generation flow', ...)
 
 **Intent**: Establish the shared fixture configuration for all 8 generation-flow tests. The key difference from the existing delete-flow `beforeEach` is that `generateAndSaveSpy` is left unconfigured until each test sets its own resolution.
 
-**Contract**: 
+**Contract**:
+
 - `generateAndSaveSpy = vi.fn()` declared in outer scope (not yet resolved or rejected)
 - Providers mirror the delete-flow block: `provideRouter([])`, `provideAnimationsAsync()`, `ActivatedRoute` stub with `{ snapshot: { params: { id: 'v1' } } }`, `VehicleService` mock with `getVehicle: vi.fn().mockResolvedValue(makeVehicle({ ai_schedule: null }))` (forces the generation path since `ai_schedule` is null), `AiScheduleService` mock with `generateAndSave: generateAndSaveSpy`
 - `await TestBed.compileComponents()` and `fixture = TestBed.createComponent(ScheduleViewComponent)` — no `detectChanges()` yet

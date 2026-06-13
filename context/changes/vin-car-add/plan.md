@@ -7,6 +7,7 @@ Add VIN-based auto-fill to the vehicle add form. User enters an optional VIN and
 ## Current State Analysis
 
 The codebase is partially scaffolded:
+
 - `vin text` column exists in the DB; RLS is in place — no migration needed
 - `Vehicle` model has `vin: string | null` already
 - `VehicleService.createVehicle()` already accepts `vin`
@@ -62,6 +63,7 @@ Extend `functions/worker.ts` with a `/api/vin` handler that calls AutoRef.eu, fa
 **Intent**: Add `AUTOREF_API_KEY` to the `Env` interface, implement a `handleVin()` function, and route `POST /api/vin` to it in the main `fetch()` handler.
 
 **Contract**:
+
 - `Env` gains `AUTOREF_API_KEY: string`
 - `handleVin()` accepts `{ vin: string }` body; validates it is 17 chars before calling upstream
 - AutoRef.eu call: `GET` or `POST` to the confirmed endpoint with `Authorization: Bearer <AUTOREF_API_KEY>`; treat 404 or empty result as a miss
@@ -119,6 +121,7 @@ Add a `VinDecoderService` that calls `/api/vin`, then update `VehicleAddComponen
 **Intent**: Injectable service that POSTs a VIN to `/api/vin` and returns the decoded fields. Throws on network/HTTP error (matching the project's error contract: services throw, components catch).
 
 **Contract**:
+
 - `@Injectable({ providedIn: 'root' })`
 - Exports `VinDecodeResult` interface mirroring the Worker's canonical response: `{ make?: string; model?: string; year?: number; engine_capacity?: number; fuel_type?: string; error?: string }`
 - Method: `decode(vin: string): Promise<VinDecodeResult>` — posts `{ vin }` to `/api/vin`, returns parsed JSON, throws `Error` on non-2xx
@@ -131,6 +134,7 @@ Add a `VinDecoderService` that calls `/api/vin`, then update `VehicleAddComponen
 **Intent**: Add optional `vin` form control, decode loading/error signals, and a `decodeVin()` method. Update `onSubmit()` to pass the VIN value instead of `null`.
 
 **Contract**:
+
 - Import and inject `VinDecoderService`
 - Form gains: `vin: [null as string | null, [Validators.pattern(/^[A-HJ-NPR-Z0-9]{17}$/i)]]` — optional (no `Validators.required`)
 - New signals: `isDecoding = signal(false)`, `decodeError = signal<string | null>(null)`
@@ -144,6 +148,7 @@ Add a `VinDecoderService` that calls `/api/vin`, then update `VehicleAddComponen
 **Intent**: Add a VIN input with a Decode button at the top of the form, before the Make field. Show loading state on the button; show an inline error below the field when decode fails.
 
 **Contract**:
+
 - VIN section inserted before the existing `<mat-form-field>` for Make
 - `<mat-form-field>` wrapping a `matInput` with `formControlName="vin"`, `maxlength="17"`, labelled "VIN — optional (auto-fills fields below)"
 - Pattern error message: "VIN must be 17 characters (letters A–H, J–N, P–R, Z and digits)"

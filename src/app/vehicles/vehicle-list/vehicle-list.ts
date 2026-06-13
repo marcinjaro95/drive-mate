@@ -51,7 +51,7 @@ export class VehicleListComponent implements OnInit {
         message: `Deleting this car will also permanently remove all its service records. This cannot be undone.`,
         onConfirm: async () => {
           await this.vehicleService.deleteVehicle(vehicle.id);
-          this.vehicles.update(list => list.filter(c => c.id !== vehicle.id));
+          this.vehicles.update((list) => list.filter((c) => c.id !== vehicle.id));
         },
       },
     });

@@ -36,8 +36,14 @@ export class VehicleAddComponent {
     vin: [null as string | null, [Validators.pattern(/^[A-HJ-NPR-Z0-9]{17}$/i)]],
     make: ['', Validators.required],
     model: ['', Validators.required],
-    year: [null as number | null, [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
-    engine_capacity: [null as number | null, [Validators.required, Validators.min(0.1), Validators.max(20)]],
+    year: [
+      null as number | null,
+      [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)],
+    ],
+    engine_capacity: [
+      null as number | null,
+      [Validators.required, Validators.min(0.1), Validators.max(20)],
+    ],
     fuel_type: ['', Validators.required],
     current_mileage: [null as number | null, Validators.min(0)],
   });

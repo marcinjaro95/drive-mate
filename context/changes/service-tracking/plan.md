@@ -57,12 +57,14 @@ Extend `ScheduleViewComponent` with the full "Mark as done" interaction: expand/
 **Contract**:
 
 New signals added as class fields:
+
 - `expandedItem = signal<ScheduleItem | null>(null)` — which card is currently open; `null` means none
 - `isSaving = signal(false)` — disables form controls during the async save sequence
 - `saveError = signal<string | null>(null)` — inline error message if `createServiceRecord` throws
 - `mileageSyncWarning = signal(false)` — shown when `updateVehicle` fails; non-blocking
 
 Mark-done form (field `fb = inject(FormBuilder)` initialised before the form):
+
 - `service_date: string` — `Validators.required`; pre-filled with today as `YYYY-MM-DD`
 - `mileage: number | null` — `Validators.required`, `Validators.min(0)`; pre-filled with `vehicle().current_mileage ?? null`
 - `notes: string | null` — no validators (optional)
@@ -74,6 +76,7 @@ Mark-done form (field `fb = inject(FormBuilder)` initialised before the form):
 `cancelMarkDone()`: sets `expandedItem(null)`, clears `saveError`.
 
 `saveMarkDone()`:
+
 1. Return if `markDoneForm.invalid` or `isSaving()` is true.
 2. Set `isSaving(true)`, clear `saveError`.
 3. Call `createServiceRecord({ vehicle_id: vehicle()!.id, label: expandedItem()!.item, service_date, mileage, notes: notes || null })`.
@@ -112,12 +115,12 @@ The rules block includes: `- Use the service history to adjust "next_due_km" and
 
 **File**: `src/app/vehicles/schedule-view/schedule-view.html`
 
-
 **Intent**: Add a "Mark as done" button to each schedule card, a conditional inline form inside the expanded card, and one post-save banner (mileage sync warning). The regen prompt is handled by a `MatDialog` opened from the component class, not from the template.
 
 **Contract**:
 
 Inside the `@for (item of scheduleItems(); track item.item)` loop, after `</mat-card-content>`:
+
 - Add `<mat-card-actions>` with a `mat-button` "Mark as done" shown when `expandedItem()?.item !== item.item`.
 - Inside `mat-card-content`, add `@if (expandedItem()?.item === item.item)` block containing:
   - `<form [formGroup]="markDoneForm">` with:
@@ -129,6 +132,7 @@ Inside the `@for (item of scheduleItems(); track item.item)` loop, after `</mat-
   - Cancel button (`mat-button`, `[disabled]="isSaving()"`, calls `cancelMarkDone()`).
 
 After the `</div>` closing the `schedule-list`:
+
 - `@if (mileageSyncWarning())` banner: message "Service recorded, but odometer was not updated." + Dismiss `mat-button` (sets `mileageSyncWarning(false)`).
 
 #### 4. Component styles
@@ -205,7 +209,7 @@ After a successful save, replace the "Mark as done" button with a static non-int
 **Contract**: Add `savedItems = signal<Set<string>>(new Set())` alongside the existing four signals. In `saveMarkDone()`, after `this.expandedItem.set(null)`, append:
 
 ```ts
-this.savedItems.update(s => new Set([...s, item.item]));
+this.savedItems.update((s) => new Set([...s, item.item]));
 ```
 
 `item` is already a local snapshot at the top of `saveMarkDone()` — use that local, not `this.expandedItem()`.
@@ -223,13 +227,13 @@ this.savedItems.update(s => new Set([...s, item.item]));
 
 ```html
 @if (savedItems().has(item.item)) {
-  <mat-card-actions>
-    <span class="saved-label">Saved ✓</span>
-  </mat-card-actions>
+<mat-card-actions>
+  <span class="saved-label">Saved ✓</span>
+</mat-card-actions>
 } @else if (expandedItem()?.item !== item.item) {
-  <mat-card-actions>
-    <button mat-button (click)="openMarkDone(item)">Mark as done</button>
-  </mat-card-actions>
+<mat-card-actions>
+  <button mat-button (click)="openMarkDone(item)">Mark as done</button>
+</mat-card-actions>
 }
 ```
 
@@ -274,11 +278,11 @@ this.savedItems.update(s => new Set([...s, item.item]));
 4. Fill both fields and save — verify `service_records` row in Supabase, vehicle `current_mileage` updated
 5. Save a second record with lower mileage — verify `current_mileage` is NOT decreased
 6. Verify regen dialog opens after save; "Regenerate" triggers AI call and closes dialog; "Cancel" closes without regenerating
-8. After clicking "Regenerate", open DevTools → Network and confirm the `/api/ai` request body contains the "Service history" section with the newly saved record
-9. Fill notes and save — verify `notes` column populated in Supabase
-10. Click Cancel — verify no row created, form closes
-11. After a successful save, card shows "Saved ✓" — "Mark as done" is gone for that card
-12. Navigate away and back — "Saved ✓" state is gone; card shows "Mark as done" again
+7. After clicking "Regenerate", open DevTools → Network and confirm the `/api/ai` request body contains the "Service history" section with the newly saved record
+8. Fill notes and save — verify `notes` column populated in Supabase
+9. Click Cancel — verify no row created, form closes
+10. After a successful save, card shows "Saved ✓" — "Mark as done" is gone for that card
+11. Navigate away and back — "Saved ✓" state is gone; card shows "Mark as done" again
 
 ## Migration Notes
 

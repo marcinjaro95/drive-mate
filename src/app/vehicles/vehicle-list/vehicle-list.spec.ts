@@ -40,7 +40,10 @@ describe('VehicleListComponent — delete flow', () => {
         provideRouter([]),
         {
           provide: VehicleService,
-          useValue: { getVehicles: vi.fn().mockResolvedValue([vehicle]), deleteVehicle: deleteVehicleSpy },
+          useValue: {
+            getVehicles: vi.fn().mockResolvedValue([vehicle]),
+            deleteVehicle: deleteVehicleSpy,
+          },
         },
       ],
     });

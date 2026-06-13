@@ -4,7 +4,7 @@ researcher: Marcin Jarosz
 git_commit: 9ca2c2e7dda09f0181e9bd96f2e9420090e93e51
 branch: master
 repository: drive-mate
-topic: "VIN decoder API selection for EU/Polish-market vehicles"
+topic: 'VIN decoder API selection for EU/Polish-market vehicles'
 tags: [research, vin, external-api, eu-market, fr-001, fr-004, s03]
 status: complete
 last_updated: 2026-06-13
@@ -46,18 +46,18 @@ The `vin-car-add` slice is partially scaffolded already:
 
 ### 2. VIN API provider comparison
 
-| Provider | EU/PL coverage | Returns all 5 fields? | Free tier | Cheapest paid | Proxy required | Notes |
-|---|---|---|---|---|---|---|
-| **AutoRef.eu** | Yes — EU-native, 1,400+ manufacturers | Yes | 50 req/month | €19.99/month (5,000 req) | Yes | Best balance for solo dev; EU-native database; REST JSON |
-| **vindecodervehicle.com** | Yes — EU/global | Yes | None | €8.95/month (1,000 req) | Yes | Cheapest paid option; smaller/less-known; data quality unverified on PL VINs |
-| **Vincario (vindecoder.eu)** | Yes — strong EU+PL, Eastern Europe | Yes | 3 req/month | €49/month (100 req, €0.49/req) | Yes | ML-trained on national databases incl. Eastern Europe; GDPR-compliant; 3 free lookups allow ongoing spot checks |
-| **Auto.dev** | Partial — global, US-primary | Yes (fields exist, depth uncertain for EU) | 1,000 req/month | $0.004/req after free tier | Yes | Best free tier volume; EU/PL field depth unverified — test against Polish VINs before relying on it |
-| **NHTSA vPIC** | Partial — US primary | Make, model, year only (engine/fuel sparse for EU) | Unlimited free | Free | No (open CORS) | ~40–60% hit rate on Polish VINs; usable as a fallback layer; only provider safe to call from the browser client directly |
-| **VehicleDatabases** | Yes — EU from 1981 | Yes | 15 credits on signup | Contact for pricing | Yes | Pricing not public; no ongoing free tier |
-| **vindecoder.pl** | Yes — Polish-native | Yes | None | €50/month minimum invoice | Yes | Polish-native data quality; minimum €50/mo disqualifying for low traffic |
-| **Auto.dev** | Partial | Yes | 1,000 req/month | $0.004/req | Yes | |
-| **AutomotivAPI** | Yes — EU | Yes | None | €3.00/call + €590 one-off setup | Yes | €590 setup fee disqualifies for MVP |
-| **JATO VINView Pro** | Partial EU (no PL confirmed) | Yes | None | Enterprise | Yes | Enterprise contract; overkill |
+| Provider                     | EU/PL coverage                        | Returns all 5 fields?                              | Free tier            | Cheapest paid                   | Proxy required | Notes                                                                                                                    |
+| ---------------------------- | ------------------------------------- | -------------------------------------------------- | -------------------- | ------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **AutoRef.eu**               | Yes — EU-native, 1,400+ manufacturers | Yes                                                | 50 req/month         | €19.99/month (5,000 req)        | Yes            | Best balance for solo dev; EU-native database; REST JSON                                                                 |
+| **vindecodervehicle.com**    | Yes — EU/global                       | Yes                                                | None                 | €8.95/month (1,000 req)         | Yes            | Cheapest paid option; smaller/less-known; data quality unverified on PL VINs                                             |
+| **Vincario (vindecoder.eu)** | Yes — strong EU+PL, Eastern Europe    | Yes                                                | 3 req/month          | €49/month (100 req, €0.49/req)  | Yes            | ML-trained on national databases incl. Eastern Europe; GDPR-compliant; 3 free lookups allow ongoing spot checks          |
+| **Auto.dev**                 | Partial — global, US-primary          | Yes (fields exist, depth uncertain for EU)         | 1,000 req/month      | $0.004/req after free tier      | Yes            | Best free tier volume; EU/PL field depth unverified — test against Polish VINs before relying on it                      |
+| **NHTSA vPIC**               | Partial — US primary                  | Make, model, year only (engine/fuel sparse for EU) | Unlimited free       | Free                            | No (open CORS) | ~40–60% hit rate on Polish VINs; usable as a fallback layer; only provider safe to call from the browser client directly |
+| **VehicleDatabases**         | Yes — EU from 1981                    | Yes                                                | 15 credits on signup | Contact for pricing             | Yes            | Pricing not public; no ongoing free tier                                                                                 |
+| **vindecoder.pl**            | Yes — Polish-native                   | Yes                                                | None                 | €50/month minimum invoice       | Yes            | Polish-native data quality; minimum €50/mo disqualifying for low traffic                                                 |
+| **Auto.dev**                 | Partial                               | Yes                                                | 1,000 req/month      | $0.004/req                      | Yes            |                                                                                                                          |
+| **AutomotivAPI**             | Yes — EU                              | Yes                                                | None                 | €3.00/call + €590 one-off setup | Yes            | €590 setup fee disqualifies for MVP                                                                                      |
+| **JATO VINView Pro**         | Partial EU (no PL confirmed)          | Yes                                                | None                 | Enterprise                      | Yes            | Enterprise contract; overkill                                                                                            |
 
 ### 3. Architecture implications
 

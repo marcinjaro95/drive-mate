@@ -11,6 +11,7 @@ an item done — replacing the current fragile string-match on `label`. The sche
 ## Current State Analysis
 
 S-01 (`car-add-ai-schedule`) is complete and impl-reviewed. The current state:
+
 - `ScheduleItem` has no `id` field — items are identified only by the `item` string (free-form AI text)
 - `service_records.label` is set to `item.item` on mark-done (line 162 of `schedule-view.ts`) — a string match that silently breaks when AI rewording changes the text across regenerations
 - `savedItems = signal<Set<string>>(new Set())` is in-memory only; the set is never seeded from the DB, so done state resets on every reload
@@ -19,6 +20,7 @@ S-01 (`car-add-ai-schedule`) is complete and impl-reviewed. The current state:
 ## Desired End State
 
 After this plan:
+
 - Every `ScheduleItem` stored in `ai_schedule` JSONB carries a stable `id: string` UUID
 - `service_records` has a `schedule_item_id uuid` column populated on mark-done
 - `schedule-view.ts` loads service records unconditionally on init and seeds `savedItems` from `schedule_item_id` values
@@ -65,6 +67,7 @@ JSONB items. Update TypeScript models to reflect the new fields.
 existing JSONB schedule items that don't already have an `id` field.
 
 **Contract**:
+
 ```sql
 -- Stable UUID column for tracing a service record back to the schedule item that prompted it.
 -- Nullable: records predating this migration and manually created records have no linked item.
@@ -196,11 +199,7 @@ try {
   // non-blocking — done state will be empty; user can still mark items done
 }
 this.savedItems.set(
-  new Set(
-    loadedRecords
-      .map(r => r.schedule_item_id)
-      .filter((id): id is string => id !== null)
-  )
+  new Set(loadedRecords.map((r) => r.schedule_item_id).filter((id): id is string => id !== null)),
 );
 
 if (this.vehicle()!.ai_schedule?.length) {
@@ -285,6 +284,7 @@ with `savedItems().has(item.id)`. No other template changes needed.
 ### Unit Tests
 
 `src/app/core/ai-schedule/ai-schedule.service.spec.ts` additions:
+
 - `generateAndSave` returns items where each has `id: string` with non-zero length
 - Items filtered by source or urgency (already covered by existing specs) do not appear in result — UUID is only assigned to surviving items
 

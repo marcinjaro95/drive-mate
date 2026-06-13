@@ -17,13 +17,13 @@ Backfill missing test coverage for the AI schedule generation loop. Two post-imp
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-|---|---|---|---|
-| Cache-bypass assertion (cached ai_schedule path) | Out of Phase 1 scope | Low likelihood and outside the risk response table's mandate; deferred | Plan |
-| AbortError absorption | Include in component tests | Cheap single test that guards a subtle absorption that would surface as a visible error if refactored away | Plan |
-| Whitespace-only DOM assertion | Positive DOM assertion only | Template renders unconditionally — whitespace protection is a service concern; component test asserts all rendered source texts are non-empty | Plan |
-| `choices: null` vs `choices: []` | Both as separate tests | Documents two distinct free-tier model failure shapes; guards against single-variant refactors | Plan |
-| Component test depth | All generation-flow states (8 tests) | Highest-churn component (27 commits/30d); covering all terminal states costs ~3 extra tests vs strict risk-table minimum | Plan |
+| Decision                                         | Choice                               | Why (1 sentence)                                                                                                                              | Source |
+| ------------------------------------------------ | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Cache-bypass assertion (cached ai_schedule path) | Out of Phase 1 scope                 | Low likelihood and outside the risk response table's mandate; deferred                                                                        | Plan   |
+| AbortError absorption                            | Include in component tests           | Cheap single test that guards a subtle absorption that would surface as a visible error if refactored away                                    | Plan   |
+| Whitespace-only DOM assertion                    | Positive DOM assertion only          | Template renders unconditionally — whitespace protection is a service concern; component test asserts all rendered source texts are non-empty | Plan   |
+| `choices: null` vs `choices: []`                 | Both as separate tests               | Documents two distinct free-tier model failure shapes; guards against single-variant refactors                                                | Plan   |
+| Component test depth                             | All generation-flow states (8 tests) | Highest-churn component (27 commits/30d); covering all terminal states costs ~3 extra tests vs strict risk-table minimum                      | Plan   |
 
 ## Scope
 
@@ -37,11 +37,11 @@ Tests only — two existing spec files, no new files. Service tests extend the e
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. Service unit test gap-fill | 7 new tests covering envelope/items guards, null/whitespace source, invalid urgency | `makeEnvelope()` type coercion for null/object cases — confirm the helper produces the intended inner JSON |
-| 2. Component generation-flow tests | 8 new tests covering error card, AbortError absorption, skeleton, empty state, source attribution | Angular 21 signal + async `whenStable()` timing — skeleton test must use direct signal mutation |
-| 3. Cookbook update | §6.1 and §6.4 filled; §3 Phase 1 complete | None — prose only |
+| Phase                              | What it delivers                                                                                  | Key risk                                                                                                   |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| 1. Service unit test gap-fill      | 7 new tests covering envelope/items guards, null/whitespace source, invalid urgency               | `makeEnvelope()` type coercion for null/object cases — confirm the helper produces the intended inner JSON |
+| 2. Component generation-flow tests | 8 new tests covering error card, AbortError absorption, skeleton, empty state, source attribution | Angular 21 signal + async `whenStable()` timing — skeleton test must use direct signal mutation            |
+| 3. Cookbook update                 | §6.1 and §6.4 filled; §3 Phase 1 complete                                                         | None — prose only                                                                                          |
 
 **Prerequisites:** Passing `npm test` baseline on master (17 service + 3 component = 20 tests green).  
 **Estimated effort:** ~1–2 sessions; Phase 1 is mechanical, Phase 2 requires TestBed setup iteration.

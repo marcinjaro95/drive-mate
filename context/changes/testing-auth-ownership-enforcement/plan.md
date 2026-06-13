@@ -147,11 +147,11 @@ fake `AuthService` with:
 
 Three test cases:
 
-| Case | Stub state | Navigate to | Assert |
-|------|------------|-------------|--------|
-| Unauthenticated | `initialized` resolved, `isAuthenticated` → false | `/dashboard` | `router.url` is `/login` |
-| Authenticated | `initialized` resolved, `isAuthenticated` → true | `/dashboard` | `router.url` is `/dashboard` |
-| Pre-init | `initialized` is a pending Promise, then resolves as unauthenticated | `/dashboard` | guard waits; after resolution `router.url` is `/login` |
+| Case            | Stub state                                                           | Navigate to  | Assert                                                 |
+| --------------- | -------------------------------------------------------------------- | ------------ | ------------------------------------------------------ |
+| Unauthenticated | `initialized` resolved, `isAuthenticated` → false                    | `/dashboard` | `router.url` is `/login`                               |
+| Authenticated   | `initialized` resolved, `isAuthenticated` → true                     | `/dashboard` | `router.url` is `/dashboard`                           |
+| Pre-init        | `initialized` is a pending Promise, then resolves as unauthenticated | `/dashboard` | guard waits; after resolution `router.url` is `/login` |
 
 The `auth.service.spec.ts:6–38` mock builder (`makeMockSupabase`) is a useful reference pattern
 but should NOT be imported here — the guard test only needs `AuthService`, not `SupabaseService`.
@@ -226,12 +226,14 @@ compile and pass; (b) add two new ownership test cases that confirm the guard fi
 **Contract**:
 
 Add to `TestBed.configureTestingModule` providers:
+
 ```typescript
 {
   provide: AuthService,
   useValue: { currentUser: signal<User | null>({ id: 'user-abc' } as User) },
 }
 ```
+
 The `id: 'user-abc'` matches `makeVehicle()`'s default `user_id`, so no existing test needs
 modification.
 
@@ -299,6 +301,7 @@ integration tests.
 the Angular builder) does not pick up files that require a running Supabase instance.
 
 **Contract**: Define a standalone Vitest config that:
+
 - sets `environment: 'node'`
 - includes only `tests/integration/**/*.spec.ts`
 - sets `testTimeout` to at least 30000 ms (real DB operations)
@@ -313,6 +316,7 @@ Do not extend or merge with the Angular builder's config.
 **Intent**: Give the developer the values they need to run integration tests.
 
 **Contract**: `.env.test.local` should contain:
+
 ```
 SUPABASE_URL=http://127.0.0.1:54321
 SUPABASE_SERVICE_ROLE_KEY=<value from `supabase status`>
@@ -332,6 +336,7 @@ all four CRUD operations on both tables, and that own-user operations succeed (p
 **Contract**:
 
 `beforeAll`:
+
 1. Create a service-role client using `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`.
 2. Create User A (`userA@test.local`) and User B (`userB@test.local`) via
    `serviceClient.auth.admin.createUser(...)` with `email_confirm: true`.
@@ -345,14 +350,14 @@ all four CRUD operations on both tables, and that own-user operations succeed (p
 
 Test matrix (`describe('vehicles table')` and `describe('service_records table')` blocks):
 
-| Test | Client | Operation | Assert |
-|------|--------|-----------|--------|
-| cross-user SELECT | User B session | `.select().eq('id', userARowId)` | `data.length === 0` |
+| Test              | Client         | Operation                             | Assert                                 |
+| ----------------- | -------------- | ------------------------------------- | -------------------------------------- |
+| cross-user SELECT | User B session | `.select().eq('id', userARowId)`      | `data.length === 0`                    |
 | cross-user INSERT | User B session | `.insert({ user_id: userA.id, ... })` | `error` is non-null (policy violation) |
-| cross-user UPDATE | User B session | `.update({...}).eq('id', userARowId)` | `data.length === 0` or `count === 0` |
-| cross-user DELETE | User B session | `.delete().eq('id', userARowId)` | `data.length === 0` or `count === 0` |
-| own-user SELECT | User A session | `.select().eq('id', userARowId)` | `data.length === 1` |
-| own-user INSERT | User A session | `.insert({ user_id: userA.id, ... })` | `error` is null |
+| cross-user UPDATE | User B session | `.update({...}).eq('id', userARowId)` | `data.length === 0` or `count === 0`   |
+| cross-user DELETE | User B session | `.delete().eq('id', userARowId)`      | `data.length === 0` or `count === 0`   |
+| own-user SELECT   | User A session | `.select().eq('id', userARowId)`      | `data.length === 1`                    |
+| own-user INSERT   | User A session | `.insert({ user_id: userA.id, ... })` | `error` is null                        |
 
 The `service_records` table has a FK to `vehicles.id`; the own-user INSERT test must reference a
 valid `vehicle_id` from the vehicle row created in `beforeAll`.

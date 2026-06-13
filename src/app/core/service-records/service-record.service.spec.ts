@@ -182,7 +182,9 @@ describe('ServiceRecordService', () => {
       const pgError = { message: 'update error', code: '42501' };
       mockFrom.mockReturnValue(createMockBuilder({ data: null, error: pgError }));
 
-      await expect(service.updateServiceRecord('sr1', { label: 'Tyre rotation' })).rejects.toEqual(pgError);
+      await expect(service.updateServiceRecord('sr1', { label: 'Tyre rotation' })).rejects.toEqual(
+        pgError,
+      );
     });
   });
 });

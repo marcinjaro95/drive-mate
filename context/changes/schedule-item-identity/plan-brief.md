@@ -28,14 +28,14 @@ values — so done state persists across navigations and sign-out/sign-in cycles
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| --- | --- | --- | --- |
-| Identity approach | UUID in JSONB (not a normalized table) | Avoids regeneration complexity — old service records become a historical UUID snapshot, no FK breakage | Frame / Plan |
-| UUID assignment point | `generateAndSave()` after source/urgency filter | Only surviving items get an identity; no UUIDs wasted on items that don't reach the DB | Plan |
-| Backfill strategy | SQL migration with `jsonb_build_object('id', gen_random_uuid()::text)` | Existing vehicles get stable IDs at migration time — no client-side patching required | Plan |
-| Done state seeding | Load `getServiceRecords` unconditionally on `ngOnInit` | Schedule view always reflects DB truth; avoids the early-return path that skipped record loading | Plan |
-| Regeneration semantics | No change — old `schedule_item_id` values are historical snapshots | Correct: the record linked to an item that *existed at that time*; new schedule items get new UUIDs | Frame |
-| `label` field on service_records | Kept alongside `schedule_item_id` | Useful for human-readable service history display (FR-007); both fields can coexist | Plan |
+| Decision                         | Choice                                                                 | Why (1 sentence)                                                                                       | Source       |
+| -------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------ |
+| Identity approach                | UUID in JSONB (not a normalized table)                                 | Avoids regeneration complexity — old service records become a historical UUID snapshot, no FK breakage | Frame / Plan |
+| UUID assignment point            | `generateAndSave()` after source/urgency filter                        | Only surviving items get an identity; no UUIDs wasted on items that don't reach the DB                 | Plan         |
+| Backfill strategy                | SQL migration with `jsonb_build_object('id', gen_random_uuid()::text)` | Existing vehicles get stable IDs at migration time — no client-side patching required                  | Plan         |
+| Done state seeding               | Load `getServiceRecords` unconditionally on `ngOnInit`                 | Schedule view always reflects DB truth; avoids the early-return path that skipped record loading       | Plan         |
+| Regeneration semantics           | No change — old `schedule_item_id` values are historical snapshots     | Correct: the record linked to an item that _existed at that time_; new schedule items get new UUIDs    | Frame        |
+| `label` field on service_records | Kept alongside `schedule_item_id`                                      | Useful for human-readable service history display (FR-007); both fields can coexist                    | Plan         |
 
 ## Scope
 
@@ -53,11 +53,11 @@ the `savedItems` Set. No new service or API surface needed — three layers upda
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. DB Migration + Models | `schedule_item_id` column; JSONB UUID backfill; TS type updates | Backfill SQL must handle null/non-array ai_schedule rows without erroring |
-| 2. AiScheduleService UUID Injection | UUIDs on every generated item; spec coverage | TypeScript must accept `crypto.randomUUID()` without an import |
-| 3. ScheduleView — Cross-session Done State | Persistent done badges; UUID-keyed service record links | Double service-record load on first visit (mitigated by passing pre-loaded records to generateSchedule) |
+| Phase                                      | What it delivers                                                | Key risk                                                                                                |
+| ------------------------------------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| 1. DB Migration + Models                   | `schedule_item_id` column; JSONB UUID backfill; TS type updates | Backfill SQL must handle null/non-array ai_schedule rows without erroring                               |
+| 2. AiScheduleService UUID Injection        | UUIDs on every generated item; spec coverage                    | TypeScript must accept `crypto.randomUUID()` without an import                                          |
+| 3. ScheduleView — Cross-session Done State | Persistent done badges; UUID-keyed service record links         | Double service-record load on first visit (mitigated by passing pre-loaded records to generateSchedule) |
 
 **Prerequisites:** S-01 (`car-add-ai-schedule`) complete — ✓  
 **Estimated effort:** ~1–2 sessions across 3 phases

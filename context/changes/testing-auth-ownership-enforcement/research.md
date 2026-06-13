@@ -4,7 +4,7 @@ researcher: Marcin Jarosz
 git_commit: 14f7c420630a272fc66030de5fbd3112173b075d
 branch: master
 repository: drive-mate
-topic: "Auth guard coverage, RLS enforcement at DB level, and app-layer ownership before AI proxy call (Phase 2 rollout)"
+topic: 'Auth guard coverage, RLS enforcement at DB level, and app-layer ownership before AI proxy call (Phase 2 rollout)'
 tags: [research, auth, rls, supabase, angular-router, ai-schedule, ownership, testing]
 status: complete
 last_updated: 2026-06-13
@@ -76,12 +76,12 @@ The guard correctly handles the pre-initialization window. `auth.initialized` is
 
 **File**: `src/app/core/auth/auth.service.ts`
 
-| Property | Type | Line | Notes |
-|---|---|---|---|
-| `currentUser` | `Signal<User \| null>` | 10 | readonly |
-| `isAuthenticated` | `Computed<boolean>` | 11 | `currentUser !== null` |
-| `isLoading` | `Signal<boolean>` | 12 | `true` until init resolves |
-| `initialized` | `Promise<void>` | 14 | resolves after `getSession()` |
+| Property          | Type                   | Line | Notes                         |
+| ----------------- | ---------------------- | ---- | ----------------------------- |
+| `currentUser`     | `Signal<User \| null>` | 10   | readonly                      |
+| `isAuthenticated` | `Computed<boolean>`    | 11   | `currentUser !== null`        |
+| `isLoading`       | `Signal<boolean>`      | 12   | `true` until init resolves    |
+| `initialized`     | `Promise<void>`        | 14   | resolves after `getSession()` |
 
 **Error contract (from `lessons.md`)**: `signIn`/`signUp` return `AuthError | null`; they do **not** throw. Data services throw on error. The guard test must not mix these patterns.
 
@@ -91,15 +91,15 @@ The guard correctly handles the pre-initialization window. `auth.initialized` is
 
 **File**: `src/app/app.routes.ts`
 
-| Route | Component | Guard |
-|---|---|---|
-| `/login` | `LoginComponent` | none (public) |
-| `/signup` | `SignupComponent` | none (public) |
-| `/` (root) | — | `authGuard` (line 15) |
-| `/dashboard` | `DashboardComponent` | inherited |
-| `/` (empty, under root) | `VehicleListComponent` | inherited |
-| `/vehicles/new` | `VehicleAddComponent` | inherited |
-| `/vehicles/:id` | `ScheduleViewComponent` | inherited |
+| Route                   | Component               | Guard                 |
+| ----------------------- | ----------------------- | --------------------- |
+| `/login`                | `LoginComponent`        | none (public)         |
+| `/signup`               | `SignupComponent`       | none (public)         |
+| `/` (root)              | —                       | `authGuard` (line 15) |
+| `/dashboard`            | `DashboardComponent`    | inherited             |
+| `/` (empty, under root) | `VehicleListComponent`  | inherited             |
+| `/vehicles/new`         | `VehicleAddComponent`   | inherited             |
+| `/vehicles/:id`         | `ScheduleViewComponent` | inherited             |
 
 No unprotected routes detected for protected content. All dashboard-area routes inherit from the root `/` parent. The guard is applied once (line 15) and covers all children.
 
@@ -144,20 +144,20 @@ Lines 73–83: Four policies on service_records (same pattern):
 
 **Policy matrix**:
 
-| Table | SELECT | INSERT | UPDATE | DELETE |
-|---|---|---|---|---|
-| `vehicles` | `vehicles_select` | `vehicles_insert` | `vehicles_update` | `vehicles_delete` |
+| Table             | SELECT                   | INSERT                   | UPDATE                   | DELETE                   |
+| ----------------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ |
+| `vehicles`        | `vehicles_select`        | `vehicles_insert`        | `vehicles_update`        | `vehicles_delete`        |
 | `service_records` | `service_records_select` | `service_records_insert` | `service_records_update` | `service_records_delete` |
 
 No missing policies. All four operations are covered on both tables. `service_records` carries its own `user_id` column (denormalized, not derived via `vehicle_id` FK), so its RLS policies are self-contained — no JOIN to `vehicles` needed.
 
 #### Existing mock tests (insufficient for Risk #4)
 
-| File | Lines | What it asserts |
-|---|---|---|
-| `src/app/core/vehicles/vehicle.service.spec.ts` | 60–77 | `user_id` stamped from `AuthService` on create — client-side call assertion |
-| `src/app/core/service-records/service-record.service.spec.ts` | 59–75 | same pattern for service records |
-| `src/app/core/service-records/service-record.service.spec.ts` | 145–153 | `.eq('user_id', ...)` called on read — client-side call assertion |
+| File                                                          | Lines   | What it asserts                                                             |
+| ------------------------------------------------------------- | ------- | --------------------------------------------------------------------------- |
+| `src/app/core/vehicles/vehicle.service.spec.ts`               | 60–77   | `user_id` stamped from `AuthService` on create — client-side call assertion |
+| `src/app/core/service-records/service-record.service.spec.ts` | 59–75   | same pattern for service records                                            |
+| `src/app/core/service-records/service-record.service.spec.ts` | 145–153 | `.eq('user_id', ...)` called on read — client-side call assertion           |
 
 These confirm the client sends the right query. They do **not** confirm the database rejects a cross-user query. A dropped or misconfigured RLS policy passes every one of these tests.
 
@@ -218,10 +218,10 @@ The component's normal UI path is safe: `getVehicle` relies on RLS, which return
 
 **File**: `src/app/core/vehicles/vehicle.service.ts`
 
-| Method | user_id filter | Line |
-|---|---|---|
-| `getVehicle(id)` | none — relies on RLS | 24–32 |
-| `updateVehicle(id, patch)` | `.eq('user_id', user.id)` explicit | 54 |
+| Method                     | user_id filter                     | Line  |
+| -------------------------- | ---------------------------------- | ----- |
+| `getVehicle(id)`           | none — relies on RLS               | 24–32 |
+| `updateVehicle(id, patch)` | `.eq('user_id', user.id)` explicit | 54    |
 
 This means the DB write in `generateAndSave` (via `updateVehicle`) IS protected by both RLS and an explicit client-side filter. But the AI proxy call at line 12 happens BEFORE the write — the proxy is invoked with no protection.
 
@@ -266,12 +266,14 @@ Then the unit test verifies: spy on `fetch`, call `generateAndSave` with a vehic
 ## Code References
 
 **Auth guard:**
+
 - `src/app/core/auth/auth.guard.ts:5–12` — guard implementation
 - `src/app/app.routes.ts:15` — guard applied to root `/` route; lines 18–41 for child routes
 - `src/app/core/auth/auth.service.ts:10–26` — auth state signals and initialization promise
 - `src/app/core/auth/auth.service.spec.ts:12–39` — mock builder available for reuse in guard tests
 
 **RLS:**
+
 - `supabase/migrations/20260604000000_init_schema.sql:36–83` — RLS ENABLE + all 8 policies
 - `supabase/config.toml:5,10,29,65` — local instance config
 - `src/app/core/vehicles/vehicle.service.ts:24–32` — `getVehicle` (RLS-only, no client-side user_id filter)
@@ -279,6 +281,7 @@ Then the unit test verifies: spy on `fetch`, call `generateAndSave` with a vehic
 - `src/app/core/service-records/service-record.service.spec.ts:145–153` — existing mock ownership test
 
 **AI schedule ownership:**
+
 - `src/app/core/ai-schedule/ai-schedule.service.ts:11–35` — `generateAndSave` (proxy call at line 12, no ownership check)
 - `src/app/vehicles/schedule-view/schedule-view.ts:67–74` — vehicle ID from route params, no re-verify
 - `src/app/core/vehicles/vehicle.service.ts:54` — `updateVehicle` explicit `.eq('user_id', ...)` (write protected)

@@ -1,36 +1,36 @@
 <div class="page-content">
-@if (isLoading()) {
-  <div class="spinner-container">
-    <mat-progress-spinner mode="indeterminate" />
-  </div>
-} @else if (error()) {
-  <p class="error-message">{{ error() }}</p>
-} @else if (vehicles().length === 0) {
-  <div class="empty-state">
-    <p>No cars added yet.</p>
-    <button mat-raised-button color="primary" (click)="addCar()">Add your first car</button>
-  </div>
-} @else {
-  <div class="vehicle-list">
-    @for (v of vehicles(); track v.id) {
-      <mat-card class="vehicle-card" (click)="openVehicle(v.id)">
-        <mat-card-header>
-          <mat-card-title>{{ v.year }} {{ v.make }} {{ v.model }}</mat-card-title>
-          <mat-card-subtitle>{{ v.engine_capacity }}L {{ v.fuel_type }}</mat-card-subtitle>
-        </mat-card-header>
-        @if (v.current_mileage !== null) {
-          <mat-card-content>
-            <p>{{ v.current_mileage | number }} km</p>
-          </mat-card-content>
-        }
-        <mat-card-actions>
-          <button mat-stroked-button color="warn" (click)="deleteCar($event, v)">Delete</button>
-        </mat-card-actions>
-      </mat-card>
-    }
-    <div class="add-car-row">
-      <button mat-raised-button color="primary" (click)="addCar()">Add another car</button>
+  @if (isLoading()) {
+    <div class="spinner-container">
+      <mat-progress-spinner mode="indeterminate" />
     </div>
-  </div>
-}
+  } @else if (error()) {
+    <p class="error-message">{{ error() }}</p>
+  } @else if (vehicles().length === 0) {
+    <div class="empty-state">
+      <p>No cars added yet.</p>
+      <button mat-raised-button color="primary" (click)="addCar()">Add your first car</button>
+    </div>
+  } @else {
+    <div class="vehicle-list">
+      @for (v of vehicles(); track v.id) {
+        <mat-card class="vehicle-card" (click)="openVehicle(v.id)">
+          <mat-card-header>
+            <mat-card-title>{{ v.year }} {{ v.make }} {{ v.model }}</mat-card-title>
+            <mat-card-subtitle>{{ v.engine_capacity }}L {{ v.fuel_type }}</mat-card-subtitle>
+          </mat-card-header>
+          @if (v.current_mileage !== null) {
+            <mat-card-content>
+              <p>{{ v.current_mileage | number }} km</p>
+            </mat-card-content>
+          }
+          <mat-card-actions>
+            <button mat-stroked-button color="warn" (click)="deleteCar($event, v)">Delete</button>
+          </mat-card-actions>
+        </mat-card>
+      }
+      <div class="add-car-row">
+        <button mat-raised-button color="primary" (click)="addCar()">Add another car</button>
+      </div>
+    </div>
+  }
 </div>

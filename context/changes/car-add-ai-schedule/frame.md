@@ -1,6 +1,6 @@
 # Frame Brief: AI Schedule Item Identity + Traceability
 
-> Framing step before /10x-plan. This document captures what is *actually*
+> Framing step before /10x-plan. This document captures what is _actually_
 > at issue, separated from what was initially assumed.
 
 ## Reported Observation
@@ -38,12 +38,12 @@ The observation could originate at any of these dimensions:
 
 ## Hypothesis Investigation
 
-| Hypothesis | Evidence | Verdict |
-| --- | --- | --- |
-| **H-A: String-match is the only identity** | `schedule-item.model.ts:3-10` — no `id` field. `ai-schedule.service.ts:46-74` — prompt produces free-form item names, no fixed enum. `schedule-view.ts:162` — `label: item.item`. Template commit history: `track item.item` → `track $index` as defensive refactor ("duplicate label safety"). | STRONG |
-| **H-B: JSONB blocks per-item addressability** ← initial framing | True: JSONB is an atomic blob; any mutation requires reading the full array, splicing, and writing back. No DB-level address per item. | STRONG |
-| **H-C: Done state is derivable from existing data** | `schedule-view.ts:66-87` — `ngOnInit` does NOT call `getServiceRecords`. `service-record.service.ts:13-23` — `getServiceRecords` returns full records incl. `label`. `savedItems` signal is never seeded from DB on load — only populated within the session. Zero schema changes needed to derive cross-session done state. | STRONG |
-| **H-D: Normalized table creates regeneration complexity** | `ai-schedule.service.ts:30` — `updateVehicle({ ai_schedule: filtered })` is a full atomic overwrite. Three regeneration strategies with a table each have hard costs: DELETE+re-insert loses FK links; soft-delete requires audit overhead; merge-by-identity still depends on the same fragile string match. | STRONG |
+| Hypothesis                                                      | Evidence                                                                                                                                                                                                                                                                                                                     | Verdict |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| **H-A: String-match is the only identity**                      | `schedule-item.model.ts:3-10` — no `id` field. `ai-schedule.service.ts:46-74` — prompt produces free-form item names, no fixed enum. `schedule-view.ts:162` — `label: item.item`. Template commit history: `track item.item` → `track $index` as defensive refactor ("duplicate label safety").                              | STRONG  |
+| **H-B: JSONB blocks per-item addressability** ← initial framing | True: JSONB is an atomic blob; any mutation requires reading the full array, splicing, and writing back. No DB-level address per item.                                                                                                                                                                                       | STRONG  |
+| **H-C: Done state is derivable from existing data**             | `schedule-view.ts:66-87` — `ngOnInit` does NOT call `getServiceRecords`. `service-record.service.ts:13-23` — `getServiceRecords` returns full records incl. `label`. `savedItems` signal is never seeded from DB on load — only populated within the session. Zero schema changes needed to derive cross-session done state. | STRONG  |
+| **H-D: Normalized table creates regeneration complexity**       | `ai-schedule.service.ts:30` — `updateVehicle({ ai_schedule: filtered })` is a full atomic overwrite. Three regeneration strategies with a table each have hard costs: DELETE+re-insert loses FK links; soft-delete requires audit overhead; merge-by-identity still depends on the same fragile string match.                | STRONG  |
 
 ## Narrowing Signals
 
@@ -72,7 +72,7 @@ The initial framing (JSONB is the problem) is partially correct: JSONB prevents 
 identity. But the proposed solution (full table normalization) doesn't resolve the
 identity problem on its own — it merely relocates it. All three regeneration strategies
 for a normalized table still require either losing FK links on regeneration or re-solving
-the identity problem via merge-by-name. 
+the identity problem via merge-by-name.
 
 A lighter path resolves the identity problem with less regeneration complexity: **add a
 generated UUID to `ScheduleItem` (persisted inside the JSONB) and a `schedule_item_id`

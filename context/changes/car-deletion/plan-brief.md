@@ -16,26 +16,28 @@ Users can delete a car from both the vehicle list (per-card Delete button) and t
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| --- | --- | --- | --- |
-| Where delete button appears | Both list card + schedule-view | Power users skip navigating into a car just to delete it | Plan |
-| Confirmation UX | MatDialog modal | Standard Material pattern; clear focus surface with no ambiguity | Plan |
-| Cascade warning copy | Explicit — mentions service records | Users deserve informed consent before permanent data loss | Plan |
-| Post-delete from list | Remove card in-place via signal | No network round-trip; matches existing signals pattern in the list | Plan |
-| Post-delete from detail | Navigate to /dashboard | Avoids showing stale data on a page for a vehicle that no longer exists | Plan |
-| Error display | Inline in the dialog | User stays in context and can retry without reopening the dialog | Plan |
-| Who owns the async lifecycle | ConfirmDialogComponent | Keeps loading + error state co-located; avoids splitting state across host and dialog | Plan |
-| Test scope | Component tests only; skip ConfirmDialogComponent spec | Tests the integration that matters; dialog is pure UI | Plan |
+| Decision                     | Choice                                                 | Why (1 sentence)                                                                      | Source |
+| ---------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------- | ------ |
+| Where delete button appears  | Both list card + schedule-view                         | Power users skip navigating into a car just to delete it                              | Plan   |
+| Confirmation UX              | MatDialog modal                                        | Standard Material pattern; clear focus surface with no ambiguity                      | Plan   |
+| Cascade warning copy         | Explicit — mentions service records                    | Users deserve informed consent before permanent data loss                             | Plan   |
+| Post-delete from list        | Remove card in-place via signal                        | No network round-trip; matches existing signals pattern in the list                   | Plan   |
+| Post-delete from detail      | Navigate to /dashboard                                 | Avoids showing stale data on a page for a vehicle that no longer exists               | Plan   |
+| Error display                | Inline in the dialog                                   | User stays in context and can retry without reopening the dialog                      | Plan   |
+| Who owns the async lifecycle | ConfirmDialogComponent                                 | Keeps loading + error state co-located; avoids splitting state across host and dialog | Plan   |
+| Test scope                   | Component tests only; skip ConfirmDialogComponent spec | Tests the integration that matters; dialog is pure UI                                 | Plan   |
 
 ## Scope
 
 **In scope:**
+
 - New `ConfirmDialogComponent` in `src/app/shared/confirm-dialog/`
 - Delete button on each vehicle card in `VehicleListComponent`
 - Delete car button in vehicle header in `ScheduleViewComponent`
 - Vitest specs for both host components
 
 **Out of scope:**
+
 - App-layer service-record deletion (Postgres cascade handles it)
 - MatSnackBar success toast
 - Soft delete / undo
@@ -50,12 +52,12 @@ The delete button on the list card calls `event.stopPropagation()` to prevent th
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. ConfirmDialogComponent | Reusable dialog with loading + error lifecycle | MatDialog setup / animation provider already required |
-| 2. Delete on VehicleListComponent | Delete button on each card; signal mutation on success | event.stopPropagation() needed to prevent card navigation |
-| 3. Delete on ScheduleViewComponent | Delete button in vehicle header; navigation on success | Must guard against null vehicle signal |
-| 4. Tests | Vitest specs for both host component delete flows | MatDialog stub setup in TestBed |
+| Phase                              | What it delivers                                       | Key risk                                                  |
+| ---------------------------------- | ------------------------------------------------------ | --------------------------------------------------------- |
+| 1. ConfirmDialogComponent          | Reusable dialog with loading + error lifecycle         | MatDialog setup / animation provider already required     |
+| 2. Delete on VehicleListComponent  | Delete button on each card; signal mutation on success | event.stopPropagation() needed to prevent card navigation |
+| 3. Delete on ScheduleViewComponent | Delete button in vehicle header; navigation on success | Must guard against null vehicle signal                    |
+| 4. Tests                           | Vitest specs for both host component delete flows      | MatDialog stub setup in TestBed                           |
 
 **Prerequisites:** `provideAnimationsAsync()` is already in `app.config.ts`. No new providers needed.
 **Estimated effort:** ~1 session across 4 phases.

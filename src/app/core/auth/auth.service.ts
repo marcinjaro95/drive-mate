@@ -14,7 +14,8 @@ export class AuthService {
   readonly initialized: Promise<void>;
 
   constructor(private readonly supabase: SupabaseService) {
-    this.initialized = this.supabase.client.auth.getSession()
+    this.initialized = this.supabase.client.auth
+      .getSession()
       .then(({ data }) => {
         this._currentUser.set(data.session?.user ?? null);
       })

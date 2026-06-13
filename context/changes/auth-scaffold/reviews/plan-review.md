@@ -1,4 +1,5 @@
 <!-- PLAN-REVIEW-REPORT -->
+
 # Plan Review: Auth Scaffold Implementation Plan
 
 - **Plan**: context/changes/auth-scaffold/plan.md
@@ -9,13 +10,13 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| End-State Alignment | PASS |
-| Lean Execution | PASS |
-| Architectural Fitness | PASS |
-| Blind Spots | WARNING |
-| Plan Completeness | WARNING |
+| Dimension             | Verdict |
+| --------------------- | ------- |
+| End-State Alignment   | PASS    |
+| Lean Execution        | PASS    |
+| Architectural Fitness | PASS    |
+| Blind Spots           | WARNING |
+| Plan Completeness     | WARNING |
 
 ## Grounding
 
@@ -59,7 +60,7 @@
 - **Impact**: 🏃 LOW — quick decision; fix is obvious and narrowly scoped
 - **Dimension**: Plan Completeness
 - **Location**: Critical Implementation Details
-- **Detail**: "onAuthStateChange is the exclusive updater of currentUser" — but the constructor also sets _currentUser directly from getSession(). Overstated exclusivity would confuse future readers.
+- **Detail**: "onAuthStateChange is the exclusive updater of currentUser" — but the constructor also sets \_currentUser directly from getSession(). Overstated exclusivity would confuse future readers.
 - **Fix**: Scope the claim to "after initialization".
 - **Decision**: FIXED — scoped via the F2 fix ("after initialization" wording added)
 

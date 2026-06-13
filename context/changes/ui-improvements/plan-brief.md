@@ -16,15 +16,15 @@ Every screen shares a unified visual language: deep-blue primary color (`#1565C0
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| --- | --- | --- | --- |
-| Material theme approach | Custom M3 palette via `@angular/material` | Full brand ownership with consistent token propagation across all Material components | Plan |
-| Primary brand color | Deep blue `#1565C0` / `mat.$blue-palette` | Trustworthy automotive feel with high contrast on white | Plan |
-| Token system | CSS custom properties in `styles.scss` | Native CSS, DevTools-inspectable, works with Angular Material M3 tokens at runtime | Plan |
-| Navigation fix | In-page breadcrumb at top of each child component | Avoids parent-child signal complexity; fixes the most visible UX bug (back-link at bottom of schedule view) | Plan |
-| Auth branding | Text wordmark above form card | High visual impact on first-touch screen with zero asset complexity | Plan |
-| Mobile strategy | Verify all screens at 375px + fix any overflow | PRD NFR requires 375px — skipping would be a guardrail violation | Plan |
-| Done criteria | Visual consistency checklist + 375px pass | Clear, testable exit gate that prevents infinite polish | Plan |
+| Decision                | Choice                                            | Why (1 sentence)                                                                                            | Source |
+| ----------------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------ |
+| Material theme approach | Custom M3 palette via `@angular/material`         | Full brand ownership with consistent token propagation across all Material components                       | Plan   |
+| Primary brand color     | Deep blue `#1565C0` / `mat.$blue-palette`         | Trustworthy automotive feel with high contrast on white                                                     | Plan   |
+| Token system            | CSS custom properties in `styles.scss`            | Native CSS, DevTools-inspectable, works with Angular Material M3 tokens at runtime                          | Plan   |
+| Navigation fix          | In-page breadcrumb at top of each child component | Avoids parent-child signal complexity; fixes the most visible UX bug (back-link at bottom of schedule view) | Plan   |
+| Auth branding           | Text wordmark above form card                     | High visual impact on first-touch screen with zero asset complexity                                         | Plan   |
+| Mobile strategy         | Verify all screens at 375px + fix any overflow    | PRD NFR requires 375px — skipping would be a guardrail violation                                            | Plan   |
+| Done criteria           | Visual consistency checklist + 375px pass         | Clear, testable exit gate that prevents infinite polish                                                     | Plan   |
 
 ## Scope
 
@@ -38,14 +38,14 @@ Every screen shares a unified visual language: deep-blue primary color (`#1565C0
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Design System Foundation | Custom M3 theme + CSS token vocabulary in `styles.scss` | M3 theming API in Angular Material 21 requires verification against actual module exports |
-| 2. Navigation Shell | Branded dashboard header + back-links at top of deep pages | `dashboard.scss` must use correct M3 surface token for header color |
-| 3. Auth Pages | DriveMate wordmark on login + signup | None — purely additive HTML/SCSS |
-| 4. Vehicle Pages | SCSS for vehicle-list + vehicle-add with layout tokens | Missing `styleUrl` in two `@Component` decorators is easy to forget |
-| 5. Schedule View Polish | All hardcoded hex values migrated to tokens | `!important` on chip colors must be preserved in token form |
-| 6. Mobile + Consistency | 375px verification + visual checklist sign-off | May discover minor layout issues requiring small SCSS tweaks |
+| Phase                       | What it delivers                                           | Key risk                                                                                  |
+| --------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1. Design System Foundation | Custom M3 theme + CSS token vocabulary in `styles.scss`    | M3 theming API in Angular Material 21 requires verification against actual module exports |
+| 2. Navigation Shell         | Branded dashboard header + back-links at top of deep pages | `dashboard.scss` must use correct M3 surface token for header color                       |
+| 3. Auth Pages               | DriveMate wordmark on login + signup                       | None — purely additive HTML/SCSS                                                          |
+| 4. Vehicle Pages            | SCSS for vehicle-list + vehicle-add with layout tokens     | Missing `styleUrl` in two `@Component` decorators is easy to forget                       |
+| 5. Schedule View Polish     | All hardcoded hex values migrated to tokens                | `!important` on chip colors must be preserved in token form                               |
+| 6. Mobile + Consistency     | 375px verification + visual checklist sign-off             | May discover minor layout issues requiring small SCSS tweaks                              |
 
 **Prerequisites:** All of S-01 through S-04 must be implemented (all are done per roadmap).
 **Estimated effort:** ~2-3 focused sessions across 6 phases.

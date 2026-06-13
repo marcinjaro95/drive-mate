@@ -1,5 +1,5 @@
 ---
-project: "DriveMate"
+project: 'DriveMate'
 version: 1
 status: draft
 created: 2026-05-23
@@ -17,7 +17,7 @@ timeline_budget:
 
 ## Vision & Problem Statement
 
-A private car owner knows their car needs servicing — they just don't know *what*, *when*, or *why*. The answer exists: it's buried in a PDF manual, scattered across model-specific forums, or locked in the head of a mechanic they haven't called yet. The gap isn't the information — it's access to it at the moment it's needed.
+A private car owner knows their car needs servicing — they just don't know _what_, _when_, or _why_. The answer exists: it's buried in a PDF manual, scattered across model-specific forums, or locked in the head of a mechanic they haven't called yet. The gap isn't the information — it's access to it at the moment it's needed.
 
 DriveMate's insight: existing reminder apps hand the owner a raw maintenance table. That's still a mechanic's read. DriveMate goes one step further — it speaks to the person, not the car. A natural-language AI layer translates the manufacturer schedule and the car's service history into a clear, actionable answer: "your next job is X, here's why, here's what to expect."
 
@@ -33,12 +33,15 @@ Moment they reach for DriveMate: standing at the workshop counter being quoted a
 ## Success Criteria
 
 ### Primary
+
 - User adds a car (via VIN or manually) and receives a personalised maintenance schedule in under 2 minutes.
 
 ### Secondary
+
 - Service history accumulates into a simple readable record as the user marks services done — giving a hint of the long-term value of keeping records.
 
 ### Guardrails
+
 - A user must never be able to see or access another user's car data. A single data-isolation bug kills trust permanently.
 - The app must never display a maintenance item without a traceable source (manufacturer schedule or service record). AI hallucinating intervals is worse than showing nothing.
 
@@ -51,6 +54,7 @@ Moment they reach for DriveMate: standing at the workshop counter being quoted a
 - **Then** they see a personalised maintenance schedule for that car within 2 minutes
 
 #### Acceptance Criteria
+
 - Schedule lists at least the top 5 upcoming service items with estimated mileage or date
 - VIN path auto-fills make, model, year, engine capacity, and fuel type if the lookup succeeds
 - Manual path requires all 5 fields before proceeding
@@ -59,27 +63,35 @@ Moment they reach for DriveMate: standing at the workshop counter being quoted a
 ## Functional Requirements
 
 ### Vehicle management
+
 - FR-001: User can add a car by entering its VIN. Priority: must-have
+
   > Socrates: Counter-argument considered: "VIN lookup depends on an external API that may be unreliable or costly for MVP." Resolution: kept. VIN is the core differentiator — without it the schedule is only as accurate as what the user remembers about their car.
 
 - FR-002: User can add a car manually (make, model, year, engine capacity, fuel type). Priority: must-have
+
   > Socrates: Counter-argument considered: "5 fields adds friction; make/model/year alone might be enough." Resolution: kept. Capacity and fuel type are load-bearing for schedule accuracy — a generic 2.0 petrol schedule is wrong for a 1.6 diesel.
 
 - FR-003: User can delete a car record and all associated service history. Priority: must-have
+
   > Socrates: Counter-argument considered: "Delete is one-way — accidental delete loses all history; soft-delete is safer." Resolution: kept as must-have (GDPR and user autonomy require it). A confirmation step is non-negotiable; data-retention strategy is an open question — see Open Questions.
 
 - FR-004: App fetches basic vehicle data from a VIN lookup. Priority: must-have
   > Socrates: Counter-argument considered: "VIN data quality varies by market; EU/Polish VINs may return incomplete data from free APIs." Resolution: kept. VIN lookup is the core differentiator. API reliability for Polish-market vehicles must be validated before committing — see Open Questions.
 
 ### Maintenance schedule
+
 - FR-005: User can view an AI-generated maintenance schedule for their car. Priority: must-have
   > Socrates: Counter-argument considered: "AI may hallucinate intervals, leading to real maintenance harm; a static manufacturer table has higher credibility." Resolution: kept. The guardrail "no maintenance item shown without a traceable source" is the mitigation — hallucination risk is manageable with source attribution, not by dropping AI.
 
 ### Service tracking
+
 - FR-006: User can mark a scheduled service item as done, recording the date and mileage. Priority: must-have
+
   > Socrates: Counter-argument considered: "Requiring both date AND mileage adds friction — users often don't know exact mileage at service time." Resolution: kept. Both fields are load-bearing for schedule recalculation. Whether one can be made optional is deferred to implementation — see Open Questions.
 
 - FR-007: User can view their service records as a date-sorted list. Priority: nice-to-have
+
   > Socrates: Counter-argument accepted: "A visual timeline is v2; a simple date-sorted list is sufficient for MVP and faster to build." Resolution: downgraded to nice-to-have and FR reworded from 'chronological timeline' to 'date-sorted list'.
 
 - FR-008: User can edit a previously saved service record. Priority: nice-to-have

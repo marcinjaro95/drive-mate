@@ -29,17 +29,18 @@ canonical command to run them.
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-|----------|--------|------------------|--------|
-| Risk #5 ownership check location | Service layer only (`AiScheduleService`) | Single enforcement point consistent with the data-service error contract; component path is already gated by RLS-null redirect | Plan |
-| RLS test user provisioning | Service-role key in `beforeAll`/`afterAll` | Self-contained, no seed file drift, users cleaned up after each run | Plan |
-| RLS test file location | `tests/integration/rls.spec.ts` (separate directory) | Prevents `npm test` from failing for developers without a local Supabase instance | Plan |
-| Supabase CLI entry points | Add `supabase:start/stop/reset` + `test:integration` npm scripts | Documented, discoverable entry points reduce onboarding friction | Plan |
-| Reverse guard (auth'd user → /login) | Deferred again | UX gap, not a security risk; not in the risk map | Plan |
+| Decision                             | Choice                                                           | Why (1 sentence)                                                                                                               | Source |
+| ------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| Risk #5 ownership check location     | Service layer only (`AiScheduleService`)                         | Single enforcement point consistent with the data-service error contract; component path is already gated by RLS-null redirect | Plan   |
+| RLS test user provisioning           | Service-role key in `beforeAll`/`afterAll`                       | Self-contained, no seed file drift, users cleaned up after each run                                                            | Plan   |
+| RLS test file location               | `tests/integration/rls.spec.ts` (separate directory)             | Prevents `npm test` from failing for developers without a local Supabase instance                                              | Plan   |
+| Supabase CLI entry points            | Add `supabase:start/stop/reset` + `test:integration` npm scripts | Documented, discoverable entry points reduce onboarding friction                                                               | Plan   |
+| Reverse guard (auth'd user → /login) | Deferred again                                                   | UX gap, not a security risk; not in the risk map                                                                               | Plan   |
 
 ## Scope
 
 **In scope:**
+
 - `src/app/core/auth/auth.guard.spec.ts` (new) — 3 Angular router integration test cases
 - `src/app/core/ai-schedule/ai-schedule.service.ts` (modify) — add `AuthService` dep + ownership check
 - `src/app/core/ai-schedule/ai-schedule.service.spec.ts` (modify) — add `AuthService` mock to providers; add 2 ownership tests
@@ -49,6 +50,7 @@ canonical command to run them.
 - `context/foundation/test-plan.md` §6.2 and §6.3 (update) — fill in cookbook placeholders
 
 **Out of scope:**
+
 - Reverse auth guard, e2e tests, visual tests
 - Cloudflare Worker auth (trust-the-client by design)
 - Component-level ownership check (service layer is sufficient)
@@ -66,11 +68,11 @@ assertion queries use user-session clients so policies actually fire.
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|-------|-----------------|----------|
-| 1. Auth guard integration test | `auth.guard.spec.ts` proves guard fires and redirects correctly | Lazy-loaded routes in TestBed; mitigated by asserting `router.url`, not rendered component |
-| 2. Ownership check + unit test | Service rejects unowned vehicles before proxy call; test asserts `fetch` not called | Adding `AuthService` dep breaks all 14 existing tests unless providers are updated in `beforeEach` |
-| 3. RLS integration tests | `tests/integration/rls.spec.ts` validates real DB isolation | Local Supabase not running; mitigated by `npm run supabase:start` script + helpful error if unreachable |
+| Phase                          | What it delivers                                                                    | Key risk                                                                                                |
+| ------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| 1. Auth guard integration test | `auth.guard.spec.ts` proves guard fires and redirects correctly                     | Lazy-loaded routes in TestBed; mitigated by asserting `router.url`, not rendered component              |
+| 2. Ownership check + unit test | Service rejects unowned vehicles before proxy call; test asserts `fetch` not called | Adding `AuthService` dep breaks all 14 existing tests unless providers are updated in `beforeEach`      |
+| 3. RLS integration tests       | `tests/integration/rls.spec.ts` validates real DB isolation                         | Local Supabase not running; mitigated by `npm run supabase:start` script + helpful error if unreachable |
 
 **Prerequisites:** Supabase CLI installed globally (`supabase` in PATH); local instance started
 via `npm run supabase:start` before running Phase 3; `.env.test.local` created with URL and

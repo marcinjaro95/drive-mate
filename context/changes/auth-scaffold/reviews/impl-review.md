@@ -1,4 +1,5 @@
 <!-- IMPL-REVIEW-REPORT -->
+
 # Implementation Review: Auth Scaffold Implementation Plan
 
 - **Plan**: context/changes/auth-scaffold/plan.md
@@ -9,18 +10,19 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| Plan Adherence | PASS |
-| Scope Discipline | WARNING |
-| Safety & Quality | PASS |
-| Architecture | PASS |
-| Pattern Consistency | PASS |
-| Success Criteria | PASS |
+| Dimension           | Verdict |
+| ------------------- | ------- |
+| Plan Adherence      | PASS    |
+| Scope Discipline    | WARNING |
+| Safety & Quality    | PASS    |
+| Architecture        | PASS    |
+| Pattern Consistency | PASS    |
+| Success Criteria    | PASS    |
 
 ## Grounding
 
 Automated success criteria all green:
+
 - `npm run build` passes (only a bundle-budget warning, not an error)
 - `npm test` — 8/8 spec cases pass, 0 skipped
 - Deps present: `@supabase/supabase-js`, `@angular/material`, `@angular/cdk`, `@angular/animations`, `vitest`, `happy-dom`

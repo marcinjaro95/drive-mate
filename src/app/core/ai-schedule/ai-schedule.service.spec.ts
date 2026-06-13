@@ -52,7 +52,10 @@ describe('AiScheduleService', () => {
       providers: [
         AiScheduleService,
         { provide: VehicleService, useValue: { updateVehicle: mockUpdateVehicle } },
-        { provide: AuthService, useValue: { currentUser: signal<User | null>({ id: 'user-abc' } as User) } },
+        {
+          provide: AuthService,
+          useValue: { currentUser: signal<User | null>({ id: 'user-abc' } as User) },
+        },
       ],
     });
     service = TestBed.inject(AiScheduleService);
@@ -64,17 +67,20 @@ describe('AiScheduleService', () => {
 
   it('returns correctly typed filtered ScheduleItem[] on a valid response', async () => {
     const items = [makeItem(), makeItem({ item: 'Tyre rotation', source: 'Standard practice' })];
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(makeEnvelope(items)),
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(makeEnvelope(items)),
+      }),
+    );
 
     const result = await service.generateAndSave(makeVehicle());
 
     expect(result).toHaveLength(2);
     expect(result[0].item).toBe('Oil change');
     expect(result[1].item).toBe('Tyre rotation');
-    expect(result.every(i => typeof i.id === 'string' && i.id.length > 0)).toBe(true);
+    expect(result.every((i) => typeof i.id === 'string' && i.id.length > 0)).toBe(true);
     expect(result[0].id).toMatch(/^[0-9a-f-]{36}$/);
   });
 
@@ -83,10 +89,13 @@ describe('AiScheduleService', () => {
       makeItem({ source: '' }),
       makeItem({ item: 'Air filter', source: 'Manufacturer schedule' }),
     ];
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(makeEnvelope(items)),
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(makeEnvelope(items)),
+      }),
+    );
 
     const result = await service.generateAndSave(makeVehicle());
 
@@ -95,12 +104,21 @@ describe('AiScheduleService', () => {
   });
 
   it('excludes items where source property is missing', async () => {
-    const itemWithoutSource = { item: 'Brake fluid', interval_km: 40000, next_due_km: null, next_due_date: null, urgency: 'upcoming' } as any;
+    const itemWithoutSource = {
+      item: 'Brake fluid',
+      interval_km: 40000,
+      next_due_km: null,
+      next_due_date: null,
+      urgency: 'upcoming',
+    } as any;
     const items = [itemWithoutSource, makeItem({ item: 'Spark plugs' })];
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(makeEnvelope(items)),
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(makeEnvelope(items)),
+      }),
+    );
 
     const result = await service.generateAndSave(makeVehicle());
 
@@ -109,10 +127,13 @@ describe('AiScheduleService', () => {
   });
 
   it('throws when choices[0].message.content is not valid JSON', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ choices: [{ message: { content: 'not json' } }] }),
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ choices: [{ message: { content: 'not json' } }] }),
+      }),
+    );
 
     await expect(service.generateAndSave(makeVehicle())).rejects.toThrow();
   });
@@ -124,47 +145,73 @@ describe('AiScheduleService', () => {
   });
 
   it('throws when choices is null', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ choices: null }),
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ choices: null }),
+      }),
+    );
 
-    await expect(service.generateAndSave(makeVehicle())).rejects.toThrow('AI proxy returned unexpected response shape');
+    await expect(service.generateAndSave(makeVehicle())).rejects.toThrow(
+      'AI proxy returned unexpected response shape',
+    );
   });
 
   it('throws when choices is an empty array', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ choices: [] }),
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ choices: [] }),
+      }),
+    );
 
-    await expect(service.generateAndSave(makeVehicle())).rejects.toThrow('AI proxy returned unexpected response shape');
+    await expect(service.generateAndSave(makeVehicle())).rejects.toThrow(
+      'AI proxy returned unexpected response shape',
+    );
   });
 
   it('throws when parsed items is null', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(makeEnvelope(null as any)),
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(makeEnvelope(null as any)),
+      }),
+    );
 
-    await expect(service.generateAndSave(makeVehicle())).rejects.toThrow('AI response missing items array');
+    await expect(service.generateAndSave(makeVehicle())).rejects.toThrow(
+      'AI response missing items array',
+    );
   });
 
   it('throws when parsed items is a plain object, not an array', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(makeEnvelope({} as any)),
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(makeEnvelope({} as any)),
+      }),
+    );
 
-    await expect(service.generateAndSave(makeVehicle())).rejects.toThrow('AI response missing items array');
+    await expect(service.generateAndSave(makeVehicle())).rejects.toThrow(
+      'AI response missing items array',
+    );
   });
 
   it('excludes items where source is null', async () => {
-    const items = [makeItem({ source: null as any }), makeItem({ item: 'Air filter', source: 'Manufacturer schedule' })];
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(makeEnvelope(items)),
-    }));
+    const items = [
+      makeItem({ source: null as any }),
+      makeItem({ item: 'Air filter', source: 'Manufacturer schedule' }),
+    ];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(makeEnvelope(items)),
+      }),
+    );
 
     const result = await service.generateAndSave(makeVehicle());
 
@@ -173,11 +220,17 @@ describe('AiScheduleService', () => {
   });
 
   it('excludes items where source is whitespace only', async () => {
-    const items = [makeItem({ source: '   ' }), makeItem({ item: 'Brake fluid', source: 'Standard practice' })];
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(makeEnvelope(items)),
-    }));
+    const items = [
+      makeItem({ source: '   ' }),
+      makeItem({ item: 'Brake fluid', source: 'Standard practice' }),
+    ];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(makeEnvelope(items)),
+      }),
+    );
 
     const result = await service.generateAndSave(makeVehicle());
 
@@ -187,10 +240,13 @@ describe('AiScheduleService', () => {
 
   it('excludes items with an invalid urgency value', async () => {
     const items = [makeItem({ urgency: 'unknown' as any }), makeItem({ item: 'Spark plugs' })];
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(makeEnvelope(items)),
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(makeEnvelope(items)),
+      }),
+    );
 
     const result = await service.generateAndSave(makeVehicle());
 
@@ -200,15 +256,24 @@ describe('AiScheduleService', () => {
 
   it('persists the filtered items via VehicleService.updateVehicle', async () => {
     const items = [makeItem(), makeItem({ item: 'Brake check', source: '' })];
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(makeEnvelope(items)),
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(makeEnvelope(items)),
+      }),
+    );
 
     await service.generateAndSave(makeVehicle());
 
     expect(mockUpdateVehicle).toHaveBeenCalledWith('v1', {
-      ai_schedule: [expect.objectContaining({ item: items[0].item, source: items[0].source, id: expect.stringMatching(/^[0-9a-f-]{36}$/) })],
+      ai_schedule: [
+        expect.objectContaining({
+          item: items[0].item,
+          source: items[0].source,
+          id: expect.stringMatching(/^[0-9a-f-]{36}$/),
+        }),
+      ],
     });
   });
 
@@ -223,24 +288,32 @@ describe('AiScheduleService', () => {
   });
 
   it('resolves without throwing when vehicle is owned by current user', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(makeEnvelope([makeItem()])),
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(makeEnvelope([makeItem()])),
+      }),
+    );
 
-    await expect(service.generateAndSave(makeVehicle({ user_id: 'user-abc' }))).resolves.toBeDefined();
+    await expect(
+      service.generateAndSave(makeVehicle({ user_id: 'user-abc' })),
+    ).resolves.toBeDefined();
   });
 
   describe('buildPrompt', () => {
     it('contains make, model, year, engine_capacity, and fuel_type', async () => {
       let capturedBody: any;
-      vi.stubGlobal('fetch', vi.fn().mockImplementation((_, init) => {
-        capturedBody = JSON.parse(init.body);
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(makeEnvelope([makeItem()])),
-        });
-      }));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockImplementation((_, init) => {
+          capturedBody = JSON.parse(init.body);
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(makeEnvelope([makeItem()])),
+          });
+        }),
+      );
 
       await service.generateAndSave(makeVehicle());
 

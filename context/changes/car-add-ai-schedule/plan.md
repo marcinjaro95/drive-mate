@@ -7,6 +7,7 @@ S-01 from the DriveMate roadmap: user fills in car details (make, model, year, e
 ## Current State Analysis
 
 F-01 (auth) and F-02 (data schema + RLS) are complete. The codebase has:
+
 - `VehicleService` with full CRUD, throw-on-error pattern (`src/app/core/vehicles/vehicle.service.ts`)
 - `Vehicle` and `ServiceRecord` TypeScript models (`src/app/core/models/`)
 - Cloudflare Worker at `functions/worker.ts` proxying `POST /api/ai` to OpenRouter — transparent passthrough, no Worker changes needed
@@ -14,6 +15,7 @@ F-01 (auth) and F-02 (data schema + RLS) are complete. The codebase has:
 - Route tree: `/login`, `/signup`, `/dashboard` — no child routes exist
 
 **What does not exist yet:**
+
 - `ai_schedule` JSONB column on the `vehicles` table
 - `ScheduleItem` TypeScript interface
 - `AiScheduleService` (prompt building, parsing, filtering, persistence)
@@ -23,6 +25,7 @@ F-01 (auth) and F-02 (data schema + RLS) are complete. The codebase has:
 ## Desired End State
 
 After this plan:
+
 - User navigates to `/dashboard` → sees their vehicle list (empty state with CTA if none)
 - User clicks "Add your car" → fills the form → lands directly on `/dashboard/vehicles/:id` where the schedule loads
 - Schedule is generated once and cached as JSONB; future visits load instantly from the DB
@@ -80,9 +83,11 @@ Add `ai_schedule JSONB` to the `vehicles` table and extend the TypeScript models
 **Intent**: Add a nullable JSONB column to `vehicles` for storing persisted AI schedules.
 
 **Contract**:
+
 ```sql
 ALTER TABLE vehicles ADD COLUMN ai_schedule jsonb DEFAULT NULL;
 ```
+
 No new RLS policy needed — the existing `vehicles_select` / `vehicles_update` policies already scope this column to `auth.uid()`.
 
 #### 2. New model file
@@ -156,7 +161,9 @@ const httpRes = await fetch('/api/ai', {
 if (!httpRes.ok) throw new Error(`AI proxy error: ${httpRes.status}`);
 const envelope = await httpRes.json();
 const parsed: { items: ScheduleItem[] } = JSON.parse(envelope.choices[0].message.content);
-const filtered = parsed.items.filter(i => typeof i.source === 'string' && i.source.trim().length > 0);
+const filtered = parsed.items.filter(
+  (i) => typeof i.source === 'string' && i.source.trim().length > 0,
+);
 await this.vehicleService.updateVehicle(vehicle.id, { ai_schedule: filtered });
 return filtered;
 ```
@@ -168,6 +175,7 @@ return filtered;
 **Intent**: Verify the four critical paths and the prompt contract.
 
 **Contract**: Use `vi.stubGlobal('fetch', vi.fn())` to mock the global fetch. Cover:
+
 - Valid OpenRouter response → returns correctly typed filtered `ScheduleItem[]`
 - Items where `source` is an empty string or missing are excluded from the return value
 - `choices[0].message.content` is not valid JSON → method throws
@@ -200,6 +208,7 @@ Refactor the dashboard into a persistent layout shell with `<router-outlet>`. Ad
 **Intent**: Make the dashboard route a parent with three lazy-loaded children.
 
 **Contract**: Add a `children` array to the existing dashboard route entry:
+
 - `{ path: '', loadComponent: () => import('./vehicles/vehicle-list/vehicle-list').then(m => m.VehicleListComponent), pathMatch: 'full' }`
 - `{ path: 'vehicles/new', loadComponent: () => import('./vehicles/vehicle-add/vehicle-add').then(m => m.VehicleAddComponent) }`
 - `{ path: 'vehicles/:id', loadComponent: () => import('./vehicles/schedule-view/schedule-view').then(m => m.ScheduleViewComponent) }`
@@ -237,6 +246,7 @@ Follow the identical `loadComponent` pattern used by `/login` and `/signup`.
 **Intent**: Empty state with a single CTA for new users; card list for returning users.
 
 **Contract**:
+
 - `@if (isLoading())` → centered `<mat-progress-spinner>`
 - `@else if (error())` → error message paragraph
 - `@else if (vehicles().length === 0)` → empty-state block: `<p>No cars added yet.</p>` + `<button mat-raised-button color="primary" (click)="addCar()">Add your first car</button>`
@@ -277,6 +287,7 @@ Imports: `MatCardModule`, `MatButtonModule`, `MatProgressSpinnerModule`.
 **Intent**: Capture car specs via a validated reactive form, persist via `VehicleService.createVehicle`, then route to the new car's schedule view to trigger AI generation.
 
 **Contract**: Inject `FormBuilder`, `VehicleService`, `Router`. Form group with:
+
 - `make`: `Validators.required`
 - `model`: `Validators.required`
 - `year`: `Validators.required`, `Validators.min(1900)`, `Validators.max(2030)`
@@ -295,6 +306,7 @@ Signals: `isSubmitting = signal(false)`, `error = signal<string | null>(null)`.
 **Intent**: Material form UI with a fuel-type select and an optional mileage field; inline validation feedback.
 
 **Contract**: `<form [formGroup]="form" (ngSubmit)="onSubmit()">` with:
+
 - `<mat-form-field>` + `<input matInput type="text">` for make and model
 - `<mat-form-field>` + `<input matInput type="number">` for year, engine_capacity, and current_mileage; engine_capacity label "Engine capacity (L)"; current_mileage label "Current mileage (km) — optional"
 - `<mat-form-field>` + `<mat-select formControlName="fuel_type">` with `<mat-option>` for five values: `petrol` (Petrol), `diesel` (Diesel), `electric` (Electric), `hybrid` (Hybrid), `lpg` (LPG)
@@ -342,6 +354,7 @@ Imports: `ReactiveFormsModule`, `MatFormFieldModule`, `MatInputModule`, `MatSele
 **Contract**: Inject `VehicleService`, `AiScheduleService`, `ActivatedRoute`, `Router`. Signals: `vehicle = signal<Vehicle | null>(null)`, `scheduleItems = signal<ScheduleItem[]>([])`, `isLoading = signal(true)`, `isGenerating = signal(false)`, `error = signal<string | null>(null)`.
 
 `ngOnInit()`:
+
 1. `const id = this.route.snapshot.params['id']`
 2. `this.vehicle.set(await this.vehicleService.getVehicle(id))` — if result is null, `router.navigate(['/dashboard'])` and return
 3. `this.isLoading.set(false)`
@@ -359,6 +372,7 @@ Imports: `ReactiveFormsModule`, `MatFormFieldModule`, `MatInputModule`, `MatSele
 **Intent**: Vehicle header always visible; skeleton → items → error in the schedule body.
 
 **Contract**:
+
 - Vehicle header (`@if (!isLoading())`): `<h2>{{v.year}} {{v.make}} {{v.model}}</h2>` + `<p>{{v.engine_capacity}}L · {{v.fuel_type}}</p>`
 - `@if (isLoading())` → `<mat-progress-spinner>` (loading the vehicle record)
 - `@else` block:
@@ -406,6 +420,7 @@ Imports: `MatCardModule`, `MatChipsModule`, `MatButtonModule`, `MatProgressSpinn
 ### Unit Tests
 
 `src/app/core/ai-schedule/ai-schedule.service.spec.ts`:
+
 - Valid OpenRouter response → returns correctly typed and filtered `ScheduleItem[]`
 - Items where `source` is empty string or missing property are excluded
 - `choices[0].message.content` is not valid JSON → method throws

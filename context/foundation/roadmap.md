@@ -41,11 +41,11 @@ A private car owner knows their car needs servicing but doesn't know what, when,
 
 Navigation aid — groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
 
-| Stream | Theme                    | Chain                                   | Note                                                                       |
-| ------ | ------------------------ | --------------------------------------- | -------------------------------------------------------------------------- |
-| A      | Auth & schedule loop     | `F-01` → `S-01` → `S-02` → `S-03`      | Core speed path; S-03 is blocked pending OQ-1 (VIN API).                  |
-| B      | Data enabler & lifecycle | `F-02` → `S-01` (joins A) / `S-04`     | F-02 runs parallel with F-01; S-04 runs parallel with S-02 after S-01.    |
-| C      | UI polish                | `S-01` → `S-05`                        | Runs after the core loop is proven; can be parallelised with S-02/S-04.   |
+| Stream | Theme                    | Chain                              | Note                                                                    |
+| ------ | ------------------------ | ---------------------------------- | ----------------------------------------------------------------------- |
+| A      | Auth & schedule loop     | `F-01` → `S-01` → `S-02` → `S-03`  | Core speed path; S-03 is blocked pending OQ-1 (VIN API).                |
+| B      | Data enabler & lifecycle | `F-02` → `S-01` (joins A) / `S-04` | F-02 runs parallel with F-01; S-04 runs parallel with S-02 after S-01.  |
+| C      | UI polish                | `S-01` → `S-05`                    | Runs after the core loop is proven; can be parallelised with S-02/S-04. |
 
 ## Baseline
 
@@ -156,15 +156,15 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID           | Suggested issue title                                      | Ready for `/10x-plan` | Notes                                        |
-| ---------- | ------------------- | ---------------------------------------------------------- | --------------------- | -------------------------------------------- |
-| F-01       | auth-scaffold       | Auth scaffold: Supabase auth + Angular route guard         | yes                   | Run `/10x-plan auth-scaffold`                |
-| F-02       | data-schema-rls     | Data schema: vehicles + service_records + RLS policies     | yes                   | Run `/10x-plan data-schema-rls`; parallel with F-01 |
-| S-01       | car-add-ai-schedule | Manual car add + AI maintenance schedule                   | no                    | Requires F-01 and F-02 done first            |
-| S-02       | service-tracking    | Service tracking: mark item done with date and mileage     | no                    | Requires S-01                                |
-| S-03       | vin-car-add         | VIN car add with auto-populated fields                     | no                    | Blocked: resolve OQ-1 (VIN API) first        |
-| S-04       | car-deletion        | Car deletion with confirmation and cascade                 | no                    | Requires S-01; parallel with S-02            |
-| S-05       | ui-improvements     | UI improvements: consistent design across all screens      | no                    | Requires S-01; run after core loop ships     |
+| Roadmap ID | Change ID           | Suggested issue title                                  | Ready for `/10x-plan` | Notes                                               |
+| ---------- | ------------------- | ------------------------------------------------------ | --------------------- | --------------------------------------------------- |
+| F-01       | auth-scaffold       | Auth scaffold: Supabase auth + Angular route guard     | yes                   | Run `/10x-plan auth-scaffold`                       |
+| F-02       | data-schema-rls     | Data schema: vehicles + service_records + RLS policies | yes                   | Run `/10x-plan data-schema-rls`; parallel with F-01 |
+| S-01       | car-add-ai-schedule | Manual car add + AI maintenance schedule               | no                    | Requires F-01 and F-02 done first                   |
+| S-02       | service-tracking    | Service tracking: mark item done with date and mileage | no                    | Requires S-01                                       |
+| S-03       | vin-car-add         | VIN car add with auto-populated fields                 | no                    | Blocked: resolve OQ-1 (VIN API) first               |
+| S-04       | car-deletion        | Car deletion with confirmation and cascade             | no                    | Requires S-01; parallel with S-02                   |
+| S-05       | ui-improvements     | UI improvements: consistent design across all screens  | no                    | Requires S-01; run after core loop ships            |
 
 ## Open Roadmap Questions
 

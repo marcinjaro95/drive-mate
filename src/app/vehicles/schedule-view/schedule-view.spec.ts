@@ -55,8 +55,17 @@ describe('ScheduleViewComponent — delete flow', () => {
         provideAnimationsAsync(),
         provideRouter([]),
         { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'v1' } } } },
-        { provide: VehicleService, useValue: { getVehicle: vi.fn().mockResolvedValue(vehicle), deleteVehicle: deleteVehicleSpy } },
-        { provide: AiScheduleService, useValue: { generateAndSave: vi.fn().mockResolvedValue([]) } },
+        {
+          provide: VehicleService,
+          useValue: {
+            getVehicle: vi.fn().mockResolvedValue(vehicle),
+            deleteVehicle: deleteVehicleSpy,
+          },
+        },
+        {
+          provide: AiScheduleService,
+          useValue: { generateAndSave: vi.fn().mockResolvedValue([]) },
+        },
       ],
     });
     TestBed.overrideComponent(ScheduleViewComponent, {
@@ -107,7 +116,7 @@ describe('ScheduleViewComponent — generation flow', () => {
   let generateAndSaveSpy: ReturnType<typeof vi.fn>;
 
   // Drains the full microtask queue (setTimeout fires only after all microtasks settle)
-  const flushPromises = () => new Promise<void>(resolve => setTimeout(resolve, 0));
+  const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 
   beforeEach(async () => {
     generateAndSaveSpy = vi.fn();
@@ -118,8 +127,14 @@ describe('ScheduleViewComponent — generation flow', () => {
         provideRouter([]),
         provideAnimationsAsync(),
         { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'v1' } } } },
-        { provide: VehicleService, useValue: { getVehicle: vi.fn().mockResolvedValue(makeVehicle({ ai_schedule: null })) } },
-        { provide: ServiceRecordService, useValue: { getServiceRecords: vi.fn().mockResolvedValue([]) } },
+        {
+          provide: VehicleService,
+          useValue: { getVehicle: vi.fn().mockResolvedValue(makeVehicle({ ai_schedule: null })) },
+        },
+        {
+          provide: ServiceRecordService,
+          useValue: { getServiceRecords: vi.fn().mockResolvedValue([]) },
+        },
         { provide: AiScheduleService, useValue: { generateAndSave: generateAndSaveSpy } },
       ],
     });
@@ -202,7 +217,7 @@ describe('ScheduleViewComponent — generation flow', () => {
     fixture.detectChanges();
     const smalls: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('small');
     expect(smalls.length).toBeGreaterThan(0);
-    smalls.forEach(small => {
+    smalls.forEach((small) => {
       expect(small.textContent!.trim().length).toBeGreaterThan(0);
     });
   });

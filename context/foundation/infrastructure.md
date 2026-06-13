@@ -24,14 +24,14 @@ The Angular SPA is served as static files from Cloudflare Pages (free, unlimited
 
 ### Scoring Matrix
 
-| Platform | CLI-first | Managed / Serverless | Agent-readable docs | Stable deploy API | MCP / Integration | Total |
-|---|---|---|---|---|---|---|
-| **Cloudflare Workers + Pages** | Pass | Pass | Pass | Pass | Pass | **5 / 5** |
-| Vercel | Pass | Pass | Pass | Pass | Partial (beta) | 4½ / 5 |
-| Netlify | Partial | Pass | Pass | Pass | Pass (GA) | 4½ / 5 |
-| Railway | Partial | Partial | Pass | Pass | Partial (beta) | 3½ / 5 |
-| Render | Partial | Pass | Partial | Partial | Pass (GA) | 3½ / 5 |
-| Fly.io | Pass | Partial | Partial | Pass | Fail (experimental) | 3 / 5 |
+| Platform                       | CLI-first | Managed / Serverless | Agent-readable docs | Stable deploy API | MCP / Integration   | Total     |
+| ------------------------------ | --------- | -------------------- | ------------------- | ----------------- | ------------------- | --------- |
+| **Cloudflare Workers + Pages** | Pass      | Pass                 | Pass                | Pass              | Pass                | **5 / 5** |
+| Vercel                         | Pass      | Pass                 | Pass                | Pass              | Partial (beta)      | 4½ / 5    |
+| Netlify                        | Partial   | Pass                 | Pass                | Pass              | Pass (GA)           | 4½ / 5    |
+| Railway                        | Partial   | Partial              | Pass                | Pass              | Partial (beta)      | 3½ / 5    |
+| Render                         | Partial   | Pass                 | Partial             | Partial           | Pass (GA)           | 3½ / 5    |
+| Fly.io                         | Pass      | Partial              | Partial             | Pass              | Fail (experimental) | 3 / 5     |
 
 Soft-weight adjustments applied: Cloudflare familiarity (Q3) breaks the tie with Vercel/Netlify. No persistent-connection requirement (Q1) keeps all platforms in scope. Single-region preference (Q4) and external Supabase + OpenRouter (Q5) are neutral across all candidates.
 
@@ -69,7 +69,7 @@ The DriveMate deploy launched cleanly: Pages served the Angular SPA instantly, t
 
 Six weeks in, maintenance schedule generation began returning truncated responses for high-mileage vehicles. Root cause: Cloudflare Workers enforce a 6 MB response body limit; verbose AI completions from OpenRouter were silently cut at that boundary. Fixing this required switching from buffered proxy to streaming (`ReadableStream` / `TransformStream`) — a non-trivial refactor, discovered through community forums rather than official docs.
 
-Three months in, Supabase latency spiked without explanation. The Worker was routing to US edge nodes despite Polish users — Cloudflare places Workers nearest the *user*, not the *origin*. Supabase was in eu-central-1. Enabling Smart Placement (`[placement] mode = "smart"` in `wrangler.toml`) fixed it after two weeks of confused performance investigation.
+Three months in, Supabase latency spiked without explanation. The Worker was routing to US edge nodes despite Polish users — Cloudflare places Workers nearest the _user_, not the _origin_. Supabase was in eu-central-1. Enabling Smart Placement (`[placement] mode = "smart"` in `wrangler.toml`) fixed it after two weeks of confused performance investigation.
 
 Four months in, a Wrangler major version bump changed the CI authentication token format. The pipeline broke silently on the next deploy; recovery took two days. Cloudflare's platform ships fast — CLI commands and auth flows change underneath you.
 
@@ -95,16 +95,16 @@ Four months in, a Wrangler major version bump changed the CI authentication toke
 
 ## Risk Register
 
-| Risk | Source | Likelihood | Impact | Mitigation |
-|---|---|---|---|---|
-| Agent uses deprecated `wrangler pages publish` instead of `wrangler pages deploy` | Research finding | H | M | Pin in AGENTS.md: always use `wrangler pages deploy dist/drive-mate/browser`. Document in CI workflow comment. |
-| Angular output path misconfigured (`dist/drive-mate` vs `dist/drive-mate/browser`) | Research finding | H | H | Hardcode the full path in every deploy command and the Pages dashboard; never use a glob or short path. |
-| OpenRouter completions exceed 6 MB Workers response body limit | Unknown unknowns | M | H | Implement the proxy as a streaming passthrough (`TransformStream`) from day one — do not buffer the full response. |
-| Worker routes to user edge, not Supabase region, adding 150–200ms latency | Unknown unknowns | H | M | Add `[placement]\nmode = "smart"` to `wrangler.toml` before first production deploy. |
-| OpenRouter SDK uses Node.js APIs unavailable in Workers runtime | Devil's advocate | M | H | Verify SDK Web Platform compatibility before integrating; fall back to raw `fetch` + OpenRouter REST API if needed. |
-| Wrangler major version breaks CI authentication in GitHub Actions | Pre-mortem | M | M | Pin Wrangler version in `package.json` devDependencies (e.g. `"wrangler": "^3.x"`) — do not use `@latest` in CI. |
-| First CI run fails because Pages project doesn't exist yet | Unknown unknowns | H | M | Run `wrangler pages deploy dist/drive-mate/browser --project-name=drive-mate` manually once before enabling CI. |
-| SPA/proxy version skew if proxy is a separate Worker deployed independently | Unknown unknowns | M | M | Use Pages Functions (`functions/` directory inside the Pages project) so SPA and proxy deploy atomically. |
+| Risk                                                                               | Source           | Likelihood | Impact | Mitigation                                                                                                          |
+| ---------------------------------------------------------------------------------- | ---------------- | ---------- | ------ | ------------------------------------------------------------------------------------------------------------------- |
+| Agent uses deprecated `wrangler pages publish` instead of `wrangler pages deploy`  | Research finding | H          | M      | Pin in AGENTS.md: always use `wrangler pages deploy dist/drive-mate/browser`. Document in CI workflow comment.      |
+| Angular output path misconfigured (`dist/drive-mate` vs `dist/drive-mate/browser`) | Research finding | H          | H      | Hardcode the full path in every deploy command and the Pages dashboard; never use a glob or short path.             |
+| OpenRouter completions exceed 6 MB Workers response body limit                     | Unknown unknowns | M          | H      | Implement the proxy as a streaming passthrough (`TransformStream`) from day one — do not buffer the full response.  |
+| Worker routes to user edge, not Supabase region, adding 150–200ms latency          | Unknown unknowns | H          | M      | Add `[placement]\nmode = "smart"` to `wrangler.toml` before first production deploy.                                |
+| OpenRouter SDK uses Node.js APIs unavailable in Workers runtime                    | Devil's advocate | M          | H      | Verify SDK Web Platform compatibility before integrating; fall back to raw `fetch` + OpenRouter REST API if needed. |
+| Wrangler major version breaks CI authentication in GitHub Actions                  | Pre-mortem       | M          | M      | Pin Wrangler version in `package.json` devDependencies (e.g. `"wrangler": "^3.x"`) — do not use `@latest` in CI.    |
+| First CI run fails because Pages project doesn't exist yet                         | Unknown unknowns | H          | M      | Run `wrangler pages deploy dist/drive-mate/browser --project-name=drive-mate` manually once before enabling CI.     |
+| SPA/proxy version skew if proxy is a separate Worker deployed independently        | Unknown unknowns | M          | M      | Use Pages Functions (`functions/` directory inside the Pages project) so SPA and proxy deploy atomically.           |
 
 ---
 
@@ -123,6 +123,7 @@ Four months in, a Wrangler major version bump changed the CI authentication toke
 ## Out of Scope
 
 The following were not evaluated in this research:
+
 - Docker image configuration
 - CI/CD pipeline setup beyond the deploy step
 - Production-scale architecture (multi-region, HA, DR)

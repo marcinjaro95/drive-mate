@@ -17,24 +17,26 @@ User opens "Add your car", types a VIN, clicks Decode, and sees five fields auto
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-|---|---|---|---|
-| VIN API provider | AutoRef.eu (primary) + NHTSA vPIC (fallback) | EU-native DB with 50 free req/month for dev; NHTSA is free and covers the miss case | Research |
-| Proxy placement | Extend `functions/worker.ts` | One Worker, one wrangler binding — matches the existing `/api/ai` pattern exactly | Plan |
-| Decode trigger | Explicit "Decode" button | Prevents mid-typing API calls and conserves the 50 free req/month rate limit | Plan |
-| Field lock after decode | Editable (pre-filled) | Covers partial decodes and EU data quality gaps; user stays in control | Plan |
-| Unknown fuel type | Leave fuel_type blank | Simple and safe — no wrong pre-selection when AutoRef returns "CNG" or similar | Plan |
-| Fallback UX | Silent (no banner) | Partial fill is expected and already covered by editable fields | Plan |
+| Decision                | Choice                                       | Why (1 sentence)                                                                    | Source   |
+| ----------------------- | -------------------------------------------- | ----------------------------------------------------------------------------------- | -------- |
+| VIN API provider        | AutoRef.eu (primary) + NHTSA vPIC (fallback) | EU-native DB with 50 free req/month for dev; NHTSA is free and covers the miss case | Research |
+| Proxy placement         | Extend `functions/worker.ts`                 | One Worker, one wrangler binding — matches the existing `/api/ai` pattern exactly   | Plan     |
+| Decode trigger          | Explicit "Decode" button                     | Prevents mid-typing API calls and conserves the 50 free req/month rate limit        | Plan     |
+| Field lock after decode | Editable (pre-filled)                        | Covers partial decodes and EU data quality gaps; user stays in control              | Plan     |
+| Unknown fuel type       | Leave fuel_type blank                        | Simple and safe — no wrong pre-selection when AutoRef returns "CNG" or similar      | Plan     |
+| Fallback UX             | Silent (no banner)                           | Partial fill is expected and already covered by editable fields                     | Plan     |
 
 ## Scope
 
 **In scope:**
+
 - `POST /api/vin` Worker handler (AutoRef.eu → NHTSA vPIC fallback, fuel normalization)
 - `VinDecoderService` (new Angular service)
 - VIN form field + Decode button + autofill logic in `VehicleAddComponent`
 - `.dev.vars` local secrets setup
 
 **Out of scope:**
+
 - License-plate lookup
 - VIN edit flow (separate slice)
 - Automated tests mocking the Worker endpoint (rate-limit concern)
@@ -45,10 +47,10 @@ Angular calls `POST /api/vin { vin }` → Cloudflare Worker calls AutoRef.eu wit
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
+| Phase                      | What it delivers                                         | Key risk                                                                                                  |
+| -------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | 1. Worker — /api/vin proxy | End-to-end decode via AutoRef + NHTSA, testable via curl | AutoRef.eu displacement field key is not shown in public docs; must be confirmed from first live response |
-| 2. Angular — service + UI | VIN field, Decode button, autofill, error display | Template type errors from new form control and signal bindings |
+| 2. Angular — service + UI  | VIN field, Decode button, autofill, error display        | Template type errors from new form control and signal bindings                                            |
 
 **Prerequisites:** AutoRef.eu free-tier API key obtained before starting Phase 1 manual verification  
 **Estimated effort:** ~2 focused sessions across 2 phases

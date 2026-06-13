@@ -20,6 +20,7 @@ For the remainder of the session the card that triggered the save must display
 without a round-trip re-fetch.
 
 Implementation notes:
+
 - `savedItems` is a `Signal<Set<string>>` — mutate immutably (`new Set([...prev, id])`).
 - Check membership in the template with a computed: `isSaved = computed(() => this.savedItems().has(item.id))`.
 - State is intentionally ephemeral (signal in component/service, not persisted to Supabase).
