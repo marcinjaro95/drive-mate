@@ -160,14 +160,14 @@ No existing workflow to migrate. The Cloudflare Pages deployment continues to ru
 
 #### Automated
 
-- [x] 1.1 Prettier check passes locally: `npx prettier --check .`
-- [x] 1.2 Typecheck passes locally: `npx tsc -p tsconfig.app.json --noEmit`
-- [x] 1.3 Full test suite passes locally: `npm test`
-- [x] 1.4 Workflow YAML is syntactically valid (GitHub validates on first push)
+- [x] 1.1 Prettier check passes locally: `npx prettier --check .` — 4b9986b
+- [x] 1.2 Typecheck passes locally: `npx tsc -p tsconfig.app.json --noEmit` — 4b9986b
+- [x] 1.3 Full test suite passes locally: `npm test` — 4b9986b
+- [x] 1.4 Workflow YAML is syntactically valid (GitHub validates on first push) — 4b9986b
 
 #### Manual
 
-- [x] 1.5 PR check panel shows CI job and it passes
-- [x] 1.6 Deliberate test failure causes CI red and blocks PR
-- [x] 1.7 Fixup commit cancels the stale run (concurrency)
-- [x] 1.8 `nvm use` picks up Node 22 from `.nvmrc`
+- [x] 1.5 PR check panel shows CI job and it passes — 4b9986b
+- [x] 1.6 Deliberate test failure causes CI red and blocks PR — 4b9986b
+- [x] 1.7 Fixup commit cancels the stale run (concurrency) — 4b9986b
+- [x] 1.8 `nvm use` picks up Node 22 from `.nvmrc` — 4b9986b
