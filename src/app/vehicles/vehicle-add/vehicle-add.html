@@ -49,7 +49,7 @@
         <mat-error>Year is required</mat-error>
       }
       @if (form.controls.year.touched && (form.controls.year.hasError('min') || form.controls.year.hasError('max'))) {
-        <mat-error>Year must be between 1900 and 2030</mat-error>
+        <mat-error>Year must be between 1900 and next year</mat-error>
       }
     </mat-form-field>
 

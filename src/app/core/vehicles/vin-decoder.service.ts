@@ -1,4 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom, catchError, of } from 'rxjs';
 
 export interface VinDecodeResult {
   make?: string;
@@ -11,15 +13,16 @@ export interface VinDecodeResult {
 
 @Injectable({ providedIn: 'root' })
 export class VinDecoderService {
-  async decode(vin: string): Promise<VinDecodeResult> {
-    const response = await fetch('/api/vin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ vin }),
-    });
-    if (!response.ok) {
-      throw new Error(`VIN decode failed: ${response.status}`);
-    }
-    return response.json() as Promise<VinDecodeResult>;
+  private readonly http = inject(HttpClient);
+
+  decode(vin: string): Promise<VinDecodeResult> {
+    return firstValueFrom(
+      this.http.post<VinDecodeResult>('/api/vin', { vin }).pipe(
+        catchError((err: HttpErrorResponse) => {
+          if (err.status === 404) return of({ error: 'not_found' } as VinDecodeResult);
+          throw new Error(`VIN decode failed: ${err.status}`);
+        }),
+      ),
+    );
   }
 }

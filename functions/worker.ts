@@ -1,8 +1,17 @@
-const CORS_HEADERS: HeadersInit = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+const ALLOWED_ORIGINS = new Set([
+  'https://drive-mate.marcinjaro95.workers.dev',
+  'http://localhost:4200',
+]);
+
+function corsHeaders(request: Request): Record<string, string> {
+  const origin = request.headers.get('Origin');
+  return {
+    'Access-Control-Allow-Origin':
+      origin && ALLOWED_ORIGINS.has(origin) ? origin : 'https://drive-mate.marcinjaro95.workers.dev',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+}
 
 interface Fetcher {
   fetch(input: RequestInfo, init?: RequestInit): Promise<Response>;
@@ -46,7 +55,10 @@ async function tryAutoRef(vin: string, apiKey: string): Promise<VinDecodeResult 
   }
 
   if (resp.status === 404) return null;
-  if (!resp.ok) return null;
+  if (!resp.ok) {
+    console.warn('AutoRef non-OK:', resp.status, vin);
+    return null;
+  }
 
   let data: Record<string, unknown>;
   try {
@@ -132,7 +144,7 @@ async function handleVin(request: Request, env: Env): Promise<Response> {
   if (!env.AUTOREF_API_KEY) {
     return new Response(JSON.stringify({ error: 'API key not configured' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
@@ -142,7 +154,7 @@ async function handleVin(request: Request, env: Env): Promise<Response> {
   } catch {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
@@ -150,7 +162,7 @@ async function handleVin(request: Request, env: Env): Promise<Response> {
   if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)) {
     return new Response(JSON.stringify({ error: 'invalid_vin' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
@@ -158,7 +170,7 @@ async function handleVin(request: Request, env: Env): Promise<Response> {
   if (autoRefResult) {
     return new Response(JSON.stringify(autoRefResult), {
       status: 200,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
@@ -166,13 +178,13 @@ async function handleVin(request: Request, env: Env): Promise<Response> {
   if (nhtsaResult) {
     return new Response(JSON.stringify(nhtsaResult), {
       status: 200,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
   return new Response(JSON.stringify({ error: 'not_found' }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    status: 404,
+    headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
   });
 }
 
@@ -180,7 +192,7 @@ async function handleAI(request: Request, env: Env): Promise<Response> {
   if (!env.OPENROUTER_API_KEY) {
     return new Response(JSON.stringify({ error: 'API key not configured' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
@@ -190,7 +202,7 @@ async function handleAI(request: Request, env: Env): Promise<Response> {
   } catch {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
@@ -209,7 +221,7 @@ async function handleAI(request: Request, env: Env): Promise<Response> {
     status: upstream.status,
     headers: {
       'Content-Type': upstream.headers.get('Content-Type') ?? 'application/json',
-      ...CORS_HEADERS,
+      ...corsHeaders(request),
     },
   });
 }
@@ -220,7 +232,7 @@ export default {
 
     if (url.pathname === '/api/ai') {
       if (request.method === 'OPTIONS') {
-        return new Response(null, { status: 204, headers: CORS_HEADERS });
+        return new Response(null, { status: 204, headers: corsHeaders(request) });
       }
       if (request.method === 'POST') {
         return handleAI(request, env);
@@ -230,7 +242,7 @@ export default {
 
     if (url.pathname === '/api/vin') {
       if (request.method === 'OPTIONS') {
-        return new Response(null, { status: 204, headers: CORS_HEADERS });
+        return new Response(null, { status: 204, headers: corsHeaders(request) });
       }
       if (request.method === 'POST') {
         return handleVin(request, env);

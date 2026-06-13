@@ -36,17 +36,17 @@ export class VehicleAddComponent {
     vin: [null as string | null, [Validators.pattern(/^[A-HJ-NPR-Z0-9]{17}$/i)]],
     make: ['', Validators.required],
     model: ['', Validators.required],
-    year: [null as number | null, [Validators.required, Validators.min(1900), Validators.max(2030)]],
+    year: [null as number | null, [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
     engine_capacity: [null as number | null, [Validators.required, Validators.min(0.1), Validators.max(20)]],
     fuel_type: ['', Validators.required],
     current_mileage: [null as number | null, Validators.min(0)],
   });
 
   async decodeVin(): Promise<void> {
+    if (this.isDecoding()) return;
     const vin = this.form.controls.vin.value;
     if (!vin) return;
     this.isDecoding.set(true);
-    this.decodeError.set(null);
     try {
       const result = await this.vinDecoderService.decode(vin);
       if (result.error === 'not_found') {
@@ -60,6 +60,7 @@ export class VehicleAddComponent {
       if (result.engine_capacity !== undefined) patch['engine_capacity'] = result.engine_capacity;
       if (result.fuel_type !== undefined) patch['fuel_type'] = result.fuel_type;
       this.form.patchValue(patch);
+      this.decodeError.set(null);
     } catch {
       this.decodeError.set('Could not decode this VIN. Please fill in manually.');
     } finally {
