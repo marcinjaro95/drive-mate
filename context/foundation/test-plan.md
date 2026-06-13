@@ -70,7 +70,7 @@ orchestrator updates Status as artifacts appear on disk.
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|------------|-----------------|----------------|------------|--------|---------------|
 | 1 | AI schedule flow hardening | Prove the core generation loop is resilient to malformed responses and always enforces source attribution | #1, #2 | unit + component | complete | testing-ai-schedule-hardening |
-| 2 | Auth & ownership enforcement | Verify route guard covers all protected routes; verify RLS enforces per-user isolation at the DB; verify app-layer ownership on schedule generation | #3, #4, #5 | Angular router integration + Supabase integration (local) | not started | — |
+| 2 | Auth & ownership enforcement | Verify route guard covers all protected routes; verify RLS enforces per-user isolation at the DB; verify app-layer ownership on schedule generation | #3, #4, #5 | Angular router integration + Supabase integration (local) | change opened | testing-auth-ownership-enforcement |
 | 3 | CI test gate | Wire `npm test` to run on every PR so the floor from Phases 1+2 cannot regress silently | cross-cutting | CI gate | not started | — |
 
 ---
@@ -182,7 +182,70 @@ The generation-flow `beforeEach` provides: `provideRouter([])`,
 
 ### 6.2 Adding an Angular router / guard integration test
 
-TBD — see §3 Phase 2 for auth guard coverage and route protection patterns.
+**File**: `src/app/core/auth/auth.guard.spec.ts` — extend the existing `describe('authGuard', ...)` block.
+
+**Setup** — provide the real route config and a minimal `AuthService` fake, with initial navigation disabled so each test controls navigation explicitly:
+
+```ts
+import { TestBed } from '@angular/core/testing';
+import { provideRouter, withDisabledInitialNavigation, Router } from '@angular/router';
+import { signal } from '@angular/core';
+import { routes } from '../../app.routes';
+import { AuthService } from './auth.service';
+
+function setupGuardTest(opts: { initialized: Promise<void>; authenticated: boolean }) {
+  TestBed.configureTestingModule({
+    providers: [
+      provideRouter(routes, withDisabledInitialNavigation()),
+      {
+        provide: AuthService,
+        useValue: {
+          initialized: opts.initialized,
+          isAuthenticated: signal(opts.authenticated),
+        },
+      },
+    ],
+  });
+  return TestBed.inject(Router);
+}
+```
+
+**Why `provideRouter(routes)`** (not a test-only stub): using the real route config means the test verifies the guard is actually wired to protected routes — a stub would pass even if the guard were removed from `app.routes.ts`.
+
+**Why `withDisabledInitialNavigation()`**: prevents Angular from triggering an automatic navigation to `'/'` when the TestBed is set up. Without this, the first navigation in a pending-`initialized` test might conflict with an in-flight initial navigation to the root route.
+
+**Fake `AuthService` shape**: the guard only uses two properties — `initialized: Promise<void>` and `isAuthenticated: Signal<boolean>`. The fake needs only those two; other `AuthService` members are not required.
+
+**Assertion pattern** — always assert `router.url`, never the rendered component:
+
+```ts
+// Unauthenticated redirect
+await router.navigateByUrl('/dashboard');
+expect(router.url).toBe('/login');
+
+// Authenticated pass-through
+await router.navigateByUrl('/dashboard');
+expect(router.url).toBe('/dashboard');
+```
+
+`router.url` is reliable regardless of whether lazy-loaded components instantiate successfully. For `loadComponent` routes, the guard fires before the dynamic `import()` — so the unauthenticated test never triggers lazy loading at all.
+
+**Testing pre-init suspension** (guard awaits `auth.initialized`):
+
+```ts
+let resolveInit!: () => void;
+const initialized = new Promise<void>(r => { resolveInit = r; });
+const router = setupGuardTest({ initialized, authenticated: false });
+
+const nav = router.navigateByUrl('/dashboard');
+// Guard is suspended — initialized hasn't resolved yet.
+expect(router.url).toBe('/');  // URL unchanged while guard waits
+resolveInit();
+await nav;
+expect(router.url).toBe('/login');
+```
+
+This works because the `await router.navigateByUrl(...)` call is not awaited before the `expect` — JavaScript is synchronous between microtasks, so `router.url` is checked before any pending Promise callbacks can run.
 
 ### 6.3 Adding a Supabase RLS integration test
 
