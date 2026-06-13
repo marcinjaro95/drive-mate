@@ -1,14 +1,22 @@
 import { Injectable } from '@angular/core';
 import { VehicleService } from '../vehicles/vehicle.service';
+import { AuthService } from '../auth/auth.service';
 import type { Vehicle } from '../models/vehicle.model';
 import type { ScheduleItem } from '../models/schedule-item.model';
 import type { ServiceRecord } from '../models/service-record.model';
 
 @Injectable({ providedIn: 'root' })
 export class AiScheduleService {
-  constructor(private readonly vehicleService: VehicleService) {}
+  constructor(
+    private readonly vehicleService: VehicleService,
+    private readonly auth: AuthService,
+  ) {}
 
   async generateAndSave(vehicle: Vehicle, signal?: AbortSignal, serviceRecords: ServiceRecord[] = []): Promise<ScheduleItem[]> {
+    const currentUserId = this.auth.currentUser()?.id;
+    if (!currentUserId || vehicle.user_id !== currentUserId) {
+      throw new Error('Vehicle does not belong to the current user');
+    }
     const httpRes = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

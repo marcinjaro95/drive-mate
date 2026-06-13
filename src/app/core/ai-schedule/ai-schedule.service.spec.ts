@@ -1,9 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { vi } from 'vitest';
 import { AiScheduleService } from './ai-schedule.service';
 import { VehicleService } from '../vehicles/vehicle.service';
+import { AuthService } from '../auth/auth.service';
 import type { Vehicle } from '../models/vehicle.model';
 import type { ScheduleItem } from '../models/schedule-item.model';
+import type { User } from '@supabase/supabase-js';
 
 const makeVehicle = (overrides: Partial<Vehicle> = {}): Vehicle => ({
   id: 'v1',
@@ -49,6 +52,7 @@ describe('AiScheduleService', () => {
       providers: [
         AiScheduleService,
         { provide: VehicleService, useValue: { updateVehicle: mockUpdateVehicle } },
+        { provide: AuthService, useValue: { currentUser: signal<User | null>({ id: 'user-abc' } as User) } },
       ],
     });
     service = TestBed.inject(AiScheduleService);
@@ -206,6 +210,25 @@ describe('AiScheduleService', () => {
     expect(mockUpdateVehicle).toHaveBeenCalledWith('v1', {
       ai_schedule: [expect.objectContaining({ item: items[0].item, source: items[0].source, id: expect.stringMatching(/^[0-9a-f-]{36}$/) })],
     });
+  });
+
+  it('throws and does not call fetch when vehicle is not owned by current user', async () => {
+    const fetchSpy = vi.fn();
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await expect(service.generateAndSave(makeVehicle({ user_id: 'attacker-id' }))).rejects.toThrow(
+      'Vehicle does not belong to the current user',
+    );
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('resolves without throwing when vehicle is owned by current user', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(makeEnvelope([makeItem()])),
+    }));
+
+    await expect(service.generateAndSave(makeVehicle({ user_id: 'user-abc' }))).resolves.toBeDefined();
   });
 
   describe('buildPrompt', () => {

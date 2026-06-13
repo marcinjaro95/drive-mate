@@ -445,13 +445,13 @@ new migrations.
 
 #### Automated
 
-- [x] 1.1 `npm test` passes with zero failures (new auth.guard.spec.ts included)
-- [x] 1.2 TypeScript compiles without errors
+- [x] 1.1 `npm test` passes with zero failures (new auth.guard.spec.ts included) — 2b8ef67
+- [x] 1.2 TypeScript compiles without errors — 2b8ef67
 
 #### Manual
 
-- [x] 1.3 Spec exercises the guard via real router config (not guard function in isolation)
-- [x] 1.4 Pre-init test case genuinely suspends on `await auth.initialized`
+- [x] 1.3 Spec exercises the guard via real router config (not guard function in isolation) — 2b8ef67
+- [x] 1.4 Pre-init test case genuinely suspends on `await auth.initialized` — 2b8ef67
 
 ### Phase 2: App-Layer Ownership Guard + Test
 
