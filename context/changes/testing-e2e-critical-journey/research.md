@@ -4,7 +4,7 @@ researcher: Claude Sonnet 4.6
 git_commit: 3b6a775b57d894f4a0dc143283206b2e5dd5a5d7
 branch: master
 repository: drive-mate
-topic: "E2E Playwright test for the critical new-user journey (sign-up → vehicle → AI schedule)"
+topic: 'E2E Playwright test for the critical new-user journey (sign-up → vehicle → AI schedule)'
 tags: [research, e2e, playwright, cloudflare-workers, supabase, github-actions, testing]
 status: complete
 last_updated: 2026-06-14
@@ -99,10 +99,10 @@ not_found_handling = "single-page-application"
 
 **Implications for Phase 4:**
 
-| Option | Target URL | Setup cost | Test-data isolation |
-|--------|-----------|------------|---------------------|
-| A — Production Worker (recommended for now) | `https://drive-mate.marcinjaro95.workers.dev` | None | Test user created/deleted in prod Supabase project |
-| B — Separate staging Worker (`drive-mate-staging`) | `https://drive-mate-staging.marcinjaro95.workers.dev` | New wrangler deploy + secrets + CORS update | True isolation |
+| Option                                             | Target URL                                            | Setup cost                                  | Test-data isolation                                |
+| -------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------- | -------------------------------------------------- |
+| A — Production Worker (recommended for now)        | `https://drive-mate.marcinjaro95.workers.dev`         | None                                        | Test user created/deleted in prod Supabase project |
+| B — Separate staging Worker (`drive-mate-staging`) | `https://drive-mate-staging.marcinjaro95.workers.dev` | New wrangler deploy + secrets + CORS update | True isolation                                     |
 
 Option A is the right call for Phase 4 because the project has one environment today. The plan
 should note that Option B is the eventual target once traffic justifies it.
@@ -133,21 +133,21 @@ No `data-testid` attributes exist anywhere in the app. All selectors below use `
 
 #### Sign-up (`/signup`) — `src/app/auth/signup/signup.html`
 
-| Field | Selector | Line |
-|-------|----------|------|
-| Email input | `input[formControlName="email"]` | 7 |
-| Password input | `input[formControlName="password"]` | 12 |
-| Submit button | `button[type="submit"]` | 15 |
+| Field          | Selector                            | Line |
+| -------------- | ----------------------------------- | ---- |
+| Email input    | `input[formControlName="email"]`    | 7    |
+| Password input | `input[formControlName="password"]` | 12   |
+| Submit button  | `button[type="submit"]`             | 15   |
 
 Button text cycles: `'Create account'` → `'Creating account…'` (disabled while `isSubmitting()`).
 
 #### Login (`/login`) — `src/app/auth/login/login.html`
 
-| Field | Selector | Line |
-|-------|----------|------|
-| Email input | `input[formControlName="email"]` | 7 |
-| Password input | `input[formControlName="password"]` | 12 |
-| Submit button | `button[type="submit"]` | 15 |
+| Field          | Selector                            | Line |
+| -------------- | ----------------------------------- | ---- |
+| Email input    | `input[formControlName="email"]`    | 7    |
+| Password input | `input[formControlName="password"]` | 12   |
+| Submit button  | `button[type="submit"]`             | 15   |
 
 Button text: `'Sign in'` → `'Signing in…'`.
 
@@ -155,28 +155,28 @@ Button text: `'Sign in'` → `'Signing in…'`.
 
 Full-page form (not a modal).
 
-| Field | Selector | Notes |
-|-------|----------|-------|
-| Make | `input[formControlName="make"]` | Required |
-| Model | `input[formControlName="model"]` | Required |
-| Year | `input[formControlName="year"]` | Required; number; 1900–next year |
-| Engine capacity | `input[formControlName="engine_capacity"]` | Required; number; 0.1–20 |
-| Fuel type | `mat-select[formControlName="fuel_type"]` | **mat-select** — needs special handling (see §5) |
-| VIN | `input[formControlName="vin"]` | Optional; skip in e2e |
-| Submit | `button[type="submit"]` | Text: `'Save car'` |
+| Field           | Selector                                   | Notes                                            |
+| --------------- | ------------------------------------------ | ------------------------------------------------ |
+| Make            | `input[formControlName="make"]`            | Required                                         |
+| Model           | `input[formControlName="model"]`           | Required                                         |
+| Year            | `input[formControlName="year"]`            | Required; number; 1900–next year                 |
+| Engine capacity | `input[formControlName="engine_capacity"]` | Required; number; 0.1–20                         |
+| Fuel type       | `mat-select[formControlName="fuel_type"]`  | **mat-select** — needs special handling (see §5) |
+| VIN             | `input[formControlName="vin"]`             | Optional; skip in e2e                            |
+| Submit          | `button[type="submit"]`                    | Text: `'Save car'`                               |
 
 **Minimum required fields to submit:** make, model, year, engine_capacity, fuel_type.
 
 #### Schedule View (`/dashboard/vehicles/:id`) — `src/app/vehicles/schedule-view/schedule-view.html`
 
-| Element | Selector | Notes |
-|---------|----------|-------|
-| Initial loading spinner | `.spinner-container` or `mat-progress-spinner` | Line 20 — hide before asserting items |
-| AI generation skeleton | `.skeleton-card` | Line 26 — hide before asserting items |
-| Schedule item card | `mat-card.schedule-card` | Line 54 — the positive assertion target |
-| Source attribution | `mat-card.schedule-card small` | Line 68 — text shape: `"Source: <text>"` |
-| Error state card | `mat-card.error-card` | Line 35 — assert this is NOT present |
-| Filtered-out notice | text `All schedule items were filtered` | Line 42 — assert this is NOT present |
+| Element                 | Selector                                       | Notes                                    |
+| ----------------------- | ---------------------------------------------- | ---------------------------------------- |
+| Initial loading spinner | `.spinner-container` or `mat-progress-spinner` | Line 20 — hide before asserting items    |
+| AI generation skeleton  | `.skeleton-card`                               | Line 26 — hide before asserting items    |
+| Schedule item card      | `mat-card.schedule-card`                       | Line 54 — the positive assertion target  |
+| Source attribution      | `mat-card.schedule-card small`                 | Line 68 — text shape: `"Source: <text>"` |
+| Error state card        | `mat-card.error-card`                          | Line 35 — assert this is NOT present     |
+| Filtered-out notice     | text `All schedule items were filtered`        | Line 42 — assert this is NOT present     |
 
 **Playwright wait strategy:**
 
@@ -232,12 +232,12 @@ journey (add vehicle → schedule), not on auth mechanics.
 
 **Env vars** — mirror the existing integration test pattern:
 
-| Variable | Source in CI | Source locally |
-|----------|-------------|----------------|
-| `SUPABASE_URL` | GitHub secret `SUPABASE_URL` | `.env.test.local` |
-| `SUPABASE_ANON_KEY` | GitHub secret `SUPABASE_ANON_KEY` | `.env.test.local` |
-| `SUPABASE_SERVICE_ROLE_KEY` | GitHub secret `SUPABASE_SERVICE_ROLE_KEY` | `.env.test.local` |
-| `PLAYWRIGHT_BASE_URL` | GitHub secret / hardcoded staging URL | `https://drive-mate.marcinjaro95.workers.dev` |
+| Variable                    | Source in CI                              | Source locally                                |
+| --------------------------- | ----------------------------------------- | --------------------------------------------- |
+| `SUPABASE_URL`              | GitHub secret `SUPABASE_URL`              | `.env.test.local`                             |
+| `SUPABASE_ANON_KEY`         | GitHub secret `SUPABASE_ANON_KEY`         | `.env.test.local`                             |
+| `SUPABASE_SERVICE_ROLE_KEY` | GitHub secret `SUPABASE_SERVICE_ROLE_KEY` | `.env.test.local`                             |
+| `PLAYWRIGHT_BASE_URL`       | GitHub secret / hardcoded staging URL     | `https://drive-mate.marcinjaro95.workers.dev` |
 
 The `.env.test.local` file already exists with local Supabase values. A separate
 `.env.e2e.local` (gitignored) should hold the production Supabase keys for local e2e runs.
@@ -267,6 +267,7 @@ This is the standard pattern for Angular Material selects with Playwright.
 ### 6. GitHub Actions CI — Current State and Required Additions
 
 **Current CI** (`.github/workflows/ci.yml`, lines 1–35):
+
 - Trigger: `push` and `pull_request` to `master`
 - Steps: checkout → Node 22 → `npm ci` → prettier → tsc → `npm test`
 - **No secrets. No deploy step. No e2e step.**
@@ -297,12 +298,12 @@ e2e:
 
 **GitHub secrets to add** (via repo Settings → Secrets → Actions):
 
-| Secret name | Value |
-|-------------|-------|
-| `PLAYWRIGHT_BASE_URL` | `https://drive-mate.marcinjaro95.workers.dev` |
-| `SUPABASE_URL` | `https://hftjmsmkmfiasseubjpz.supabase.co` |
-| `SUPABASE_ANON_KEY` | the publishable key from `src/environments/environment.ts` |
-| `SUPABASE_SERVICE_ROLE_KEY` | from Supabase project Settings → API |
+| Secret name                 | Value                                                      |
+| --------------------------- | ---------------------------------------------------------- |
+| `PLAYWRIGHT_BASE_URL`       | `https://drive-mate.marcinjaro95.workers.dev`              |
+| `SUPABASE_URL`              | `https://hftjmsmkmfiasseubjpz.supabase.co`                 |
+| `SUPABASE_ANON_KEY`         | the publishable key from `src/environments/environment.ts` |
+| `SUPABASE_SERVICE_ROLE_KEY` | from Supabase project Settings → API                       |
 
 **Security model**: `push`-only trigger means no fork can trigger this job. Secrets are
 automatically masked in logs. The `SUPABASE_SERVICE_ROLE_KEY` never appears in PR review logs
@@ -320,16 +321,14 @@ export default defineConfig({
   globalSetup: './tests/e2e/global-setup.ts',
   globalTeardown: './tests/e2e/global-teardown.ts',
   testDir: './tests/e2e',
-  timeout: 120_000,       // 2 min per test — AI generation can take 60+ s
+  timeout: 120_000, // 2 min per test — AI generation can take 60+ s
   retries: 1,
   use: {
     baseURL: process.env['PLAYWRIGHT_BASE_URL'] ?? 'https://drive-mate.marcinjaro95.workers.dev',
     storageState: 'playwright/.auth/user.json',
     trace: 'on-first-retry',
   },
-  projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-  ],
+  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 });
 ```
 
@@ -358,11 +357,11 @@ scratch in Phase 4.
 
 ### 9. Risk Response Verification Against Test Plan §2
 
-| Risk | Test plan claim | Research verdict |
-|------|----------------|------------------|
-| #1 AI schedule resilience | E2e catches live proxy contract, network errors, full browser render | **Confirmed.** The Worker's `/api/ai` handler calls real OpenRouter. E2e hitting the deployed Worker will use `gpt-oss-120b:free` (free tier). |
-| #2 Source attribution guardrail | Assert in DOM, not service layer | **Confirmed.** `<small>Source: {{ item.source }}</small>` at line 68 of `schedule-view.html`. The filter-out notice at line 42 provides a ready-made error assertion. |
-| #3 Unauthenticated redirect | Deployed environment, not TestBed | **Confirmed.** Playwright navigating to `/dashboard` unauthenticated should redirect to `/login`. This is simple to assert without auth state. |
+| Risk                            | Test plan claim                                                      | Research verdict                                                                                                                                                      |
+| ------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #1 AI schedule resilience       | E2e catches live proxy contract, network errors, full browser render | **Confirmed.** The Worker's `/api/ai` handler calls real OpenRouter. E2e hitting the deployed Worker will use `gpt-oss-120b:free` (free tier).                        |
+| #2 Source attribution guardrail | Assert in DOM, not service layer                                     | **Confirmed.** `<small>Source: {{ item.source }}</small>` at line 68 of `schedule-view.html`. The filter-out notice at line 42 provides a ready-made error assertion. |
+| #3 Unauthenticated redirect     | Deployed environment, not TestBed                                    | **Confirmed.** Playwright navigating to `/dashboard` unauthenticated should redirect to `/login`. This is simple to assert without auth state.                        |
 
 ---
 

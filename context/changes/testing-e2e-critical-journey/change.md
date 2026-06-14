@@ -18,6 +18,7 @@ Test types planned: Playwright e2e against a Cloudflare Pages preview +
 real Supabase staging project.
 
 Risk response intent:
+
 - Risk #1: prove the schedule view renders real maintenance items (not a
   crash or blank) after a live AI proxy call in staging — the e2e catches
   what unit tests cannot: the actual proxy contract, network errors, and
@@ -35,6 +36,7 @@ schedule item is visible with non-empty source attribution. Teardown:
 delete the test user via Supabase Admin API after each run.
 
 Required research before planning:
+
 - How to provision/teardown a real Supabase staging user in Playwright
   beforeAll/afterAll (REST Admin API or SDK).
 - Whether Cloudflare Pages preview URLs are deterministic enough to

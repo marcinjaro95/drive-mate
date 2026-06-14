@@ -28,20 +28,21 @@ master via a new `e2e` GitHub Actions job.
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-|---|---|---|---|
-| Auth flow | Sign-in, not sign-up | Sign-up requires email confirmation loop; sign-in covers the same Risks #1–#3 in practice | Plan |
-| User provisioning | Static dedicated test account | No globalSetup latency; aligns with existing `seed.spec.ts` approach; cleanup is per-test via `afterEach` | Plan |
-| mat-select interaction | Click-open-overlay pattern | `.selectOption()` only works on native `<select>`; Angular Material appends overlay to `<body>` | Research |
-| data-testid scope | schedule-item + source only | Form fields use stable ARIA `getByRole()` selectors; only dynamic card elements need testids | Plan |
-| AI proxy | Live call, no stub | The whole point of this e2e test is to verify the real Worker→OpenRouter path works | Plan |
-| CI trigger | Push to master only | PRs can't access secrets safely; fork PRs would fail or be blocked | Research |
-| Deployment target | Production Worker URL | There is no staging Worker; one environment is the current reality | Research |
-| seed.spec.ts | Leave untouched | User direction; new test goes in its own file | Plan |
+| Decision               | Choice                        | Why (1 sentence)                                                                                          | Source   |
+| ---------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------- | -------- |
+| Auth flow              | Sign-in, not sign-up          | Sign-up requires email confirmation loop; sign-in covers the same Risks #1–#3 in practice                 | Plan     |
+| User provisioning      | Static dedicated test account | No globalSetup latency; aligns with existing `seed.spec.ts` approach; cleanup is per-test via `afterEach` | Plan     |
+| mat-select interaction | Click-open-overlay pattern    | `.selectOption()` only works on native `<select>`; Angular Material appends overlay to `<body>`           | Research |
+| data-testid scope      | schedule-item + source only   | Form fields use stable ARIA `getByRole()` selectors; only dynamic card elements need testids              | Plan     |
+| AI proxy               | Live call, no stub            | The whole point of this e2e test is to verify the real Worker→OpenRouter path works                       | Plan     |
+| CI trigger             | Push to master only           | PRs can't access secrets safely; fork PRs would fail or be blocked                                        | Research |
+| Deployment target      | Production Worker URL         | There is no staging Worker; one environment is the current reality                                        | Research |
+| seed.spec.ts           | Leave untouched               | User direction; new test goes in its own file                                                             | Plan     |
 
 ## Scope
 
 **In scope:**
+
 - `playwright.config.ts` (new)
 - `package.json` — add `@playwright/test` + `test:e2e` script
 - `e2e/critical-journey.spec.ts` (new) — two tests
@@ -50,6 +51,7 @@ master via a new `e2e` GitHub Actions job.
 - Documentation of required `.env.e2e.local` vars and six GitHub secrets
 
 **Out of scope:**
+
 - Modifying `e2e/seed.spec.ts`
 - Testing sign-up UI
 - Staging Worker setup
@@ -67,11 +69,11 @@ vehicles via the Supabase service-role client, mirroring `rls.spec.ts:130–143`
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. Playwright setup | Config, devDep, npm script, env var docs | Config typo fails silently (`--list` catches it) |
-| 2. HTML + spec | data-testid attrs, two-test spec, local e2e passing | mat-select overlay timing; AI free-tier quota; 120 s timeout |
-| 3. CI integration | `e2e` job on push-to-master; secrets documented | Secrets not yet added to repo Settings block the first run |
+| Phase               | What it delivers                                    | Key risk                                                     |
+| ------------------- | --------------------------------------------------- | ------------------------------------------------------------ |
+| 1. Playwright setup | Config, devDep, npm script, env var docs            | Config typo fails silently (`--list` catches it)             |
+| 2. HTML + spec      | data-testid attrs, two-test spec, local e2e passing | mat-select overlay timing; AI free-tier quota; 120 s timeout |
+| 3. CI integration   | `e2e` job on push-to-master; secrets documented     | Secrets not yet added to repo Settings block the first run   |
 
 **Prerequisites:** Dedicated test account must be created once in Supabase production before
 Phase 2 manual verification. Six GitHub secrets must be set before Phase 3 manual verification.

@@ -10,6 +10,7 @@ unit/integration ceiling.
 ## Current State Analysis
 
 The project already has:
+
 - A north-star spec at `e2e/seed.spec.ts` (untracked) with one test that follows the same
   journey but has two bugs: (1) uses `.selectOption()` on `mat-select` which fails at runtime,
   and (2) references `data-testid` attributes that don't exist in `schedule-view.html`.
@@ -24,6 +25,7 @@ target — there is no separate staging environment.
 ## Desired End State
 
 A new `e2e/critical-journey.spec.ts` with two tests:
+
 1. Unauthenticated visitor navigating to `/dashboard` is redirected to `/login`.
 2. Authenticated user can sign in, add a vehicle, and see at least one AI-generated schedule
    card with non-empty source attribution.
@@ -102,6 +104,7 @@ script entry).
 use, what base URL to target, and how long to allow each test to run.
 
 **Contract**:
+
 - `testDir: './e2e'`
 - `timeout: 120_000` (2 min — AI generation takes 30–90 s on the free-tier model)
 - `retries: 1`
@@ -117,14 +120,14 @@ use, what base URL to target, and how long to allow each test to run.
 **Intent**: Document the six env vars a developer needs to run the e2e tests locally against
 the live Worker. The dedicated test account in Supabase must be created once before first use.
 
-| Variable | Source |
-|---|---|
-| `PLAYWRIGHT_BASE_URL` | `https://drive-mate.marcinjaro95.workers.dev` |
-| `SUPABASE_URL` | `src/environments/environment.ts` |
-| `SUPABASE_ANON_KEY` | `src/environments/environment.ts` |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase project Settings → API |
-| `E2E_USER_EMAIL` | Email of the dedicated test account |
-| `E2E_USER_PASSWORD` | Password of that account |
+| Variable                    | Source                                        |
+| --------------------------- | --------------------------------------------- |
+| `PLAYWRIGHT_BASE_URL`       | `https://drive-mate.marcinjaro95.workers.dev` |
+| `SUPABASE_URL`              | `src/environments/environment.ts`             |
+| `SUPABASE_ANON_KEY`         | `src/environments/environment.ts`             |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase project Settings → API               |
+| `E2E_USER_EMAIL`            | Email of the dedicated test account           |
+| `E2E_USER_PASSWORD`         | Password of that account                      |
 
 ### Success Criteria
 
@@ -162,6 +165,7 @@ Add two `data-testid` attributes to `schedule-view.html`, then write
 identifiers so the Playwright spec can target them without coupling to CSS class names.
 
 **Contract**:
+
 - Line 55: `<mat-card class="schedule-card">` → add `data-testid="schedule-item"`
 - Line 68: `<small>Source: {{ item.source }}</small>` → add `data-testid="schedule-item-source"`
 
@@ -187,9 +191,11 @@ Env vars read at module top: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `E2E_U
 and delete their vehicles — mirror the pattern at `tests/integration/rls.spec.ts:130–143`.
 
 **Test 1 — unauthenticated redirect**:
+
 - `page.goto('/dashboard')` then `page.waitForURL(/\/login/)` then assert `page.url()` contains `/login`
 
 **Test 2 — critical journey**:
+
 1. Fill `input[formControlName="email"]` and `input[formControlName="password"]` via ARIA
    `getByRole('textbox')` or `formControlName` attribute selectors; click `button[type="submit"]`; wait for URL `/dashboard`.
 2. Navigate to `/dashboard/vehicles/new` (direct navigation or click the Add car link).
@@ -271,14 +277,14 @@ e2e:
 **Intent**: Document the six secrets that must be added to the repo via Settings → Secrets and
 variables → Actions before the CI job can succeed.
 
-| Secret name | Value |
-|---|---|
-| `PLAYWRIGHT_BASE_URL` | `https://drive-mate.marcinjaro95.workers.dev` |
-| `SUPABASE_URL` | `https://hftjmsmkmfiasseubjpz.supabase.co` |
-| `SUPABASE_ANON_KEY` | anon key from `src/environments/environment.ts` |
-| `SUPABASE_SERVICE_ROLE_KEY` | from Supabase project Settings → API |
-| `E2E_USER_EMAIL` | email of the dedicated test account |
-| `E2E_USER_PASSWORD` | password of the dedicated test account |
+| Secret name                 | Value                                           |
+| --------------------------- | ----------------------------------------------- |
+| `PLAYWRIGHT_BASE_URL`       | `https://drive-mate.marcinjaro95.workers.dev`   |
+| `SUPABASE_URL`              | `https://hftjmsmkmfiasseubjpz.supabase.co`      |
+| `SUPABASE_ANON_KEY`         | anon key from `src/environments/environment.ts` |
+| `SUPABASE_SERVICE_ROLE_KEY` | from Supabase project Settings → API            |
+| `E2E_USER_EMAIL`            | email of the dedicated test account             |
+| `E2E_USER_PASSWORD`         | password of the dedicated test account          |
 
 ### Success Criteria
 
@@ -354,13 +360,13 @@ variables → Actions before the CI job can succeed.
 
 #### Automated
 
-- [x] 2.1 `npx tsc -p tsconfig.app.json --noEmit` exits 0
-- [x] 2.2 `npm test` (Vitest) exits 0
+- [x] 2.1 `npx tsc -p tsconfig.app.json --noEmit` exits 0 — fa8d70b
+- [x] 2.2 `npm test` (Vitest) exits 0 — fa8d70b
 - [ ] 2.3 `npm run test:e2e` exits 0 (both tests pass against live Worker)
 
 #### Manual
 
-- [x] 2.4 Redirect test completes in under 5 s
+- [x] 2.4 Redirect test completes in under 5 s — fa8d70b
 - [ ] 2.5 Critical-journey test completes within 120 s with schedule cards and source attribution visible
 - [ ] 2.6 `playwright-report/index.html` shows zero retries
 

@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-14 (all phases complete)
+> Last updated: 2026-06-14 (Phase 4 added — e2e critical journey)
 
 ---
 
@@ -72,6 +72,7 @@ orchestrator updates Status as artifacts appear on disk.
 | 1   | AI schedule flow hardening   | Prove the core generation loop is resilient to malformed responses and always enforces source attribution                                           | #1, #2        | unit + component                                          | complete      | testing-ai-schedule-hardening      |
 | 2   | Auth & ownership enforcement | Verify route guard covers all protected routes; verify RLS enforces per-user isolation at the DB; verify app-layer ownership on schedule generation | #3, #4, #5    | Angular router integration + Supabase integration (local) | complete      | testing-auth-ownership-enforcement |
 | 3   | CI test gate                 | Wire `npm test` to run on every PR so the floor from Phases 1+2 cannot regress silently                                                             | cross-cutting | CI gate                                                   | complete      | testing-ci-test-gate               |
+| 4   | E2E critical user journey    | Prove the full new-user flow (sign-up → add vehicle → AI schedule renders with visible source attribution) works against a Cloudflare Pages preview | #1, #2, #3    | Playwright e2e (staging + real Supabase)                  | change opened | testing-e2e-critical-journey       |
 
 ---
 
@@ -87,7 +88,7 @@ tools actually exposed in the current session.
 | unit + component           | Vitest (via Angular builder)                 | ^4.1.8   | Runner: `npm test`; Angular TestBed for component tests                               |
 | Supabase integration       | `@supabase/supabase-js` + local Supabase CLI | ^2.107.0 | `supabase start` for local DB; two test user sessions for cross-user RLS verification |
 | Angular router integration | Angular TestBed + `provideRouter`            | ^21.0.0  | Route guard testing; no separate e2e runner needed                                    |
-| e2e                        | none — see §7                                | —        | Excluded per Q5 (no infrastructure overinvestment)                                    |
+| e2e                        | Playwright                                   | latest   | Phase 4 only; targets Cloudflare Pages preview + real Supabase project (staging)      |
 | AI-native                  | none                                         | —        | No Playwright MCP or vision review in scope for this rollout                          |
 
 **Stack grounding tools (current session):**
@@ -410,7 +411,7 @@ contributors should respect these unless the underlying assumption changes.
 
 - **Visual look-and-feel** — no snapshot or pixel-diff tests for component appearance. Re-evaluate if the product introduces a paid design system with contractual visual requirements. (Source: Phase 2 interview Q5.)
 - **Configuration files** — no tests that verify wrangler.toml, angular.json, or tsconfig are correct. These are validated implicitly by a successful build. Re-evaluate if multi-environment config divergence causes a production incident. (Source: Phase 2 interview Q5.)
-- **End-to-end (Playwright/Cypress)** — out of scope for this rollout; integration layer is the ceiling. Re-evaluate if a critical user flow can only be verified through a fully deployed environment. (Source: Phase 2 interview Q5.)
+- **End-to-end (Playwright/Cypress)** — excluded for all flows except the Phase 4 critical-journey test. Phase 4 covers one flow only: sign-up → add vehicle → AI schedule renders with attribution, against a Cloudflare Pages preview. All other flows remain at the integration ceiling. (Source: Phase 2 interview Q5; re-evaluated 2026-06-14.)
 - **VIN lookup flow (S-03)** — blocked on an unresolved external API; excluded until the API provider is confirmed. (Source: roadmap, S-03 status: blocked.)
 
 ---
