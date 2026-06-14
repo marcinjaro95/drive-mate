@@ -362,13 +362,13 @@ variables → Actions before the CI job can succeed.
 
 - [x] 2.1 `npx tsc -p tsconfig.app.json --noEmit` exits 0 — fa8d70b
 - [x] 2.2 `npm test` (Vitest) exits 0 — fa8d70b
-- [ ] 2.3 `npm run test:e2e` exits 0 (both tests pass against live Worker)
+- [x] 2.3 `npm run test:e2e` exits 0 (both tests pass against live Worker)
 
 #### Manual
 
 - [x] 2.4 Redirect test completes in under 5 s — fa8d70b
-- [ ] 2.5 Critical-journey test completes within 120 s with schedule cards and source attribution visible
-- [ ] 2.6 `playwright-report/index.html` shows zero retries
+- [x] 2.5 Critical-journey test completes within 120 s with schedule cards and source attribution visible
+- [x] 2.6 `playwright-report/index.html` shows zero retries
 
 ### Phase 3: CI integration
 

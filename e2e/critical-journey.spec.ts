@@ -53,21 +53,18 @@ test.describe('Critical user journey', () => {
     await page.locator('mat-option:has-text("Gasoline")').click();
     await page.waitForSelector('mat-option', { state: 'hidden' });
 
-    // Step 5: Register AI intercept BEFORE clicking submit — response fires immediately
-    // after vehicle save navigates to schedule-view; registering after click risks a race
-    const aiPromise = page.waitForResponse((r) => r.url().includes('/api/ai') && r.ok());
-
-    // Step 6: Submit the form
+    // Step 5: Submit the form; wait for navigation to the vehicle detail / schedule-view page
     await page.getByRole('button', { name: /save car/i }).click();
-
-    // Step 7: Wait for navigation to the vehicle detail / schedule-view page
     await page.waitForURL(/\/dashboard\/vehicles\/.+/);
 
-    // Step 8: Wait for the AI proxy response to settle
-    await aiPromise;
-
     // Risk #1: at least one schedule card rendered (AI generation did not crash or return empty)
-    await expect(page.locator('[data-testid="schedule-item"]').first()).toBeVisible();
+    // 90 s budget covers the full cycle: Worker AI call (free-tier model, up to ~60 s) +
+    // Supabase updateVehicle write + Angular signal propagation + DOM render.
+    // We wait directly for the visual outcome rather than intercepting the HTTP response,
+    // because waitForResponse can match a preflight or redirect before the real body arrives.
+    await expect(page.locator('[data-testid="schedule-item"]').first()).toBeVisible({
+      timeout: 90_000,
+    });
 
     // Risk #2: every visible source attribution is non-empty (guardrail enforced end-to-end)
     const sources = page.locator('[data-testid="schedule-item-source"]');
