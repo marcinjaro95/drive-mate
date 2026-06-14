@@ -35,7 +35,7 @@ A private car owner knows their car needs servicing but doesn't know what, when,
 | S-01a | schedule-item-identity             | (enhancement) schedule items have stable UUIDs; done state persists across sessions | S-01          | —                              | done    |
 | S-02  | service-tracking                   | mark a service item as done with date and mileage                                   | S-01          | FR-006                         | done    |
 | S-03  | vin-car-add                        | add a car via VIN with fields auto-populated                                        | S-01          | FR-001, FR-004, US-01          | done    |
-| S-04  | car-deletion                       | delete a car and all its service records                                            | S-01          | FR-003                         | planned |
+| S-04  | car-deletion                       | delete a car and all its service records                                            | S-01          | FR-003                         | done    |
 | S-05  | ui-improvements                    | use the app with a consistent, coherent visual design                               | S-01          | —                              | done    |
 | T-01  | testing-ai-schedule-hardening      | (quality) AI schedule service unit tests + component flow tests                     | S-01          | —                              | done    |
 | T-02  | testing-auth-ownership-enforcement | (quality) auth guard, RLS, and app-layer ownership tests                            | F-01, F-02    | —                              | done    |
@@ -48,7 +48,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | Stream | Theme                    | Chain                                       | Note                                                                       |
 | ------ | ------------------------ | ------------------------------------------- | -------------------------------------------------------------------------- |
 | A      | Auth & schedule loop     | `F-01` → `S-01` → `S-01a` → `S-02` → `S-03` | Core speed path; all done.                                                 |
-| B      | Data enabler & lifecycle | `F-02` → `S-01` (joins A) / `S-04`          | F-02 done; S-04 is the remaining lifecycle item.                           |
+| B      | Data enabler & lifecycle | `F-02` → `S-01` (joins A) / `S-04`          | All done.                                                                  |
 | C      | UI polish                | `S-01` → `S-05`                             | Done.                                                                      |
 | T      | Testing                  | `T-01` → `T-02` → `T-03`                    | All three phases done; CI gate active. New features extend the test suite. |
 
@@ -153,7 +153,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Soft-delete or hard-delete? — Owner: user. Block: no (a confirmation dialog is non-negotiable for v1; data-retention strategy can be decided at implementation time per PRD OQ-2).
 - **Risk:** Delete must cascade to `service_records` — confirm cascade behaviour against the F-02 schema before implementing; hard-delete without cascade leaves orphaned records.
-- **Status:** planned
+- **Status:** done
 
 ### S-05: UI improvements
 
@@ -190,16 +190,10 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** T-01, T-02
 - **Status:** done
 
-## Backlog Handoff
-
-| Roadmap ID | Change ID    | Suggested issue title                      | Ready for `/10x-plan` | Notes                        |
-| ---------- | ------------ | ------------------------------------------ | --------------------- | ---------------------------- |
-| S-04       | car-deletion | Car deletion with confirmation and cascade | yes                   | Run `/10x-plan car-deletion` |
-
 ## Open Roadmap Questions
 
 1. ~~**Which VIN lookup API covers Polish-market (EU) vehicles reliably?**~~ — Resolved 2026-06-13: AutoRef.eu selected. See `context/changes/vin-car-add/research.md`.
-2. **Soft-delete vs hard-delete for car deletion (FR-003)?** — Owner: user. Block: S-04 (implementation choice, not a planning gate).
+2. ~~**Soft-delete vs hard-delete for car deletion (FR-003)?**~~ — Resolved during S-04 implementation.
 3. ~~**Is mileage optional when marking a service done (FR-006)?**~~ — Resolved during S-02 implementation.
 
 ## Parked
@@ -226,6 +220,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | 2026-06-07 | ui-improvements                    | S-05       | Consistent design across all core screens                                |
 | 2026-06-11 | schedule-item-identity             | S-01a      | Stable UUID per ScheduleItem; done state persists across sessions via DB |
 | 2026-06-13 | vin-car-add                        | S-03       | VIN lookup via AutoRef.eu; Cloudflare Worker proxy + Angular form UI     |
+| 2026-06-14 | car-deletion                       | S-04       | Car deletion with confirmation dialog; cascades to service_records        |
 | 2026-06-13 | testing-ai-schedule-hardening      | T-01       | AI schedule service + component generation-flow test suite               |
 | 2026-06-13 | testing-auth-ownership-enforcement | T-02       | Auth guard, RLS, and app-layer ownership enforcement tests               |
 | 2026-06-14 | testing-ci-test-gate               | T-03       | GitHub Actions CI gate; Node version locked                              |
