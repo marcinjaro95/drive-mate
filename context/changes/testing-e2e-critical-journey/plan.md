@@ -375,9 +375,9 @@ variables → Actions before the CI job can succeed.
 #### Automated
 
 - [x] 3.1 `npx tsc -p tsconfig.app.json --noEmit` exits 0
-- [ ] 3.2 `e2e` CI job appears and exits green on push to master
+- [x] 3.2 `e2e` CI job appears and exits green on push to master
 
 #### Manual
 
-- [ ] 3.3 `e2e` job absent on PR builds
-- [ ] 3.4 Actions log shows Playwright passing; no secret values in log
+- [x] 3.3 `e2e` job absent on PR builds
+- [x] 3.4 Actions log shows Playwright passing; no secret values in log
