@@ -37,8 +37,7 @@ test.describe('Critical user journey', () => {
     // Step 1: Sign in using label-based locators (mat-label associates via aria-labelledby)
     await page.goto('/login');
     await page.getByLabel('Email').fill(TEST_EMAIL);
-    // type="password" has no textbox ARIA role — use formControlName attribute selector
-    await page.locator('[formControlName="password"]').fill(TEST_PASSWORD);
+    await page.getByLabel('Password').fill(TEST_PASSWORD);
     await page.getByRole('button', { name: /sign in/i }).click();
     await page.waitForURL(/\/dashboard/);
 
@@ -51,12 +50,11 @@ test.describe('Critical user journey', () => {
     await page.getByLabel('Year').fill('2020');
     await page.getByLabel('Engine capacity (L)').fill('2.0');
 
-    // Step 4: Open the mat-select fuel type overlay
-    // mat-option elements are appended to <body>, not scoped to the form
-    await page.locator('mat-select[formControlName="fuel_type"]').click();
-    await page.waitForSelector('mat-option', { state: 'visible' });
-    await page.locator('mat-option:has-text("Gasoline")').click();
-    await page.waitForSelector('mat-option', { state: 'hidden' });
+    // Step 4: Open the mat-select fuel type overlay and select Gasoline
+    // getByRole('option') searches globally — Angular Material appends mat-option to <body>
+    await page.getByLabel('Fuel type').click();
+    await page.getByRole('option', { name: 'Gasoline' }).click();
+    await expect(page.getByRole('option', { name: 'Gasoline' })).toBeHidden();
 
     // Step 5: Submit the form; wait for navigation to the vehicle detail / schedule-view page
     await page.getByRole('button', { name: /save car/i }).click();
@@ -71,12 +69,15 @@ test.describe('Critical user journey', () => {
       timeout: 90_000,
     });
 
-    // Risk #2: every visible source attribution is non-empty (guardrail enforced end-to-end)
-    const sources = page.locator('[data-testid="schedule-item-source"]');
-    const count = await sources.count();
-    expect(count).toBeGreaterThanOrEqual(1);
-    for (let i = 0; i < count; i++) {
-      const text = await sources.nth(i).textContent();
+    // Risk #2: every schedule-item has a non-empty source attribution (guardrail enforced end-to-end)
+    // Iterate over items, not sources — a sourceless item renders invisibly to the old source-only check.
+    const items = page.locator('[data-testid="schedule-item"]');
+    const itemCount = await items.count();
+    expect(itemCount).toBeGreaterThanOrEqual(1);
+    for (let i = 0; i < itemCount; i++) {
+      const src = items.nth(i).locator('[data-testid="schedule-item-source"]');
+      await expect(src).toBeVisible();
+      const text = await src.textContent();
       expect(text?.trim()).not.toBe('');
     }
   });

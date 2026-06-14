@@ -6,15 +6,20 @@ const SERVICE_ROLE_KEY = process.env['SUPABASE_SERVICE_ROLE_KEY']!;
 const TEST_EMAIL = process.env['E2E_USER_EMAIL']!;
 const TEST_PASSWORD = process.env['E2E_USER_PASSWORD']!;
 
-test.afterEach(async () => {
-  // S-04 (car deletion UI) not yet implemented — clean up via service client
+// S-04 (car deletion UI) not yet implemented — clean up via service client
+async function cleanupTestVehicles() {
   const client = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
-  const { data: users } = await client.auth.admin.listUsers();
-  const user = users?.users.find((u) => u.email === TEST_EMAIL);
+  // perPage:1000 avoids pagination losing the test user on larger projects
+  const { data: { users } } = await client.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  const user = users.find((u) => u.email === TEST_EMAIL);
   if (user) await client.from('vehicles').delete().eq('user_id', user.id);
-});
+}
+
+// Teardown-before-setup: guarantees a clean start even after a previous crash
+test.beforeEach(cleanupTestVehicles);
+test.afterEach(cleanupTestVehicles);
 
 test('north star: sign in → add car manually → AI schedule with sources', async ({ page }) => {
   // 1. Unauthenticated visitor is redirected to login
@@ -38,21 +43,22 @@ test('north star: sign in → add car manually → AI schedule with sources', as
   await page.getByRole('combobox', { name: /fuel|paliwo/i }).selectOption('gasoline');
 
   // 4. Wait for AI proxy response BEFORE clicking — Promise must exist before the request fires
-  const aiResponse = page.waitForResponse((r) => r.url().includes('/api/ai') && r.ok());
+  const aiResponsePromise = page.waitForResponse((r) => r.url().includes('/api/ai'));
 
   await page.getByRole('button', { name: /save|generate|zapisz|utwórz/i }).click();
 
   // Wait for navigation to vehicle detail, then for the AI response to resolve
   await page.waitForURL(/\/dashboard\/vehicles\/.+/);
-  await aiResponse;
+  const aiResponse = await aiResponsePromise;
+  expect(aiResponse.status()).toBe(200);
 
   // 5. Schedule is visible — no explicit timeout, AI response already settled
-  const scheduleItems = page.locator('[data-testid="schedule-item"]');
+  const scheduleItems = page.getByTestId('schedule-item');
   await expect(scheduleItems.first()).toBeVisible();
   expect(await scheduleItems.count()).toBeGreaterThanOrEqual(1);
 
   // 6. Guardrail: every visible item must carry a non-empty source
-  const sources = page.locator('[data-testid="schedule-item-source"]');
+  const sources = page.getByTestId('schedule-item-source');
   const count = await sources.count();
   expect(count).toBeGreaterThanOrEqual(1);
   for (let i = 0; i < count; i++) {
