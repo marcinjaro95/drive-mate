@@ -341,26 +341,26 @@ variables → Actions before the CI job can succeed.
 
 #### Automated
 
-- [x] 1.1 `@playwright/test` present in `package.json` devDependencies
-- [x] 1.2 `npm run test:e2e` defined in `package.json` scripts
-- [x] 1.3 `npx playwright test --list` exits 0
-- [x] 1.4 `npx tsc -p tsconfig.app.json --noEmit` exits 0
+- [x] 1.1 `@playwright/test` present in `package.json` devDependencies — 39d6788
+- [x] 1.2 `npm run test:e2e` defined in `package.json` scripts — 39d6788
+- [x] 1.3 `npx playwright test --list` exits 0 — 39d6788
+- [x] 1.4 `npx tsc -p tsconfig.app.json --noEmit` exits 0 — 39d6788
 
 #### Manual
 
-- [x] 1.5 `npm run test:e2e` (with `.env.e2e.local` populated) produces Playwright runner output
+- [x] 1.5 `npm run test:e2e` (with `.env.e2e.local` populated) produces Playwright runner output — 39d6788
 
 ### Phase 2: HTML instrumentation + spec
 
 #### Automated
 
-- [ ] 2.1 `npx tsc -p tsconfig.app.json --noEmit` exits 0
-- [ ] 2.2 `npm test` (Vitest) exits 0
+- [x] 2.1 `npx tsc -p tsconfig.app.json --noEmit` exits 0
+- [x] 2.2 `npm test` (Vitest) exits 0
 - [ ] 2.3 `npm run test:e2e` exits 0 (both tests pass against live Worker)
 
 #### Manual
 
-- [ ] 2.4 Redirect test completes in under 5 s
+- [x] 2.4 Redirect test completes in under 5 s
 - [ ] 2.5 Critical-journey test completes within 120 s with schedule cards and source attribution visible
 - [ ] 2.6 `playwright-report/index.html` shows zero retries
 

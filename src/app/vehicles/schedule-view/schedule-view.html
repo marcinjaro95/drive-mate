@@ -52,7 +52,7 @@
     } @else {
       <div class="schedule-list">
         @for (item of scheduleItems(); track item.id) {
-          <mat-card class="schedule-card">
+          <mat-card class="schedule-card" data-testid="schedule-item">
             <mat-card-header>
               <mat-card-title>{{ item.item }}</mat-card-title>
               <mat-chip [class]="urgencyClass(item.urgency)">
@@ -65,7 +65,7 @@
               } @else if (item.next_due_date) {
                 <p>Next due: {{ item.next_due_date }}</p>
               }
-              <small>Source: {{ item.source }}</small>
+              <small data-testid="schedule-item-source">Source: {{ item.source }}</small>
 
               @if (expandedItem()?.id === item.id) {
                 <div class="mark-done-form">
