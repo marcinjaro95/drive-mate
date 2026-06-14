@@ -317,51 +317,51 @@ None — single-row Supabase delete with no client-side caching layer to invalid
 
 #### Automated
 
-- [ ] 1.1 npm run build compiles without errors
+- [x] 1.1 npm run build compiles without errors — b4c09cb
 
 #### Manual
 
-- [ ] 1.2 Dialog renders correctly when opened and shows title, message, Cancel and Delete buttons
-- [ ] 1.3 Cancel closes the dialog immediately
+- [x] 1.2 Dialog renders correctly when opened and shows title, message, Cancel and Delete buttons — b4c09cb
+- [x] 1.3 Cancel closes the dialog immediately — b4c09cb
 
 ### Phase 2: Delete on VehicleListComponent
 
 #### Automated
 
-- [ ] 2.1 npm run build compiles without errors
-- [ ] 2.2 npm test passes (no regressions)
+- [x] 2.1 npm run build compiles without errors — b2e3638
+- [x] 2.2 npm test passes (no regressions) — b2e3638
 
 #### Manual
 
-- [ ] 2.3 Delete button appears on each vehicle card
-- [ ] 2.4 Clicking Delete opens the confirmation dialog with correct vehicle name and cascade warning
-- [ ] 2.5 Clicking card body still navigates into the vehicle
-- [ ] 2.6 Confirming deletes the car and removes the card immediately from the list
-- [ ] 2.7 Cancelling closes the dialog; the car remains
-- [ ] 2.8 A service error keeps the dialog open and shows the error message
+- [x] 2.3 Delete button appears on each vehicle card — b2e3638
+- [x] 2.4 Clicking Delete opens the confirmation dialog with correct vehicle name and cascade warning — b2e3638
+- [x] 2.5 Clicking card body still navigates into the vehicle — b2e3638
+- [x] 2.6 Confirming deletes the car and removes the card immediately from the list — b2e3638
+- [x] 2.7 Cancelling closes the dialog; the car remains — b2e3638
+- [x] 2.8 A service error keeps the dialog open and shows the error message — b2e3638
 
 ### Phase 3: Delete on ScheduleViewComponent
 
 #### Automated
 
-- [ ] 3.1 npm run build compiles without errors
-- [ ] 3.2 npm test passes
+- [x] 3.1 npm run build compiles without errors — de69dec
+- [x] 3.2 npm test passes — de69dec
 
 #### Manual
 
-- [ ] 3.3 Delete car button appears in the vehicle header on the schedule-view page
-- [ ] 3.4 Dialog opens with correct vehicle name and cascade warning
-- [ ] 3.5 Confirming deletes the car and navigates to /dashboard; car absent from list
-- [ ] 3.6 Cancelling keeps the user on the schedule-view page
+- [x] 3.3 Delete car button appears in the vehicle header on the schedule-view page — de69dec
+- [x] 3.4 Dialog opens with correct vehicle name and cascade warning — de69dec
+- [x] 3.5 Confirming deletes the car and navigates to /dashboard; car absent from list — de69dec
+- [x] 3.6 Cancelling keeps the user on the schedule-view page — de69dec
 
 ### Phase 4: Tests
 
 #### Automated
 
-- [ ] 4.1 npm test reports all new specs passing
-- [ ] 4.2 npm run build compiles without errors
+- [x] 4.1 npm test reports all new specs passing — 2e5dc06
+- [x] 4.2 npm run build compiles without errors — 2e5dc06
 
 #### Manual
 
-- [ ] 4.3 Test descriptions read clearly in npm test output
-- [ ] 4.4 No unexpected console errors in the test runner
+- [x] 4.3 Test descriptions read clearly in npm test output — 2e5dc06
+- [x] 4.4 No unexpected console errors in the test runner — 2e5dc06
