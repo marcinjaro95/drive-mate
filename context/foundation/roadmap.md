@@ -3,7 +3,7 @@ project: DriveMate
 version: 1
 status: draft
 created: 2026-06-01
-updated: 2026-06-07
+updated: 2026-06-14
 prd_version: 1
 main_goal: speed
 top_blocker: external
@@ -27,25 +27,30 @@ A private car owner knows their car needs servicing but doesn't know what, when,
 
 ## At a glance
 
-| ID   | Change ID           | Outcome (user can …)                                             | Prerequisites           | PRD refs                       | Status   |
-| ---- | ------------------- | ---------------------------------------------------------------- | ----------------------- | ------------------------------ | -------- |
-| F-01 | auth-scaffold       | (foundation) Supabase auth wired; route guard active             | —                       | Access Control                 | ready    |
-| F-02 | data-schema-rls     | (foundation) vehicles + service_records schema with RLS live     | —                       | FR-002, FR-003, FR-005, FR-006 | ready    |
-| S-01 | car-add-ai-schedule | add a car manually and view an AI-generated maintenance schedule | F-01, F-02              | FR-002, FR-005, US-01          | proposed |
-| S-02 | service-tracking    | mark a service item as done with date and mileage                | S-01                    | FR-006                         | proposed |
-| S-03 | vin-car-add         | add a car via VIN with fields auto-populated                     | S-01, VIN API validated | FR-001, FR-004, US-01          | blocked  |
-| S-04 | car-deletion        | delete a car and all its service records                         | S-01                    | FR-003                         | proposed |
-| S-05 | ui-improvements     | use the app with a consistent, coherent visual design            | S-01                    | —                              | planned  |
+| ID   | Change ID                          | Outcome (user can …)                                             | Prerequisites           | PRD refs                       | Status   |
+| ---- | ---------------------------------- | ---------------------------------------------------------------- | ----------------------- | ------------------------------ | -------- |
+| F-01 | auth-scaffold                      | (foundation) Supabase auth wired; route guard active             | —                       | Access Control                 | done     |
+| F-02 | data-schema-rls                    | (foundation) vehicles + service_records schema with RLS live     | —                       | FR-002, FR-003, FR-005, FR-006 | done     |
+| S-01 | car-add-ai-schedule                | add a car manually and view an AI-generated maintenance schedule | F-01, F-02              | FR-002, FR-005, US-01          | done     |
+| S-01a| schedule-item-identity             | (enhancement) schedule items have stable UUIDs; done state persists across sessions | S-01 | —                 | done     |
+| S-02 | service-tracking                   | mark a service item as done with date and mileage                | S-01                    | FR-006                         | done     |
+| S-03 | vin-car-add                        | add a car via VIN with fields auto-populated                     | S-01                    | FR-001, FR-004, US-01          | done     |
+| S-04 | car-deletion                       | delete a car and all its service records                         | S-01                    | FR-003                         | planned  |
+| S-05 | ui-improvements                    | use the app with a consistent, coherent visual design            | S-01                    | —                              | done     |
+| T-01 | testing-ai-schedule-hardening      | (quality) AI schedule service unit tests + component flow tests  | S-01                    | —                              | done     |
+| T-02 | testing-auth-ownership-enforcement | (quality) auth guard, RLS, and app-layer ownership tests         | F-01, F-02              | —                              | done     |
+| T-03 | testing-ci-test-gate               | (quality) GitHub Actions CI gate runs all tests on every push    | T-01, T-02              | —                              | done     |
 
 ## Streams
 
 Navigation aid — groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
 
-| Stream | Theme                    | Chain                              | Note                                                                    |
-| ------ | ------------------------ | ---------------------------------- | ----------------------------------------------------------------------- |
-| A      | Auth & schedule loop     | `F-01` → `S-01` → `S-02` → `S-03`  | Core speed path; S-03 is blocked pending OQ-1 (VIN API).                |
-| B      | Data enabler & lifecycle | `F-02` → `S-01` (joins A) / `S-04` | F-02 runs parallel with F-01; S-04 runs parallel with S-02 after S-01.  |
-| C      | UI polish                | `S-01` → `S-05`                    | Runs after the core loop is proven; can be parallelised with S-02/S-04. |
+| Stream | Theme                    | Chain                                         | Note                                                                          |
+| ------ | ------------------------ | --------------------------------------------- | ----------------------------------------------------------------------------- |
+| A      | Auth & schedule loop     | `F-01` → `S-01` → `S-01a` → `S-02` → `S-03`  | Core speed path; all done.                                                    |
+| B      | Data enabler & lifecycle | `F-02` → `S-01` (joins A) / `S-04`            | F-02 done; S-04 is the remaining lifecycle item.                              |
+| C      | UI polish                | `S-01` → `S-05`                               | Done.                                                                         |
+| T      | Testing                  | `T-01` → `T-02` → `T-03`                      | All three phases done; CI gate active. New features extend the test suite.    |
 
 ## Baseline
 
@@ -72,7 +77,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Auth is the root gate for every user-visible slice; sequenced parallel with F-02 to minimise total time to S-01; if incomplete, no slice can be verified end-to-end.
-- **Status:** ready
+- **Status:** done
 
 ### F-02: Data schema + RLS
 
@@ -85,7 +90,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** RLS policies are the sole enforcement layer for the data-isolation guardrail ("a single data-isolation bug kills trust permanently" per PRD Guardrails); schema design can proceed in parallel with auth scaffold, but both must be complete before S-01 can be verified end-to-end.
-- **Status:** ready
+- **Status:** done
 
 ## Slices
 
@@ -97,36 +102,45 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** F-01, F-02
 - **Parallel with:** —
 - **Blockers:** —
-- **Unknowns:**
-  - Does the existing `POST /api/ai` Worker handle AI responses without hitting the Cloudflare 6 MB body limit for verbose maintenance schedules? — Owner: user. Block: no (testable during implementation; fallback: refactor proxy to streaming passthrough per `context/foundation/infrastructure.md` pre-mortem).
+- **Unknowns:** ~~Does the existing `POST /api/ai` Worker handle AI responses without hitting the Cloudflare 6 MB body limit?~~ — resolved during implementation; no limit issue encountered.
 - **Risk:** The source-attribution guardrail must be enforced here — if the AI response does not include a traceable source for each maintenance item, that item must not be rendered; this is a hard product constraint from day one, not a polish item.
-- **Status:** proposed
+- **Status:** done
+
+### S-01a: Schedule item identity + traceability
+
+- **Outcome:** each ScheduleItem in `ai_schedule` JSONB carries a stable UUID; `service_records.schedule_item_id` references that UUID so the done state is durable; `savedItems` signal is seeded from the DB on load, preserving done state across sessions.
+- **Change ID:** schedule-item-identity
+- **PRD refs:** FR-005, FR-006
+- **Prerequisites:** S-01
+- **Parallel with:** —
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** UUID generation must happen at schedule-generation time (server side or deterministically in the proxy), not at save time, to prevent key churn across regenerations.
+- **Status:** done
 
 ### S-02: Service tracking
 
 - **Outcome:** user can mark a scheduled service item as done by recording the date and current mileage, and the schedule recalculates to reflect the completed service.
 - **Change ID:** service-tracking
 - **PRD refs:** FR-006
-- **Prerequisites:** S-01
+- **Prerequisites:** S-01, S-01a
 - **Parallel with:** S-04
 - **Blockers:** —
-- **Unknowns:**
-  - Is mileage required or can it be optional when marking a service done? — Owner: user. Block: no (implementation detail; making it optional reduces friction but weakens recalculation accuracy per PRD OQ-3).
+- **Unknowns:** ~~Is mileage required or can it be optional when marking a service done?~~ — resolved during implementation.
 - **Risk:** Both date and mileage feed the schedule recalculation rule in PRD Business Logic; decide the optionality policy before implementing the form to avoid a retrofit.
-- **Status:** proposed
+- **Status:** done
 
 ### S-03: VIN car add
 
 - **Outcome:** user can enter a VIN and have make, model, year, engine capacity, and fuel type auto-populated from a lookup, then confirm and receive a maintenance schedule.
 - **Change ID:** vin-car-add
 - **PRD refs:** FR-001, FR-004, US-01
-- **Prerequisites:** S-01, VIN API for Polish/EU market validated
-- **Parallel with:** S-02, S-04 (once unblocked)
+- **Prerequisites:** S-01
+- **Parallel with:** S-02, S-04
 - **Blockers:** —
-- **Unknowns:**
-  - Which VIN lookup API reliably covers Polish/EU market vehicles at acceptable cost and data completeness? — Owner: user. Block: yes (FR-001 and FR-004 cannot be implemented without a confirmed API provider; per PRD OQ-1).
-- **Risk:** VIN lookup is positioned as a core differentiator in PRD Vision, but depends on an unvalidated external API; S-01 (manual path) provides a working fallback that unblocks the north star independently of this decision.
-- **Status:** blocked
+- **Unknowns:** ~~Which VIN lookup API reliably covers Polish/EU market vehicles?~~ — resolved 2026-06-13: **AutoRef.eu** selected (€19.99/month, 5 000 req, EU-native, covers all five required fields). Vincario/vindecoder.eu is the documented fallback for insufficient Polish VIN hit rate. See `context/changes/vin-car-add/research.md`.
+- **Risk:** Free-tier validation (50 req/month on AutoRef) should be run against a real Polish VIN sample before committing to the paid plan.
+- **Status:** done
 
 ### S-04: Car deletion
 
@@ -139,7 +153,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Soft-delete or hard-delete? — Owner: user. Block: no (a confirmation dialog is non-negotiable for v1; data-retention strategy can be decided at implementation time per PRD OQ-2).
 - **Risk:** Delete must cascade to `service_records` — confirm cascade behaviour against the F-02 schema before implementing; hard-delete without cascade leaves orphaned records.
-- **Status:** proposed
+- **Status:** planned
 
 ### S-05: UI improvements
 
@@ -149,34 +163,49 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** S-01
 - **Parallel with:** S-02, S-04 (once S-01 ships)
 - **Blockers:** —
-- **Unknowns:**
-  - Which design system or component library (if any) to adopt — own primitives vs. an off-the-shelf library? — Owner: user. Block: no (work can start with a token/variable pass before a library decision is finalised).
+- **Unknowns:** ~~Which design system or component library (if any) to adopt?~~ — resolved during implementation.
 - **Risk:** Broad scope; must be timeboxed to avoid infinite polish — scope to the screens delivered by S-01 through S-04 only.
-- **Status:** planned
+- **Status:** done
+
+## Testing
+
+### T-01: AI schedule hardening
+
+- **Outcome:** (quality) AI schedule service has unit tests covering response parsing, source-attribution enforcement, and error paths; schedule-view component has generation-flow integration tests.
+- **Change ID:** testing-ai-schedule-hardening
+- **Prerequisites:** S-01
+- **Status:** done
+
+### T-02: Auth + ownership enforcement
+
+- **Outcome:** (quality) Angular router guard integration tests prove unauthenticated visitors are redirected from every protected route; Supabase integration tests prove RLS blocks cross-user SELECT/INSERT/UPDATE/DELETE for vehicles and service_records; app-layer ownership check is tested to prevent unnecessary AI proxy calls for unowned vehicles.
+- **Change ID:** testing-auth-ownership-enforcement
+- **Prerequisites:** F-01, F-02
+- **Status:** done
+
+### T-03: CI test gate
+
+- **Outcome:** (quality) GitHub Actions workflow runs the full Vitest suite on every push and pull request; Node version is locked to match local development; no merge is possible if tests are red.
+- **Change ID:** testing-ci-test-gate
+- **Prerequisites:** T-01, T-02
+- **Status:** done
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID           | Suggested issue title                                  | Ready for `/10x-plan` | Notes                                               |
-| ---------- | ------------------- | ------------------------------------------------------ | --------------------- | --------------------------------------------------- |
-| F-01       | auth-scaffold       | Auth scaffold: Supabase auth + Angular route guard     | yes                   | Run `/10x-plan auth-scaffold`                       |
-| F-02       | data-schema-rls     | Data schema: vehicles + service_records + RLS policies | yes                   | Run `/10x-plan data-schema-rls`; parallel with F-01 |
-| S-01       | car-add-ai-schedule | Manual car add + AI maintenance schedule               | no                    | Requires F-01 and F-02 done first                   |
-| S-02       | service-tracking    | Service tracking: mark item done with date and mileage | no                    | Requires S-01                                       |
-| S-03       | vin-car-add         | VIN car add with auto-populated fields                 | no                    | Blocked: resolve OQ-1 (VIN API) first               |
-| S-04       | car-deletion        | Car deletion with confirmation and cascade             | no                    | Requires S-01; parallel with S-02                   |
-| S-05       | ui-improvements     | UI improvements: consistent design across all screens  | no                    | Requires S-01; run after core loop ships            |
+| Roadmap ID | Change ID  | Suggested issue title                      | Ready for `/10x-plan` | Notes                          |
+| ---------- | ---------- | ------------------------------------------ | --------------------- | ------------------------------ |
+| S-04       | car-deletion | Car deletion with confirmation and cascade | yes                   | Run `/10x-plan car-deletion`   |
 
 ## Open Roadmap Questions
 
-1. **Which VIN lookup API covers Polish-market (EU) vehicles reliably?** — Owner: user. Block: S-03.
+1. ~~**Which VIN lookup API covers Polish-market (EU) vehicles reliably?**~~ — Resolved 2026-06-13: AutoRef.eu selected. See `context/changes/vin-car-add/research.md`.
 2. **Soft-delete vs hard-delete for car deletion (FR-003)?** — Owner: user. Block: S-04 (implementation choice, not a planning gate).
-3. **Is mileage optional when marking a service done (FR-006)?** — Owner: user. Block: S-02 (implementation choice, not a planning gate).
+3. ~~**Is mileage optional when marking a service done (FR-006)?**~~ — Resolved during S-02 implementation.
 
 ## Parked
 
 - **FR-007: service history date-sorted list** — Why parked: nice-to-have per PRD; deferred for speed (must-have path ships first).
 - **FR-008: edit service record** — Why parked: nice-to-have per PRD; deferred for speed (delete-and-re-add is the v1 workaround).
-- **GitHub Actions CI/CD** — Why parked: deploy works manually via `wrangler deploy`; CI was attempted and reverted in git history; not blocking any user-visible slice; add after the must-have path is complete.
 - **AI chat interface** — Why parked: PRD §Non-Goals — v2 feature; MVP proves the schedule + tracking core first.
 - **Native mobile app** — Why parked: PRD §Non-Goals — responsive web app sufficient for MVP.
 - **OBD integration** — Why parked: PRD §Non-Goals — all data entry is manual for v1.
@@ -188,4 +217,15 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
-(Empty on first generation. `/10x-archive` appends an entry here — and flips that item's `Status` to `done` — when a change whose `Change ID` matches a roadmap item is archived.)
+| Date       | Change ID                          | Roadmap ID | Summary                                                                    |
+| ---------- | ---------------------------------- | ---------- | -------------------------------------------------------------------------- |
+| 2026-06-04 | auth-scaffold                      | F-01       | Supabase auth + Angular route guard implemented and reviewed               |
+| 2026-06-04 | data-schema-rls                    | F-02       | vehicles + service_records schema with RLS applied; migrations done        |
+| 2026-06-07 | car-add-ai-schedule                | S-01       | Manual car add + AI maintenance schedule — north star slice shipped        |
+| 2026-06-07 | service-tracking                   | S-02       | Mark service item as done with date and mileage; schedule recalculates     |
+| 2026-06-07 | ui-improvements                    | S-05       | Consistent design across all core screens                                  |
+| 2026-06-11 | schedule-item-identity             | S-01a      | Stable UUID per ScheduleItem; done state persists across sessions via DB   |
+| 2026-06-13 | vin-car-add                        | S-03       | VIN lookup via AutoRef.eu; Cloudflare Worker proxy + Angular form UI       |
+| 2026-06-13 | testing-ai-schedule-hardening      | T-01       | AI schedule service + component generation-flow test suite                 |
+| 2026-06-13 | testing-auth-ownership-enforcement | T-02       | Auth guard, RLS, and app-layer ownership enforcement tests                 |
+| 2026-06-14 | testing-ci-test-gate               | T-03       | GitHub Actions CI gate; Node version locked                                |
