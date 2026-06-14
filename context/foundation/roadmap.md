@@ -27,19 +27,19 @@ A private car owner knows their car needs servicing but doesn't know what, when,
 
 ## At a glance
 
-| ID    | Change ID                          | Outcome (user can …)                                                                | Prerequisites | PRD refs                       | Status  |
-| ----- | ---------------------------------- | ----------------------------------------------------------------------------------- | ------------- | ------------------------------ | ------- |
-| F-01  | auth-scaffold                      | (foundation) Supabase auth wired; route guard active                                | —             | Access Control                 | done    |
-| F-02  | data-schema-rls                    | (foundation) vehicles + service_records schema with RLS live                        | —             | FR-002, FR-003, FR-005, FR-006 | done    |
-| S-01  | car-add-ai-schedule                | add a car manually and view an AI-generated maintenance schedule                    | F-01, F-02    | FR-002, FR-005, US-01          | done    |
-| S-01a | schedule-item-identity             | (enhancement) schedule items have stable UUIDs; done state persists across sessions | S-01          | —                              | done    |
-| S-02  | service-tracking                   | mark a service item as done with date and mileage                                   | S-01          | FR-006                         | done    |
-| S-03  | vin-car-add                        | add a car via VIN with fields auto-populated                                        | S-01          | FR-001, FR-004, US-01          | done    |
-| S-04  | car-deletion                       | delete a car and all its service records                                            | S-01          | FR-003                         | done    |
-| S-05  | ui-improvements                    | use the app with a consistent, coherent visual design                               | S-01          | —                              | done    |
-| T-01  | testing-ai-schedule-hardening      | (quality) AI schedule service unit tests + component flow tests                     | S-01          | —                              | done    |
-| T-02  | testing-auth-ownership-enforcement | (quality) auth guard, RLS, and app-layer ownership tests                            | F-01, F-02    | —                              | done    |
-| T-03  | testing-ci-test-gate               | (quality) GitHub Actions CI gate runs all tests on every push                       | T-01, T-02    | —                              | done    |
+| ID    | Change ID                          | Outcome (user can …)                                                                | Prerequisites | PRD refs                       | Status |
+| ----- | ---------------------------------- | ----------------------------------------------------------------------------------- | ------------- | ------------------------------ | ------ |
+| F-01  | auth-scaffold                      | (foundation) Supabase auth wired; route guard active                                | —             | Access Control                 | done   |
+| F-02  | data-schema-rls                    | (foundation) vehicles + service_records schema with RLS live                        | —             | FR-002, FR-003, FR-005, FR-006 | done   |
+| S-01  | car-add-ai-schedule                | add a car manually and view an AI-generated maintenance schedule                    | F-01, F-02    | FR-002, FR-005, US-01          | done   |
+| S-01a | schedule-item-identity             | (enhancement) schedule items have stable UUIDs; done state persists across sessions | S-01          | —                              | done   |
+| S-02  | service-tracking                   | mark a service item as done with date and mileage                                   | S-01          | FR-006                         | done   |
+| S-03  | vin-car-add                        | add a car via VIN with fields auto-populated                                        | S-01          | FR-001, FR-004, US-01          | done   |
+| S-04  | car-deletion                       | delete a car and all its service records                                            | S-01          | FR-003                         | done   |
+| S-05  | ui-improvements                    | use the app with a consistent, coherent visual design                               | S-01          | —                              | done   |
+| T-01  | testing-ai-schedule-hardening      | (quality) AI schedule service unit tests + component flow tests                     | S-01          | —                              | done   |
+| T-02  | testing-auth-ownership-enforcement | (quality) auth guard, RLS, and app-layer ownership tests                            | F-01, F-02    | —                              | done   |
+| T-03  | testing-ci-test-gate               | (quality) GitHub Actions CI gate runs all tests on every push                       | T-01, T-02    | —                              | done   |
 
 ## Streams
 
@@ -220,7 +220,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | 2026-06-07 | ui-improvements                    | S-05       | Consistent design across all core screens                                |
 | 2026-06-11 | schedule-item-identity             | S-01a      | Stable UUID per ScheduleItem; done state persists across sessions via DB |
 | 2026-06-13 | vin-car-add                        | S-03       | VIN lookup via AutoRef.eu; Cloudflare Worker proxy + Angular form UI     |
-| 2026-06-14 | car-deletion                       | S-04       | Car deletion with confirmation dialog; cascades to service_records        |
+| 2026-06-14 | car-deletion                       | S-04       | Car deletion with confirmation dialog; cascades to service_records       |
 | 2026-06-13 | testing-ai-schedule-hardening      | T-01       | AI schedule service + component generation-flow test suite               |
 | 2026-06-13 | testing-auth-ownership-enforcement | T-02       | Auth guard, RLS, and app-layer ownership enforcement tests               |
 | 2026-06-14 | testing-ci-test-gate               | T-03       | GitHub Actions CI gate; Node version locked                              |
