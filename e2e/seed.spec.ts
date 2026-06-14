@@ -12,7 +12,9 @@ async function cleanupTestVehicles() {
     auth: { autoRefreshToken: false, persistSession: false },
   });
   // perPage:1000 avoids pagination losing the test user on larger projects
-  const { data: { users } } = await client.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  const {
+    data: { users },
+  } = await client.auth.admin.listUsers({ page: 1, perPage: 1000 });
   const user = users.find((u) => u.email === TEST_EMAIL);
   if (user) await client.from('vehicles').delete().eq('user_id', user.id);
 }
