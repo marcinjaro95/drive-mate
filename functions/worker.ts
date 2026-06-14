@@ -108,7 +108,7 @@ async function tryNhtsa(vin: string): Promise<VinDecodeResult | null> {
 
   if (!resp.ok) return null;
 
-  let data: { Results?: Array<{ Variable: string; Value: string | null }> };
+  let data: { Results?: { Variable: string; Value: string | null }[] };
   try {
     data = await resp.json();
   } catch {
