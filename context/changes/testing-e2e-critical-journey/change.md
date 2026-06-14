@@ -1,7 +1,7 @@
 ---
 change_id: testing-e2e-critical-journey
 title: E2E Playwright test for the critical new-user journey (sign-up → vehicle → AI schedule)
-status: implemented
+status: impl_reviewed
 created: 2026-06-14
 updated: 2026-06-14
 archived_at: null

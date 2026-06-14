@@ -6,7 +6,11 @@ export default defineConfig({
   timeout: 120_000,
   retries: 1,
   use: {
-    baseURL: process.env['PLAYWRIGHT_BASE_URL'] ?? 'https://drive-mate.marcinjaro95.workers.dev',
+    baseURL:
+      process.env['PLAYWRIGHT_BASE_URL'] ??
+      (() => {
+        throw new Error('PLAYWRIGHT_BASE_URL must be set — see .env.e2e.local');
+      })(),
     trace: 'on-first-retry',
   },
   projects: [

@@ -10,10 +10,15 @@ const TEST_PASSWORD = process.env['E2E_USER_PASSWORD']!;
 
 // Mirror cleanup pattern from tests/integration/rls.spec.ts:130-143
 test.afterEach(async () => {
+  if (!SUPABASE_URL || !SERVICE_ROLE_KEY || !TEST_EMAIL) return;
   const client = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
-  const { data: users } = await client.auth.admin.listUsers();
+  const { data: users, error } = await client.auth.admin.listUsers({ perPage: 1000 });
+  if (error) {
+    console.warn('[e2e cleanup] listUsers failed:', error.message);
+    return;
+  }
   const user = users?.users.find((u) => u.email === TEST_EMAIL);
   if (user) await client.from('vehicles').delete().eq('user_id', user.id);
 });
