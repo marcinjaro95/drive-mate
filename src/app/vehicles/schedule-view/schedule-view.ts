@@ -7,6 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { VehicleService } from '../../core/vehicles/vehicle.service';
 import { AiScheduleService } from '../../core/ai-schedule/ai-schedule.service';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
@@ -29,6 +30,7 @@ import type { ServiceRecord } from '../../core/models/service-record.model';
     MatInputModule,
     ReactiveFormsModule,
     MatDialogModule,
+    MatSnackBarModule,
     RouterModule,
   ],
   templateUrl: './schedule-view.html',
@@ -42,6 +44,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
 
   private abortController: AbortController | null = null;
 
@@ -89,6 +92,11 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
     } catch (err: unknown) {
       console.warn('Service records unavailable — schedule will be generated without history', err);
       this.serviceRecordsUnavailable.set(true);
+      this.snackBar.open(
+        'Schedule generated without service history — some intervals may be approximate.',
+        'Dismiss',
+        { duration: 5000 },
+      );
     }
     this.savedItems.set(
       new Set(
@@ -117,6 +125,11 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
         } catch (err: unknown) {
           console.warn('Service records unavailable — schedule will be generated without history', err);
           this.serviceRecordsUnavailable.set(true);
+          this.snackBar.open(
+            'Schedule generated without service history — some intervals may be approximate.',
+            'Dismiss',
+            { duration: 5000 },
+          );
         }
       }
       const items = await this.aiScheduleService.generateAndSave(
