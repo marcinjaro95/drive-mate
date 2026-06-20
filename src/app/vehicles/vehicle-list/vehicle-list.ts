@@ -43,6 +43,11 @@ export class VehicleListComponent implements OnInit {
     this.router.navigate(['/dashboard/vehicles', id]);
   }
 
+  editCar(event: MouseEvent, id: string): void {
+    event.stopPropagation();
+    this.router.navigate(['/dashboard/vehicles', id, 'edit']);
+  }
+
   deleteCar(event: MouseEvent, vehicle: Vehicle): void {
     event.stopPropagation();
     this.dialog.open(ConfirmDialogComponent, {

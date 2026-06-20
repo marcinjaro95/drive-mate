@@ -210,15 +210,15 @@ Write a Vitest spec for `VehicleEditComponent` covering the key behavioural cont
 
 #### Automated
 
-- [x] 1.1 `npm run build` compiles without errors
-- [x] 1.2 `npm test` passes (no regressions)
+- [x] 1.1 `npm run build` compiles without errors — 128ee7a
+- [x] 1.2 `npm test` passes (no regressions) — 128ee7a
 
 #### Manual
 
-- [x] 1.3 Navigating to `/dashboard/vehicles/:id/edit` shows form prefilled with vehicle's current values
-- [x] 1.4 VIN field is disabled with lock icon
-- [x] 1.5 Saving a change updates the vehicle and redirects to schedule view
-- [x] 1.6 Cancel redirects to schedule view without any write
+- [x] 1.3 Navigating to `/dashboard/vehicles/:id/edit` shows form prefilled with vehicle's current values — 128ee7a
+- [x] 1.4 VIN field is disabled with lock icon — 128ee7a
+- [x] 1.5 Saving a change updates the vehicle and redirects to schedule view — 128ee7a
+- [x] 1.6 Cancel redirects to schedule view without any write — 128ee7a
 
 ### Phase 2: Route and Entry Point
 

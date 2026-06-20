@@ -30,6 +30,11 @@ export const routes: Routes = [
               import('./vehicles/vehicle-add/vehicle-add').then((m) => m.VehicleAddComponent),
           },
           {
+            path: 'vehicles/:id/edit',
+            loadComponent: () =>
+              import('./vehicles/vehicle-edit/vehicle-edit').then((m) => m.VehicleEditComponent),
+          },
+          {
             path: 'vehicles/:id',
             loadComponent: () =>
               import('./vehicles/schedule-view/schedule-view').then((m) => m.ScheduleViewComponent),
