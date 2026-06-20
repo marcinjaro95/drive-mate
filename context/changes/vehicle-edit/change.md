@@ -1,7 +1,7 @@
 ---
 id: vehicle-edit
 title: 'FR-009: Edit Vehicle Fields'
-status: implementing
+status: implemented
 created: 2026-06-20
 updated: 2026-06-20
 ---

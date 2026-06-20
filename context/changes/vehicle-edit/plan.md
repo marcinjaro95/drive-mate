@@ -237,5 +237,5 @@ Write a Vitest spec for `VehicleEditComponent` covering the key behavioural cont
 
 #### Automated
 
-- [x] 3.1 `npm test` passes with all new `vehicle-edit.spec.ts` cases green
-- [x] 3.2 No regressions in existing specs
+- [x] 3.1 `npm test` passes with all new `vehicle-edit.spec.ts` cases green — cbccb2d
+- [x] 3.2 No regressions in existing specs — cbccb2d
