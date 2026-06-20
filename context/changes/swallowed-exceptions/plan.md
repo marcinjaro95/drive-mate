@@ -365,8 +365,8 @@ No schema or data changes. No API contract changes.
 
 #### Automated
 
-- [x] 2.1 TypeScript strict compilation passes: `npm run build`
-- [x] 2.2 Existing tests remain green: `npm test`
+- [x] 2.1 TypeScript strict compilation passes: `npm run build` — 229a54d
+- [x] 2.2 Existing tests remain green: `npm test` — 229a54d
 
 > **Plan deviation**: replaced inline `<div class="records-unavailable-notice">` with a `MatSnackBar` call (user preference). Template block and `.records-unavailable-notice` CSS rule were not added. Signal stays for test assertions. Phase 3 tests will spy on `MatSnackBar.open` instead of querying the DOM class.
 
@@ -380,8 +380,8 @@ No schema or data changes. No API contract changes.
 
 #### Automated
 
-- [ ] 3.1 All five new tests pass: `npm test`
-- [ ] 3.2 No regressions in existing describe blocks: `npm test`
+- [x] 3.1 All five new tests pass: `npm test`
+- [x] 3.2 No regressions in existing describe blocks: `npm test`
 
 #### Manual
 

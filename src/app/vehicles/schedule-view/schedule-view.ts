@@ -116,10 +116,10 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
     this.abortController = new AbortController();
     this.isGenerating.set(true);
     this.error.set(null);
-    this.serviceRecordsUnavailable.set(false);
     try {
       let serviceRecords: ServiceRecord[] = preloadedRecords ?? [];
       if (!preloadedRecords) {
+        this.serviceRecordsUnavailable.set(false);
         try {
           serviceRecords = await this.serviceRecordService.getServiceRecords(this.vehicle()!.id);
         } catch (err: unknown) {

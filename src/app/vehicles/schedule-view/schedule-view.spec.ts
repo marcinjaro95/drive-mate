@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ScheduleViewComponent } from './schedule-view';
 import { VehicleService } from '../../core/vehicles/vehicle.service';
 import { AiScheduleService } from '../../core/ai-schedule/ai-schedule.service';
@@ -75,6 +76,7 @@ describe('ScheduleViewComponent — delete flow', () => {
 
     const fixture = TestBed.createComponent(ScheduleViewComponent);
     component = fixture.componentInstance;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (component as any).router = { navigate: navigateSpy };
   });
 
@@ -219,6 +221,167 @@ describe('ScheduleViewComponent — generation flow', () => {
     expect(smalls.length).toBeGreaterThan(0);
     smalls.forEach((small) => {
       expect(small.textContent!.trim().length).toBeGreaterThan(0);
+    });
+  });
+});
+
+describe('ScheduleViewComponent — service-records unavailable', () => {
+  const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+
+  describe('ngOnInit swallow (Instance A) — getServiceRecords rejects', () => {
+    let fixture: ComponentFixture<ScheduleViewComponent>;
+    let component: ScheduleViewComponent;
+    let snackBarOpenSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(async () => {
+      TestBed.configureTestingModule({
+        imports: [ScheduleViewComponent],
+        providers: [
+          provideRouter([]),
+          provideAnimationsAsync(),
+          { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'v1' } } } },
+          {
+            provide: VehicleService,
+            useValue: { getVehicle: vi.fn().mockResolvedValue(makeVehicle()) },
+          },
+          {
+            provide: ServiceRecordService,
+            useValue: { getServiceRecords: vi.fn().mockRejectedValue(new Error('RLS error')) },
+          },
+          {
+            provide: AiScheduleService,
+            useValue: { generateAndSave: vi.fn().mockResolvedValue([makeItem()]) },
+          },
+        ],
+      });
+      await TestBed.compileComponents();
+      fixture = TestBed.createComponent(ScheduleViewComponent);
+      component = fixture.componentInstance;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      snackBarOpenSpy = vi.spyOn(fixture.debugElement.injector.get(MatSnackBar), 'open').mockReturnValue(null as any);
+      fixture.detectChanges();
+      await flushPromises();
+      fixture.detectChanges();
+    });
+
+    it('getServiceRecords throws during ngOnInit → serviceRecordsUnavailable signal is true and snackbar is opened', () => {
+      expect(component.serviceRecordsUnavailable()).toBe(true);
+      expect(snackBarOpenSpy).toHaveBeenCalledWith(
+        'Schedule generated without service history — some intervals may be approximate.',
+        'Dismiss',
+        { duration: 5000 },
+      );
+    });
+
+    it('getServiceRecords throws during ngOnInit → schedule items still rendered', () => {
+      expect(
+        fixture.nativeElement.querySelectorAll('[data-testid="schedule-item"]').length,
+      ).toBe(1);
+    });
+  });
+
+  describe('ngOnInit happy path — getServiceRecords succeeds', () => {
+    let fixture: ComponentFixture<ScheduleViewComponent>;
+    let component: ScheduleViewComponent;
+    let snackBarOpenSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(async () => {
+      TestBed.configureTestingModule({
+        imports: [ScheduleViewComponent],
+        providers: [
+          provideRouter([]),
+          provideAnimationsAsync(),
+          { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'v1' } } } },
+          {
+            provide: VehicleService,
+            useValue: { getVehicle: vi.fn().mockResolvedValue(makeVehicle()) },
+          },
+          {
+            provide: ServiceRecordService,
+            useValue: { getServiceRecords: vi.fn().mockResolvedValue([]) },
+          },
+          {
+            provide: AiScheduleService,
+            useValue: { generateAndSave: vi.fn().mockResolvedValue([makeItem()]) },
+          },
+        ],
+      });
+      await TestBed.compileComponents();
+      fixture = TestBed.createComponent(ScheduleViewComponent);
+      component = fixture.componentInstance;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      snackBarOpenSpy = vi.spyOn(fixture.debugElement.injector.get(MatSnackBar), 'open').mockReturnValue(null as any);
+      fixture.detectChanges();
+      await flushPromises();
+      fixture.detectChanges();
+    });
+
+    it('getServiceRecords succeeds → serviceRecordsUnavailable signal remains false and snackbar is not opened', () => {
+      expect(component.serviceRecordsUnavailable()).toBe(false);
+      expect(snackBarOpenSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('generateSchedule() direct call (Instance B)', () => {
+    let fixture: ComponentFixture<ScheduleViewComponent>;
+    let component: ScheduleViewComponent;
+    let getServiceRecordsSpy: ReturnType<typeof vi.fn>;
+    let snackBarOpenSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(async () => {
+      getServiceRecordsSpy = vi.fn().mockResolvedValue([]);
+
+      TestBed.configureTestingModule({
+        imports: [ScheduleViewComponent],
+        providers: [
+          provideRouter([]),
+          provideAnimationsAsync(),
+          { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'v1' } } } },
+          {
+            provide: VehicleService,
+            useValue: {
+              getVehicle: vi.fn().mockResolvedValue(makeVehicle({ ai_schedule: [makeItem()] })),
+            },
+          },
+          {
+            provide: ServiceRecordService,
+            useValue: { getServiceRecords: getServiceRecordsSpy },
+          },
+          {
+            provide: AiScheduleService,
+            useValue: { generateAndSave: vi.fn().mockResolvedValue([makeItem()]) },
+          },
+        ],
+      });
+      await TestBed.compileComponents();
+      fixture = TestBed.createComponent(ScheduleViewComponent);
+      component = fixture.componentInstance;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      snackBarOpenSpy = vi.spyOn(fixture.debugElement.injector.get(MatSnackBar), 'open').mockReturnValue(null as any);
+      fixture.detectChanges();
+      await flushPromises();
+      fixture.detectChanges();
+    });
+
+    it('getServiceRecords throws during generateSchedule() → serviceRecordsUnavailable signal is true and snackbar is opened', async () => {
+      getServiceRecordsSpy.mockRejectedValue(new Error('RLS error'));
+      await component.generateSchedule();
+      fixture.detectChanges();
+      expect(component.serviceRecordsUnavailable()).toBe(true);
+      expect(snackBarOpenSpy).toHaveBeenCalledWith(
+        'Schedule generated without service history — some intervals may be approximate.',
+        'Dismiss',
+        { duration: 5000 },
+      );
+    });
+
+    it('getServiceRecords throws during generateSchedule() → schedule items still rendered', async () => {
+      getServiceRecordsSpy.mockRejectedValue(new Error('RLS error'));
+      await component.generateSchedule();
+      fixture.detectChanges();
+      expect(
+        fixture.nativeElement.querySelectorAll('[data-testid="schedule-item"]').length,
+      ).toBe(1);
     });
   });
 });
