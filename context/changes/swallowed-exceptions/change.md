@@ -1,7 +1,7 @@
 ---
 change_id: swallowed-exceptions
 title: Audit of try/catch blocks that swallow exceptions without propagating to callers
-status: implementing
+status: implemented
 created: 2026-06-16
 updated: 2026-06-20
 archived_at: null
