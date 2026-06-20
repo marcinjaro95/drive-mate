@@ -90,13 +90,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
     try {
       loadedRecords = await this.serviceRecordService.getServiceRecords(vehicleForInit.id);
     } catch (err: unknown) {
-      console.warn('Service records unavailable — schedule will be generated without history', err);
-      this.serviceRecordsUnavailable.set(true);
-      this.snackBar.open(
-        'Schedule generated without service history — some intervals may be approximate.',
-        'Dismiss',
-        { duration: 5000 },
-      );
+      this.notifyServiceRecordsUnavailable(err);
     }
     this.savedItems.set(
       new Set(
@@ -123,13 +117,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
         try {
           serviceRecords = await this.serviceRecordService.getServiceRecords(this.vehicle()!.id);
         } catch (err: unknown) {
-          console.warn('Service records unavailable — schedule will be generated without history', err);
-          this.serviceRecordsUnavailable.set(true);
-          this.snackBar.open(
-            'Schedule generated without service history — some intervals may be approximate.',
-            'Dismiss',
-            { duration: 5000 },
-          );
+          this.notifyServiceRecordsUnavailable(err);
         }
       }
       const items = await this.aiScheduleService.generateAndSave(
@@ -238,6 +226,16 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
 
   urgencyClass(urgency: string): string {
     return 'urgency-chip chip-' + urgency.replace('_', '-');
+  }
+
+  private notifyServiceRecordsUnavailable(err: unknown): void {
+    console.warn('Service records unavailable — schedule will be generated without history', err);
+    this.serviceRecordsUnavailable.set(true);
+    this.snackBar.open(
+      'Schedule generated without service history — some intervals may be approximate.',
+      undefined,
+      { duration: 5000 },
+    );
   }
 
   ngOnDestroy(): void {

@@ -231,9 +231,10 @@ describe('ScheduleViewComponent — service-records unavailable', () => {
   describe('ngOnInit swallow (Instance A) — getServiceRecords rejects', () => {
     let fixture: ComponentFixture<ScheduleViewComponent>;
     let component: ScheduleViewComponent;
-    let snackBarOpenSpy: ReturnType<typeof vi.spyOn>;
+    let snackBarOpenSpy: ReturnType<typeof vi.fn>;
 
     beforeEach(async () => {
+      snackBarOpenSpy = vi.fn();
       TestBed.configureTestingModule({
         imports: [ScheduleViewComponent],
         providers: [
@@ -254,11 +255,12 @@ describe('ScheduleViewComponent — service-records unavailable', () => {
           },
         ],
       });
+      TestBed.overrideComponent(ScheduleViewComponent, {
+        set: { providers: [{ provide: MatSnackBar, useValue: { open: snackBarOpenSpy } }] },
+      });
       await TestBed.compileComponents();
       fixture = TestBed.createComponent(ScheduleViewComponent);
       component = fixture.componentInstance;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      snackBarOpenSpy = vi.spyOn(fixture.debugElement.injector.get(MatSnackBar), 'open').mockReturnValue(null as any);
       fixture.detectChanges();
       await flushPromises();
       fixture.detectChanges();
@@ -268,7 +270,7 @@ describe('ScheduleViewComponent — service-records unavailable', () => {
       expect(component.serviceRecordsUnavailable()).toBe(true);
       expect(snackBarOpenSpy).toHaveBeenCalledWith(
         'Schedule generated without service history — some intervals may be approximate.',
-        'Dismiss',
+        undefined,
         { duration: 5000 },
       );
     });
@@ -283,9 +285,10 @@ describe('ScheduleViewComponent — service-records unavailable', () => {
   describe('ngOnInit happy path — getServiceRecords succeeds', () => {
     let fixture: ComponentFixture<ScheduleViewComponent>;
     let component: ScheduleViewComponent;
-    let snackBarOpenSpy: ReturnType<typeof vi.spyOn>;
+    let snackBarOpenSpy: ReturnType<typeof vi.fn>;
 
     beforeEach(async () => {
+      snackBarOpenSpy = vi.fn();
       TestBed.configureTestingModule({
         imports: [ScheduleViewComponent],
         providers: [
@@ -306,11 +309,12 @@ describe('ScheduleViewComponent — service-records unavailable', () => {
           },
         ],
       });
+      TestBed.overrideComponent(ScheduleViewComponent, {
+        set: { providers: [{ provide: MatSnackBar, useValue: { open: snackBarOpenSpy } }] },
+      });
       await TestBed.compileComponents();
       fixture = TestBed.createComponent(ScheduleViewComponent);
       component = fixture.componentInstance;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      snackBarOpenSpy = vi.spyOn(fixture.debugElement.injector.get(MatSnackBar), 'open').mockReturnValue(null as any);
       fixture.detectChanges();
       await flushPromises();
       fixture.detectChanges();
@@ -326,10 +330,11 @@ describe('ScheduleViewComponent — service-records unavailable', () => {
     let fixture: ComponentFixture<ScheduleViewComponent>;
     let component: ScheduleViewComponent;
     let getServiceRecordsSpy: ReturnType<typeof vi.fn>;
-    let snackBarOpenSpy: ReturnType<typeof vi.spyOn>;
+    let snackBarOpenSpy: ReturnType<typeof vi.fn>;
 
     beforeEach(async () => {
       getServiceRecordsSpy = vi.fn().mockResolvedValue([]);
+      snackBarOpenSpy = vi.fn();
 
       TestBed.configureTestingModule({
         imports: [ScheduleViewComponent],
@@ -353,11 +358,12 @@ describe('ScheduleViewComponent — service-records unavailable', () => {
           },
         ],
       });
+      TestBed.overrideComponent(ScheduleViewComponent, {
+        set: { providers: [{ provide: MatSnackBar, useValue: { open: snackBarOpenSpy } }] },
+      });
       await TestBed.compileComponents();
       fixture = TestBed.createComponent(ScheduleViewComponent);
       component = fixture.componentInstance;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      snackBarOpenSpy = vi.spyOn(fixture.debugElement.injector.get(MatSnackBar), 'open').mockReturnValue(null as any);
       fixture.detectChanges();
       await flushPromises();
       fixture.detectChanges();
@@ -370,7 +376,7 @@ describe('ScheduleViewComponent — service-records unavailable', () => {
       expect(component.serviceRecordsUnavailable()).toBe(true);
       expect(snackBarOpenSpy).toHaveBeenCalledWith(
         'Schedule generated without service history — some intervals may be approximate.',
-        'Dismiss',
+        undefined,
         { duration: 5000 },
       );
     });
