@@ -79,6 +79,10 @@ Moment they reach for DriveMate: standing at the workshop counter being quoted a
 - FR-004: App fetches basic vehicle data from a VIN lookup. Priority: must-have
   > Socrates: Counter-argument considered: "VIN data quality varies by market; EU/Polish VINs may return incomplete data from free APIs." Resolution: kept. VIN lookup is the core differentiator. API reliability for Polish-market vehicles must be validated before committing — see Open Questions.
 
+- FR-009: User can edit a car's fields (make, model, year, engine capacity, fuel type). Priority: must-have
+
+  > Socrates: Counter-argument considered: "Users can delete and re-add a car to correct mistakes, avoiding the complexity of an edit flow." Resolution: kept. Delete-and-re-add destroys all associated service history — an unacceptable data-loss risk for a correction of a typo. Edit must be non-destructive and limited to the five identity fields; VIN is immutable once set.
+
 ### Maintenance schedule
 
 - FR-005: User can view an AI-generated maintenance schedule for their car. Priority: must-have
