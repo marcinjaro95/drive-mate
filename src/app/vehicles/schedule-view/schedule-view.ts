@@ -56,6 +56,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
   saveError = signal<string | null>(null);
   mileageSyncWarning = signal(false);
   savedItems = signal<Set<string>>(new Set());
+  serviceRecordsUnavailable = signal(false);
 
   markDoneForm = this.fb.group({
     service_date: ['', Validators.required],
@@ -85,8 +86,9 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
     let loadedRecords: ServiceRecord[] = [];
     try {
       loadedRecords = await this.serviceRecordService.getServiceRecords(vehicleForInit.id);
-    } catch {
-      // non-blocking — done state will be empty; user can still mark items done
+    } catch (err: unknown) {
+      console.warn('Service records unavailable — schedule will be generated without history', err);
+      this.serviceRecordsUnavailable.set(true);
     }
     this.savedItems.set(
       new Set(
@@ -106,13 +108,15 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
     this.abortController = new AbortController();
     this.isGenerating.set(true);
     this.error.set(null);
+    this.serviceRecordsUnavailable.set(false);
     try {
       let serviceRecords: ServiceRecord[] = preloadedRecords ?? [];
       if (!preloadedRecords) {
         try {
           serviceRecords = await this.serviceRecordService.getServiceRecords(this.vehicle()!.id);
-        } catch {
-          // non-blocking
+        } catch (err: unknown) {
+          console.warn('Service records unavailable — schedule will be generated without history', err);
+          this.serviceRecordsUnavailable.set(true);
         }
       }
       const items = await this.aiScheduleService.generateAndSave(
