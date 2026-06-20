@@ -359,7 +359,7 @@ No schema or data changes. No API contract changes.
 
 #### Manual
 
-- [ ] 1.3 No visual change in the UI (signal declared but not consumed)
+- [x] 1.3 No visual change in the UI (signal declared but not consumed)
 
 ### Phase 2: Add Degraded-State Notice to Template
 
@@ -372,27 +372,27 @@ No schema or data changes. No API contract changes.
 
 #### Manual
 
-- [ ] 2.3 Notice "Schedule generated without service history" appears when `getServiceRecords` throws
-- [ ] 2.4 Schedule cards still render alongside the notice
-- [ ] 2.5 Notice disappears after successful regeneration
+- [x] 2.3 Notice "Schedule generated without service history" appears when `getServiceRecords` throws
+- [x] 2.4 Schedule cards still render alongside the notice
+- [x] 2.5 Notice disappears after successful regeneration
 
 ### Phase 3: Tests — Reproduce Both Swallow Sites
 
 #### Automated
 
-- [x] 3.1 All five new tests pass: `npm test`
-- [x] 3.2 No regressions in existing describe blocks: `npm test`
+- [x] 3.1 All five new tests pass: `npm test` — 7b49343
+- [x] 3.2 No regressions in existing describe blocks: `npm test` — 7b49343
 
 #### Manual
 
-- [ ] 3.3 Test names are self-documenting without reading implementation
+- [x] 3.3 Test names are self-documenting without reading implementation
 
 ### Phase 4: Finalize lessons.md
 
 #### Automated
 
-- [ ] 4.1 `npm test` still passes
+- [x] 4.1 `npm test` still passes
 
 #### Manual
 
-- [ ] 4.2 Both `Rule` and `Applies to` fields in `lessons.md` are unambiguous and reference concrete paths
+- [x] 4.2 Both `Rule` and `Applies to` fields in `lessons.md` are unambiguous and reference concrete paths

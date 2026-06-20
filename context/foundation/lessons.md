@@ -8,6 +8,6 @@
 
 **Problem**: AuthService.signIn/signUp return the error as a value (AuthError | null); data services throw on error. Callers using both must handle errors two different ways, which creates silent divergence that compounds over time.
 
-**Rule**: [fill in: e.g. 'Data services throw on error; AuthService returns AuthError | null. Do not introduce a third pattern.']
+**Rule**: Data services (VehicleService, ServiceRecordService) throw on error; AuthService returns AuthError | null; components catch thrown errors and set Angular signals. Do not introduce a third pattern (silent swallow, promise chain, callback).
 
-**Applies to**: [fill in: e.g. 'Any new service added under src/app/core/']
+**Applies to**: Any new service added under src/app/core/ and any component under src/app/vehicles/ or src/app/shared/ that calls those services.
