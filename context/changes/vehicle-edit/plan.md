@@ -224,18 +224,18 @@ Write a Vitest spec for `VehicleEditComponent` covering the key behavioural cont
 
 #### Automated
 
-- [x] 2.1 `npm run build` compiles without errors
-- [x] 2.2 `npm test` passes
+- [x] 2.1 `npm run build` compiles without errors — bada794
+- [x] 2.2 `npm test` passes — bada794
 
 #### Manual
 
-- [x] 2.3 Each vehicle card shows an Edit button alongside Delete
-- [x] 2.4 Clicking Edit navigates to the edit form (not the schedule view)
-- [x] 2.5 Clicking the card body still opens the schedule view
+- [x] 2.3 Each vehicle card shows an Edit button alongside Delete — bada794
+- [x] 2.4 Clicking Edit navigates to the edit form (not the schedule view) — bada794
+- [x] 2.5 Clicking the card body still opens the schedule view — bada794
 
 ### Phase 3: Unit Tests
 
 #### Automated
 
-- [ ] 3.1 `npm test` passes with all new `vehicle-edit.spec.ts` cases green
-- [ ] 3.2 No regressions in existing specs
+- [x] 3.1 `npm test` passes with all new `vehicle-edit.spec.ts` cases green
+- [x] 3.2 No regressions in existing specs
