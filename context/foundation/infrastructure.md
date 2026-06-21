@@ -1,15 +1,18 @@
 ---
 project: DriveMate
 researched_at: 2026-05-23
+last_updated: 2026-06-21
 recommended_platform: Cloudflare Workers + Pages
+actual_platform: Cloudflare Workers (Static Assets)
 runner_up: Vercel
 context_type: mvp
 tech_stack:
   language: TypeScript
   framework: Angular 21 (static SPA)
-  runtime: Browser + Cloudflare Workers (AI proxy)
+  runtime: Browser + Cloudflare Workers (AI proxy + VIN proxy)
   database: Supabase (external, PostgreSQL + RLS)
   ai_gateway: OpenRouter (external)
+  vin_api: AutoRef EU (primary), NHTSA (fallback)
 ---
 
 ## Recommendation
@@ -17,6 +20,18 @@ tech_stack:
 **Deploy on Cloudflare Workers + Pages.**
 
 The Angular SPA is served as static files from Cloudflare Pages (free, unlimited bandwidth, automatic CDN). The OpenRouter API proxy — the only server-side component — runs as a Cloudflare Pages Function (a Worker co-located in the same Pages project), keeping the entire deployment to a single `wrangler pages deploy` command. At 10k–100k monthly requests this stack costs $0. The user already has Cloudflare familiarity, Wrangler CLI covers the full operational loop, and Cloudflare publishes the most complete agent-readable documentation of any evaluated platform (`llms.txt`, per-product scoped URLs, markdown content negotiation on every page). All five agent-friendly criteria pass.
+
+### Actual Implementation (as of 2026-06-21)
+
+The project uses **Workers Static Assets** instead of Cloudflare Pages. `wrangler.toml` sets `main = "functions/worker.ts"` with an `[assets]` binding pointing to `dist/drive-mate/browser`. The Worker (`functions/worker.ts`) serves the SPA and handles two API routes: `POST /api/ai` (OpenRouter streaming proxy) and `POST /api/vin` (AutoRef EU → NHTSA fallback VIN lookup). Deploy command: `npx wrangler deploy`. Production URL: `https://drive-mate.marcinjaro95.workers.dev`.
+
+Key differences from the Pages recommendation:
+- No automatic per-branch preview URLs (Pages feature only).
+- SPA and proxy deploy atomically in a single `wrangler deploy` (equivalent to the Pages Function atomic deploy).
+- Rollback via `wrangler rollback` (Workers versioning), not the Pages dashboard.
+- No CI deploy step yet — must be added (see Getting Started).
+
+Wrangler is pinned at `^4.94.0` in `devDependencies`.
 
 ---
 
@@ -85,38 +100,56 @@ Four months in, a Wrangler major version bump changed the CI authentication toke
 
 ## Operational Story
 
-- **Preview deploys**: Every push to a non-main branch automatically generates a `<hash>.drive-mate.pages.dev` preview URL. Preview deployments use separate secret bindings configured in the Cloudflare dashboard under the Pages project's "Preview" environment. Branch protection (e.g. Cloudflare Access) can be applied to preview URLs if needed.
-- **Secrets**: OpenRouter API key is stored as a Workers Secret (`wrangler secret put OPENROUTER_API_KEY`). Must be set separately for Production and Preview environments via the dashboard. GitHub Actions CI uses `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` as repository secrets — never embed them in `wrangler.toml`.
-- **Rollback**: `wrangler rollback [version-id]` for Workers (defaults to the previous version, completes in seconds). Pages deployments can be rolled back to any prior successful build via the dashboard "Rollback" button. Supabase DB migrations do not roll back automatically — data migrations must be considered separately.
-- **Approval**: Agent may trigger production deploys via `wrangler pages deploy` unattended after the Pages project exists. Rotating the OpenRouter secret (`wrangler secret put`) or deleting the Pages project requires human action. Supabase table drops and RLS policy changes always require human review.
-- **Logs**: `wrangler tail` streams Worker request logs in real time (JSON output). `wrangler pages deployment tail` streams Pages Functions logs. Both support `--format json` for structured output. Log history (beyond the real-time buffer) requires a configured log drain or Cloudflare Logpush (paid feature).
+- **Preview deploys**: Workers Static Assets does not provide automatic per-branch preview URLs. To test a branch, deploy manually with `npx wrangler deploy --env preview` (requires a `[env.preview]` block in `wrangler.toml`) or run locally with `npx wrangler dev`.
+- **Secrets**: `OPENROUTER_API_KEY` and `AUTOREF_API_KEY` are stored as Workers Secrets (`wrangler secret put <NAME>`). GitHub Actions CI uses `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` as repository secrets — never embed them in `wrangler.toml`.
+- **Rollback**: `wrangler rollback [version-id]` rolls back to any prior Worker version (defaults to the previous deploy, completes in seconds). Supabase DB migrations do not roll back automatically — data migrations require manual intervention.
+- **Approval**: Agent may trigger production deploys via `npx wrangler deploy` unattended. Rotating a secret (`wrangler secret put`) or deleting the Worker requires human action. Supabase table drops and RLS policy changes always require human review.
+- **Logs**: `wrangler tail` streams Worker request logs in real time (`--format json` for structured output). Log history beyond the real-time buffer requires a configured Cloudflare Logpush destination (paid feature).
 
 ---
 
 ## Risk Register
 
-| Risk                                                                               | Source           | Likelihood | Impact | Mitigation                                                                                                          |
-| ---------------------------------------------------------------------------------- | ---------------- | ---------- | ------ | ------------------------------------------------------------------------------------------------------------------- |
-| Agent uses deprecated `wrangler pages publish` instead of `wrangler pages deploy`  | Research finding | H          | M      | Pin in AGENTS.md: always use `wrangler pages deploy dist/drive-mate/browser`. Document in CI workflow comment.      |
-| Angular output path misconfigured (`dist/drive-mate` vs `dist/drive-mate/browser`) | Research finding | H          | H      | Hardcode the full path in every deploy command and the Pages dashboard; never use a glob or short path.             |
-| OpenRouter completions exceed 6 MB Workers response body limit                     | Unknown unknowns | M          | H      | Implement the proxy as a streaming passthrough (`TransformStream`) from day one — do not buffer the full response.  |
-| Worker routes to user edge, not Supabase region, adding 150–200ms latency          | Unknown unknowns | H          | M      | Add `[placement]\nmode = "smart"` to `wrangler.toml` before first production deploy.                                |
-| OpenRouter SDK uses Node.js APIs unavailable in Workers runtime                    | Devil's advocate | M          | H      | Verify SDK Web Platform compatibility before integrating; fall back to raw `fetch` + OpenRouter REST API if needed. |
-| Wrangler major version breaks CI authentication in GitHub Actions                  | Pre-mortem       | M          | M      | Pin Wrangler version in `package.json` devDependencies (e.g. `"wrangler": "^3.x"`) — do not use `@latest` in CI.    |
-| First CI run fails because Pages project doesn't exist yet                         | Unknown unknowns | H          | M      | Run `wrangler pages deploy dist/drive-mate/browser --project-name=drive-mate` manually once before enabling CI.     |
-| SPA/proxy version skew if proxy is a separate Worker deployed independently        | Unknown unknowns | M          | M      | Use Pages Functions (`functions/` directory inside the Pages project) so SPA and proxy deploy atomically.           |
+| Risk                                                                               | Source           | Likelihood | Impact | Status / Mitigation                                                                                                                    |
+| ---------------------------------------------------------------------------------- | ---------------- | ---------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent uses `wrangler pages deploy` (Pages command) instead of `wrangler deploy`   | Actual deviation | H          | M      | **Mitigated**: project uses Workers Static Assets; correct command is `npx wrangler deploy`.                                           |
+| Angular output path misconfigured (`dist/drive-mate` vs `dist/drive-mate/browser`) | Research finding | H          | H      | **Mitigated**: `wrangler.toml` hardcodes `dist/drive-mate/browser` in `[assets] directory`.                                            |
+| OpenRouter completions exceed 6 MB Workers response body limit                     | Unknown unknowns | M          | H      | **Mitigated**: `handleAI` streams via `upstream.body` (ReadableStream passthrough), no buffering.                                      |
+| Worker routes to user edge, not Supabase region, adding 150–200ms latency          | Unknown unknowns | H          | M      | **Mitigated**: `[placement] mode = "smart"` is set in `wrangler.toml`.                                                                 |
+| OpenRouter SDK uses Node.js APIs unavailable in Workers runtime                    | Devil's advocate | M          | H      | **Mitigated**: proxy uses raw `fetch` + OpenRouter REST API directly, no SDK.                                                          |
+| Wrangler major version breaks CI authentication                                    | Pre-mortem       | M          | M      | **Mitigated**: pinned at `"wrangler": "^4.94.0"` in `devDependencies`; do not use `@latest` in CI.                                    |
+| No deploy step in CI — production deploy is manual                                 | Actual gap       | H          | M      | **Open**: `.github/workflows/ci.yml` has no deploy job. Must add `npx wrangler deploy` step with `CLOUDFLARE_API_TOKEN` secret.        |
+| CORS `ALLOWED_ORIGINS` hardcoded to `workers.dev` domain                          | Actual gap       | L          | M      | **Open**: if custom domain is added, `functions/worker.ts:2` must be updated to include the new origin.                                |
+| AutoRef API key missing or expired silently fails VIN lookup                       | Operational      | M          | M      | `handleVin` returns `500` when `AUTOREF_API_KEY` is unset; NHTSA fallback activates on AutoRef `null` result — not on 5xx from proxy. |
 
 ---
 
 ## Getting Started
 
-1. **Install Wrangler:** add `"wrangler": "^3"` to `devDependencies` in `package.json` and run `npm install`. Use the local binary (`npx wrangler`) rather than a global install to ensure version pinning across environments.
-2. **Authenticate:** `npx wrangler login` — opens a browser to authorize your Cloudflare account.
-3. **Create the Pages project (once):** build the app (`npm run build`) then run `npx wrangler pages deploy dist/drive-mate/browser --project-name=drive-mate`. This creates the project on the dashboard and completes the first production deploy.
-4. **Add the Pages Function proxy:** create a `functions/api/ai.ts` file in the repo root (Cloudflare Pages Functions directory). The function receives the Angular SPA's fetch requests and forwards them to OpenRouter using `fetch()`. The `functions/` directory deploys automatically with the next `wrangler pages deploy`.
-5. **Set secrets:** `npx wrangler secret put OPENROUTER_API_KEY` — enter the key when prompted. Repeat for the Preview environment via the dashboard if needed.
-6. **Enable Smart Placement:** add `[placement]\nmode = "smart"` to `wrangler.toml` to route the proxy Worker nearest to Supabase (Frankfurt) rather than to the user's edge node.
-7. **Wire up GitHub Actions CI:** set `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets; add a deploy step: `npx wrangler pages deploy dist/drive-mate/browser --project-name=drive-mate --branch=main`.
+_This section reflects the Workers Static Assets setup that is actually in use._
+
+1. **Install Wrangler:** already in `devDependencies` as `"wrangler": "^4.94.0"`. Use the local binary (`npx wrangler`) — do not install globally.
+2. **Authenticate:** `npx wrangler login` — opens a browser to authorize the Cloudflare account.
+3. **Local dev:** `npx wrangler dev` — serves the Worker + SPA locally, reads secrets from `.dev.vars` (not committed).
+4. **Deploy (once manually, then via CI):** `npm run build && npx wrangler deploy` — builds the Angular SPA and deploys the Worker with static assets. The Worker name (`drive-mate`) is set in `wrangler.toml`.
+5. **Set secrets:** `npx wrangler secret put OPENROUTER_API_KEY` and `npx wrangler secret put AUTOREF_API_KEY` — enter each key when prompted.
+6. **Wire up GitHub Actions CI (pending):** add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets, then add a deploy job to `.github/workflows/ci.yml`:
+   ```yaml
+   deploy:
+     if: github.ref == 'refs/heads/master'
+     needs: test
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+       - uses: actions/setup-node@v4
+         with: { node-version: '22', cache: 'npm' }
+       - run: npm ci
+       - run: npm run build
+       - run: npx wrangler deploy
+         env:
+           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+   ```
 
 ---
 
