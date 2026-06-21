@@ -1,5 +1,5 @@
-<nav class="page-nav"><a [routerLink]="['/dashboard/vehicles', vehicleId]">← Back to schedule</a></nav>
 <div class="page-content">
+  <nav class="page-nav"><a [routerLink]="['/dashboard/vehicles', vehicleId]">← Back to schedule</a></nav>
   @if (isLoading()) {
     <div class="spinner-container">
       <mat-progress-spinner mode="indeterminate" />
