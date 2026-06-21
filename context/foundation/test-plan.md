@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-14 (Phase 4 added — e2e critical journey)
+> Last updated: 2026-06-21 (Phase 4 marked complete; Context7 note updated; §6.5 e2e cookbook added)
 
 ---
 
@@ -72,7 +72,7 @@ orchestrator updates Status as artifacts appear on disk.
 | 1   | AI schedule flow hardening   | Prove the core generation loop is resilient to malformed responses and always enforces source attribution                                           | #1, #2        | unit + component                                          | complete      | testing-ai-schedule-hardening      |
 | 2   | Auth & ownership enforcement | Verify route guard covers all protected routes; verify RLS enforces per-user isolation at the DB; verify app-layer ownership on schedule generation | #3, #4, #5    | Angular router integration + Supabase integration (local) | complete      | testing-auth-ownership-enforcement |
 | 3   | CI test gate                 | Wire `npm test` to run on every PR so the floor from Phases 1+2 cannot regress silently                                                             | cross-cutting | CI gate                                                   | complete      | testing-ci-test-gate               |
-| 4   | E2E critical user journey    | Prove the full new-user flow (sign-up → add vehicle → AI schedule renders with visible source attribution) works against a Cloudflare Pages preview | #1, #2, #3    | Playwright e2e (staging + real Supabase)                  | change opened | testing-e2e-critical-journey       |
+| 4   | E2E critical user journey    | Prove the full new-user flow (sign-up → add vehicle → AI schedule renders with visible source attribution) works against a Cloudflare Pages preview | #1, #2, #3    | Playwright e2e (staging + real Supabase)                  | complete      | testing-e2e-critical-journey       |
 
 ---
 
@@ -93,10 +93,10 @@ tools actually exposed in the current session.
 
 **Stack grounding tools (current session):**
 
-- Docs: none — no Context7 or framework docs MCP available in this session; checked: 2026-06-09
-- Search: Exa.ai (`mcp__exa__web_search_exa`) — available; use in `/10x-research` phases to verify Supabase RLS testing patterns and Angular router guard test setup; checked: 2026-06-09
-- Runtime/browser: none — no Playwright MCP in session; consistent with Q5 exclusion of e2e; checked: 2026-06-09
-- Provider/platform: Linear MCP available — issue-creation relevance for quality gate tracking; no Supabase MCP in session; checked: 2026-06-09
+- Docs: Context7 (`mcp__context7__query-docs`) — available; use in `/10x-research` phases to verify Angular TestBed APIs, Playwright locator patterns, and Supabase client API shapes; checked: 2026-06-21
+- Search: Exa.ai (`mcp__exa__web_search_exa`) — available; use in `/10x-research` phases to verify Supabase RLS testing patterns and Angular router guard test setup; checked: 2026-06-21
+- Runtime/browser: none — no Playwright MCP in session; Phase 4 e2e suite runs via CLI (`npm run test:e2e`), not via MCP; checked: 2026-06-21
+- Provider/platform: Linear MCP available — issue-creation relevance for quality gate tracking; no Supabase MCP in session; checked: 2026-06-21
 
 ---
 
@@ -402,6 +402,76 @@ it('drops item with <bad field>', async () => {
 Use this for: `source: null`, `source: '   '`, `urgency: 'unknown'`, or any
 future field the service's filter predicate guards against.
 
+### 6.5 Adding a Playwright e2e test
+
+**Directory**: `e2e/` — all specs that match `*.spec.ts` (except `seed.spec.ts`, which is excluded by
+`playwright.config.ts`). The config runs Chromium only; `baseURL` comes from `PLAYWRIGHT_BASE_URL`.
+
+**Run command**: `npm run test:e2e` (requires `.env.e2e.local` at repo root):
+
+```
+PLAYWRIGHT_BASE_URL=https://<preview-url>.pages.dev
+SUPABASE_URL=https://<project-ref>.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=<service_role key>
+E2E_USER_EMAIL=e2e-test@example.com
+E2E_USER_PASSWORD=<test user password>
+```
+
+The test user must already exist in the Supabase project (create via dashboard or admin API
+one-time setup). Each test cleans up its own vehicles via a service-role client in `afterEach` —
+never leave rows from a failed test; the next run starts clean.
+
+**Stub `/api/ai` for determinism** (required for any test that triggers AI schedule generation):
+
+```ts
+await page.route('**/api/ai', (route) =>
+  route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      choices: [{ message: { content: JSON.stringify({ items: [/* ... */] }) } }],
+    }),
+  }),
+);
+```
+
+Register the stub BEFORE the navigation that would trigger the request. This keeps the test
+deterministic regardless of LLM availability, rate limits, or Worker deployment state.
+
+**Locator conventions** (from `e2e/critical-journey.spec.ts`):
+
+```ts
+// Prefer accessible locators
+page.getByLabel('Email')
+page.getByRole('button', { name: /sign in/i })
+page.getByRole('option', { name: 'Gasoline' })   // mat-select options appended to <body>
+
+// Use data-testid for domain elements (schedule items, source attributions)
+page.locator('[data-testid="schedule-item"]')
+page.getByTestId('schedule-item-source')
+
+// Navigation assertions
+await page.waitForURL(/\/dashboard\/vehicles\/.+/);   // wait for URL, not a timeout
+```
+
+**Cleanup pattern** (copy from `critical-journey.spec.ts`):
+
+```ts
+test.afterEach(async () => {
+  const client = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+  const { data: users } = await client.auth.admin.listUsers({ perPage: 1000 });
+  const user = users?.users.find((u) => u.email === TEST_EMAIL);
+  if (user) await client.from('vehicles').delete().eq('user_id', user.id);
+});
+```
+
+**When to add an e2e test vs. an integration test**: add e2e only when the scenario requires a
+real browser rendering cycle (Angular Material overlays, router navigation visible to the user,
+Supabase RPC across the actual auth boundary). If the behaviour can be verified via
+Angular TestBed or a Supabase integration test, prefer those — they run without a live deployment.
+
 ---
 
 ## 7. What We Deliberately Don't Test
@@ -411,16 +481,16 @@ contributors should respect these unless the underlying assumption changes.
 
 - **Visual look-and-feel** — no snapshot or pixel-diff tests for component appearance. Re-evaluate if the product introduces a paid design system with contractual visual requirements. (Source: Phase 2 interview Q5.)
 - **Configuration files** — no tests that verify wrangler.toml, angular.json, or tsconfig are correct. These are validated implicitly by a successful build. Re-evaluate if multi-environment config divergence causes a production incident. (Source: Phase 2 interview Q5.)
-- **End-to-end (Playwright/Cypress)** — excluded for all flows except the Phase 4 critical-journey test. Phase 4 covers one flow only: sign-up → add vehicle → AI schedule renders with attribution, against a Cloudflare Pages preview. All other flows remain at the integration ceiling. (Source: Phase 2 interview Q5; re-evaluated 2026-06-14.)
+- **End-to-end (Playwright/Cypress)** — restricted to the Phase 4 critical-journey test, which shipped 2026-06-21 (`e2e/critical-journey.spec.ts`). It covers one flow: sign-up → add vehicle → AI schedule renders with attribution, against a Cloudflare Pages preview. All other flows remain at the integration ceiling. Add new e2e tests only for flows with no integration-level equivalent — see §6.5 for the "when to add e2e vs. integration" decision rule. (Source: Phase 2 interview Q5; re-evaluated 2026-06-21.)
 - **VIN lookup flow (S-03)** — blocked on an unresolved external API; excluded until the API provider is confirmed. (Source: roadmap, S-03 status: blocked.)
 
 ---
 
 ## 8. Freshness Ledger
 
-- Strategy (§1–§5) last reviewed: 2026-06-09
-- Stack versions last verified: 2026-06-09
-- AI-native tool references last verified: 2026-06-09
+- Strategy (§1–§5) last reviewed: 2026-06-21
+- Stack versions last verified: 2026-06-21
+- AI-native tool references last verified: 2026-06-21
 
 Refresh (`/10x-test-plan --refresh`) when:
 
