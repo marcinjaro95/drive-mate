@@ -34,6 +34,45 @@ test.describe('Critical user journey', () => {
   });
 
   test('sign-in → add vehicle → AI schedule renders with source attribution', async ({ page }) => {
+    // Stub the AI proxy so this test is deterministic and does not depend on
+    // free-tier model availability, rate limits, or Worker deployment in CI.
+    // Risk #1 and Risk #2 are still exercised: the app must render items and
+    // every item must carry a non-empty source attribution.
+    await page.route('**/api/ai', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          choices: [
+            {
+              message: {
+                content: JSON.stringify({
+                  items: [
+                    {
+                      item: 'Oil change',
+                      interval_km: 10000,
+                      next_due_km: 55000,
+                      next_due_date: null,
+                      urgency: 'upcoming',
+                      source: "Toyota Corolla 2020 owner's manual §7.2",
+                    },
+                    {
+                      item: 'Air filter replacement',
+                      interval_km: 30000,
+                      next_due_km: 65000,
+                      next_due_date: null,
+                      urgency: 'due_soon',
+                      source: 'Standard industry practice – annual or 30 000 km',
+                    },
+                  ],
+                }),
+              },
+            },
+          ],
+        }),
+      }),
+    );
+
     // Step 1: Sign in using label-based locators (mat-label associates via aria-labelledby)
     await page.goto('/login');
     await page.getByLabel('Email').fill(TEST_EMAIL);
@@ -61,12 +100,11 @@ test.describe('Critical user journey', () => {
     await page.waitForURL(/\/dashboard\/vehicles\/.+/);
 
     // Risk #1: at least one schedule card rendered (AI generation did not crash or return empty)
-    // 90 s budget covers the full cycle: Worker AI call (free-tier model, up to ~60 s) +
-    // Supabase updateVehicle write + Angular signal propagation + DOM render.
-    // We wait directly for the visual outcome rather than intercepting the HTTP response,
-    // because waitForResponse can match a preflight or redirect before the real body arrives.
+    // Budget is generous enough to cover the Supabase updateVehicle write +
+    // Angular signal propagation + DOM render; no external AI latency because
+    // the /api/ai endpoint is stubbed above.
     await expect(page.locator('[data-testid="schedule-item"]').first()).toBeVisible({
-      timeout: 90_000,
+      timeout: 15_000,
     });
 
     // Risk #2: every schedule-item has a non-empty source attribution (guardrail enforced end-to-end)
