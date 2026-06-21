@@ -7,6 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { VehicleService } from '../../core/vehicles/vehicle.service';
 import type { Vehicle } from '../../core/models/vehicle.model';
 
@@ -21,6 +22,7 @@ import type { Vehicle } from '../../core/models/vehicle.model';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
   ],
   templateUrl: './vehicle-edit.html',
   styleUrl: './vehicle-edit.scss',
@@ -30,6 +32,7 @@ export class VehicleEditComponent implements OnInit {
   private readonly vehicleService = inject(VehicleService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly vehicleId = this.route.snapshot.params['id'] as string;
 
@@ -92,6 +95,10 @@ export class VehicleEditComponent implements OnInit {
         engine_capacity: engine_capacity!,
         fuel_type: fuel_type!,
         current_mileage: current_mileage ?? null,
+        ai_schedule: null,
+      });
+      this.snackBar.open('Vehicle updated — regenerating AI schedule…', undefined, {
+        duration: 5000,
       });
       await this.router.navigate(['/dashboard/vehicles', this.vehicleId]);
     } catch (err: unknown) {

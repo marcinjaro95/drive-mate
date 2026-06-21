@@ -83,6 +83,7 @@ describe('VehicleEditComponent', () => {
       engine_capacity: 1.0,
       fuel_type: 'gasoline',
       current_mileage: 50000,
+      ai_schedule: null,
     });
     expect(payload).not.toHaveProperty('vin');
   });
