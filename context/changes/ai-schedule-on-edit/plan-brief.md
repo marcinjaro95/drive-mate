@@ -17,20 +17,22 @@ After saving any vehicle edit, the vehicle row has `ai_schedule = null`. When `s
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-|---|---|---|---|
-| Invalidation strategy | `ai_schedule: null` in update payload | Simpler and reliable regardless of nav path; router state would be lost on refresh or indirect navigation | Plan |
-| VIN DB immutability | Out of scope | Keeps this change focused; VIN immutability is already application-layer enforced | Plan |
-| UX feedback | Snackbar before navigate in vehicle-edit | Communicates cause and effect so user understands why the spinner appears in schedule-view | Plan |
+| Decision              | Choice                                   | Why (1 sentence)                                                                                          | Source |
+| --------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------ |
+| Invalidation strategy | `ai_schedule: null` in update payload    | Simpler and reliable regardless of nav path; router state would be lost on refresh or indirect navigation | Plan   |
+| VIN DB immutability   | Out of scope                             | Keeps this change focused; VIN immutability is already application-layer enforced                         | Plan   |
+| UX feedback           | Snackbar before navigate in vehicle-edit | Communicates cause and effect so user understands why the spinner appears in schedule-view                | Plan   |
 
 ## Scope
 
 **In scope:**
+
 - `vehicle-edit.ts`: add `ai_schedule: null` to `updateVehicle` payload
 - `vehicle-edit.ts`: inject `MatSnackBar`, show notification before routing
 - `vehicle-edit.spec.ts`: update payload assertion; add snackbar test
 
 **Out of scope:**
+
 - DB-level VIN immutability trigger
 - Selective invalidation by field delta
 - Any changes to `schedule-view.ts`
@@ -41,10 +43,10 @@ Single-component change. `vehicle-edit.ts` writes `ai_schedule: null` to Supabas
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. Production Code Fix | `vehicle-edit.ts` clears schedule + shows snackbar | MatSnackBar DI may need a test-setup tweak |
-| 2. Test Update | Spec reflects new payload shape; new snackbar assertion | Existing `toEqual` will fail without the update |
+| Phase                  | What it delivers                                        | Key risk                                        |
+| ---------------------- | ------------------------------------------------------- | ----------------------------------------------- |
+| 1. Production Code Fix | `vehicle-edit.ts` clears schedule + shows snackbar      | MatSnackBar DI may need a test-setup tweak      |
+| 2. Test Update         | Spec reflects new payload shape; new snackbar assertion | Existing `toEqual` will fail without the update |
 
 **Prerequisites:** None — no migrations, no external dependencies.  
 **Estimated effort:** ~1 session, 2 phases (both trivially small).

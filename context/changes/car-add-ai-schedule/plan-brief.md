@@ -12,7 +12,7 @@ The backend (VehicleService, ServiceRecordService, Supabase schema) and the Clou
 
 ## Desired End State
 
-User navigates to `/dashboard` → sees a vehicle list with an "Add your first car" CTA on first visit → fills in 6 fields (5 required + optional mileage) → lands directly on the schedule view where skeleton cards animate while Gemini Flash 2.0 generates the schedule → items with source citations render; items without source are silently dropped → subsequent visits load the schedule instantly from the persisted JSONB column.
+User navigates to `/dashboard` → sees a vehicle list with an "Add your first car" CTA on first visit → fills in 6 fields (5 required + optional mileage) → lands directly on the schedule view where skeleton cards animate while Gemini 2.5 Flash Lite generates the schedule → items with source citations render; items without source are silently dropped → subsequent visits load the schedule instantly from the persisted JSONB column.
 
 ## Key Decisions Made
 
@@ -22,7 +22,7 @@ User navigates to `/dashboard` → sees a vehicle list with an "Add your first c
 | Schedule persistence | JSONB column `ai_schedule` on `vehicles` table                                            | Zero new migration complexity — existing RLS policy covers it, single SELECT fetches car + schedule                | Plan   |
 | Mileage at add time  | Optional field on the form                                                                | The `vehicles.current_mileage` nullable column already exists; improves AI accuracy without blocking the form      | Plan   |
 | AI response format   | JSON array with per-item `source` field                                                   | Makes source attribution machine-enforceable — items missing `source` are filtered at the type level before render | Plan   |
-| AI model             | `google/gemini-2.0-flash-001` via OpenRouter                                              | Fast, cheap, strong structured JSON output; fits the 10-second NFR comfortably                                     | Plan   |
+| AI model             | `gemini-2.5-flash-lite` via OpenRouter                                                    | Fast, cheap, strong structured JSON output; fits the 10-second NFR comfortably                                     | Plan   |
 | Loading UX           | Inline skeleton cards (5 placeholders)                                                    | Significantly better perceived performance than a spinner; sets expectations about item count                      | Plan   |
 | AI errors            | Error card with inline retry button                                                       | User is never stuck; retry overwrites any prior cached result on success                                           | Plan   |
 | Source guardrail     | Filter items missing `source`; warn if all filtered                                       | Enforces the hard PRD guardrail at the service level (tested by spec), not in the template                         | Plan   |
@@ -55,7 +55,7 @@ The Angular SPA adds child routes under `/dashboard`. `VehicleAddComponent` call
 ## Open Risks & Assumptions
 
 - `OPENROUTER_API_KEY` must be set as a Cloudflare Worker secret (`wrangler secret put OPENROUTER_API_KEY`) before Phase 5 manual testing — not coded but required at runtime
-- Gemini Flash 2.0 occasionally drifts from the requested JSON schema; the source-attribution filter is the safety net, but a particularly bad response could return 0 valid items (covered by the "all filtered" warning + retry UX)
+- Gemini 2.5 Flash Lite occasionally drifts from the requested JSON schema; the source-attribution filter is the safety net, but a particularly bad response could return 0 valid items (covered by the "all filtered" warning + retry UX)
 - The Cloudflare 6 MB body limit is not expected to be an issue for a 10–15 item schedule (~4 KB), but should be confirmed during Phase 5 manual testing
 
 ## Success Criteria (Summary)

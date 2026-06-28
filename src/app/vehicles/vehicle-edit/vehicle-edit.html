@@ -1,5 +1,7 @@
 <div class="page-content">
-  <nav class="page-nav"><a [routerLink]="['/dashboard/vehicles', vehicleId]">← Back to schedule</a></nav>
+  <nav class="page-nav">
+    <a [routerLink]="['/dashboard/vehicles', vehicleId]">← Back to schedule</a>
+  </nav>
   @if (isLoading()) {
     <div class="spinner-container">
       <mat-progress-spinner mode="indeterminate" />
@@ -51,7 +53,8 @@
         <mat-label>Engine capacity (L)</mat-label>
         <input matInput formControlName="engine_capacity" type="number" step="0.1" />
         @if (
-          form.controls.engine_capacity.touched && form.controls.engine_capacity.hasError('required')
+          form.controls.engine_capacity.touched &&
+          form.controls.engine_capacity.hasError('required')
         ) {
           <mat-error>Engine capacity is required</mat-error>
         }

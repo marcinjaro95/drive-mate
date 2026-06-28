@@ -26,6 +26,7 @@ The Angular SPA is served as static files from Cloudflare Pages (free, unlimited
 The project uses **Workers Static Assets** instead of Cloudflare Pages. `wrangler.toml` sets `main = "functions/worker.ts"` with an `[assets]` binding pointing to `dist/drive-mate/browser`. The Worker (`functions/worker.ts`) serves the SPA and handles two API routes: `POST /api/ai` (OpenRouter streaming proxy) and `POST /api/vin` (AutoRef EU → NHTSA fallback VIN lookup). Deploy command: `npx wrangler deploy`. Production URL: `https://drive-mate.marcinjaro95.workers.dev`.
 
 Key differences from the Pages recommendation:
+
 - No automatic per-branch preview URLs (Pages feature only).
 - SPA and proxy deploy atomically in a single `wrangler deploy` (equivalent to the Pages Function atomic deploy).
 - Rollback via `wrangler rollback` (Workers versioning), not the Pages dashboard.
@@ -110,16 +111,16 @@ Four months in, a Wrangler major version bump changed the CI authentication toke
 
 ## Risk Register
 
-| Risk                                                                               | Source           | Likelihood | Impact | Status / Mitigation                                                                                                                    |
-| ---------------------------------------------------------------------------------- | ---------------- | ---------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Agent uses `wrangler pages deploy` (Pages command) instead of `wrangler deploy`   | Actual deviation | H          | M      | **Mitigated**: project uses Workers Static Assets; correct command is `npx wrangler deploy`.                                           |
-| Angular output path misconfigured (`dist/drive-mate` vs `dist/drive-mate/browser`) | Research finding | H          | H      | **Mitigated**: `wrangler.toml` hardcodes `dist/drive-mate/browser` in `[assets] directory`.                                            |
-| OpenRouter completions exceed 6 MB Workers response body limit                     | Unknown unknowns | M          | H      | **Mitigated**: `handleAI` streams via `upstream.body` (ReadableStream passthrough), no buffering.                                      |
-| Worker routes to user edge, not Supabase region, adding 150–200ms latency          | Unknown unknowns | H          | M      | **Mitigated**: `[placement] mode = "smart"` is set in `wrangler.toml`.                                                                 |
-| OpenRouter SDK uses Node.js APIs unavailable in Workers runtime                    | Devil's advocate | M          | H      | **Mitigated**: proxy uses raw `fetch` + OpenRouter REST API directly, no SDK.                                                          |
+| Risk                                                                               | Source           | Likelihood | Impact | Status / Mitigation                                                                                                                   |
+| ---------------------------------------------------------------------------------- | ---------------- | ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent uses `wrangler pages deploy` (Pages command) instead of `wrangler deploy`    | Actual deviation | H          | M      | **Mitigated**: project uses Workers Static Assets; correct command is `npx wrangler deploy`.                                          |
+| Angular output path misconfigured (`dist/drive-mate` vs `dist/drive-mate/browser`) | Research finding | H          | H      | **Mitigated**: `wrangler.toml` hardcodes `dist/drive-mate/browser` in `[assets] directory`.                                           |
+| OpenRouter completions exceed 6 MB Workers response body limit                     | Unknown unknowns | M          | H      | **Mitigated**: `handleAI` streams via `upstream.body` (ReadableStream passthrough), no buffering.                                     |
+| Worker routes to user edge, not Supabase region, adding 150–200ms latency          | Unknown unknowns | H          | M      | **Mitigated**: `[placement] mode = "smart"` is set in `wrangler.toml`.                                                                |
+| OpenRouter SDK uses Node.js APIs unavailable in Workers runtime                    | Devil's advocate | M          | H      | **Mitigated**: proxy uses raw `fetch` + OpenRouter REST API directly, no SDK.                                                         |
 | Wrangler major version breaks CI authentication                                    | Pre-mortem       | M          | M      | **Mitigated**: pinned at `"wrangler": "^4.94.0"` in `devDependencies`; do not use `@latest` in CI.                                    |
-| No deploy step in CI — production deploy is manual                                 | Actual gap       | H          | M      | **Open**: `.github/workflows/ci.yml` has no deploy job. Must add `npx wrangler deploy` step with `CLOUDFLARE_API_TOKEN` secret.        |
-| CORS `ALLOWED_ORIGINS` hardcoded to `workers.dev` domain                          | Actual gap       | L          | M      | **Open**: if custom domain is added, `functions/worker.ts:2` must be updated to include the new origin.                                |
+| No deploy step in CI — production deploy is manual                                 | Actual gap       | H          | M      | **Open**: `.github/workflows/ci.yml` has no deploy job. Must add `npx wrangler deploy` step with `CLOUDFLARE_API_TOKEN` secret.       |
+| CORS `ALLOWED_ORIGINS` hardcoded to `workers.dev` domain                           | Actual gap       | L          | M      | **Open**: if custom domain is added, `functions/worker.ts:2` must be updated to include the new origin.                               |
 | AutoRef API key missing or expired silently fails VIN lookup                       | Operational      | M          | M      | `handleVin` returns `500` when `AUTOREF_API_KEY` is unset; NHTSA fallback activates on AutoRef `null` result — not on 5xx from proxy. |
 
 ---

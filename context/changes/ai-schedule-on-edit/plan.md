@@ -155,18 +155,18 @@ Update the existing payload-shape test to include `ai_schedule: null` and add a 
 
 #### Automated
 
-- [x] 1.1 Type check passes: `npx tsc --noEmit`
-- [x] 1.2 Lint passes: `npx prettier --check src/app/vehicles/vehicle-edit/vehicle-edit.ts`
+- [x] 1.1 Type check passes: `npx tsc --noEmit` — f95a53b
+- [x] 1.2 Lint passes: `npx prettier --check src/app/vehicles/vehicle-edit/vehicle-edit.ts` — f95a53b
 
 #### Manual
 
-- [x] 1.3 Snackbar appears after save and schedule-view regenerates with updated specs
-- [x] 1.4 Mileage-only edit also clears and regenerates the schedule
+- [x] 1.3 Snackbar appears after save and schedule-view regenerates with updated specs — f95a53b
+- [x] 1.4 Mileage-only edit also clears and regenerates the schedule — f95a53b
 
 ### Phase 2: Test Update
 
 #### Automated
 
-- [ ] 2.1 All unit tests pass: `npm test`
-- [ ] 2.2 Updated payload test includes `ai_schedule: null` and still asserts `not.toHaveProperty('vin')`
-- [ ] 2.3 New snackbar test passes and appears in output by name
+- [x] 2.1 All unit tests pass: `npm test`
+- [x] 2.2 Updated payload test includes `ai_schedule: null` and still asserts `not.toHaveProperty('vin')`
+- [x] 2.3 New snackbar test passes and appears in output by name

@@ -31,6 +31,7 @@ The template already uses `mileageSyncWarning()` as a non-blocking inline notice
 ## Desired End State
 
 When `getServiceRecords` throws on either path:
+
 1. The error is logged via `console.warn`.
 2. `serviceRecordsUnavailable` signal is `true`.
 3. The schedule still generates and renders (graceful degradation is preserved).
@@ -164,9 +165,9 @@ class `records-unavailable-notice` — the tests in Phase 3 query this class.
 
 ```html
 @if (serviceRecordsUnavailable()) {
-  <div class="records-unavailable-notice">
-    <span>Schedule generated without service history — some intervals may be approximate.</span>
-  </div>
+<div class="records-unavailable-notice">
+  <span>Schedule generated without service history — some intervals may be approximate.</span>
+</div>
 }
 ```
 
@@ -235,6 +236,7 @@ to be called from `ngOnInit`). `getServiceRecords` rejects with `new Error('RLS 
 flushPromises()`, `fixture.detectChanges()`.
 
 Tests:
+
 - `getServiceRecords throws during ngOnInit → shows .records-unavailable-notice`  
   Assert: `querySelector('.records-unavailable-notice')` is not null.
 - `getServiceRecords throws during ngOnInit → schedule items still rendered`  
@@ -247,13 +249,14 @@ Tests:
 **Sub-group B — `generateSchedule` direct call (Instance B, line 114)**
 
 Setup: `getVehicle` resolves with a vehicle where `ai_schedule: [makeItem()]` (so `ngOnInit`
-returns early after loading records — Instance B is not reachable from `ngOnInit`). 
-`getServiceRecords` resolves with `[]` for the `ngOnInit` savedItems call. Call 
+returns early after loading records — Instance B is not reachable from `ngOnInit`).
+`getServiceRecords` resolves with `[]` for the `ngOnInit` savedItems call. Call
 `fixture.detectChanges()`, `await flushPromises()`, `fixture.detectChanges()` to let `ngOnInit`
 finish cleanly. Then in each test body, replace the `getServiceRecords` spy with a rejecting
 mock and call `await component.generateSchedule()` (no args).
 
 Tests:
+
 - `getServiceRecords throws during generateSchedule() → shows .records-unavailable-notice`  
   Spy rejects. Call `await component.generateSchedule()`. `fixture.detectChanges()`.  
   Assert notice not null.
@@ -296,10 +299,10 @@ the codebase actually does after this fix.
 **Contract**: Replace both `[fill in: ...]` lines with:
 
 - **Rule**: `Data services (VehicleService, ServiceRecordService) throw on error; AuthService
-  returns AuthError | null; components catch thrown errors and set Angular signals. Do not
-  introduce a third pattern (silent swallow, promise chain, callback).`
+returns AuthError | null; components catch thrown errors and set Angular signals. Do not
+introduce a third pattern (silent swallow, promise chain, callback).`
 - **Applies to**: `Any new service added under src/app/core/ and any component under
-  src/app/vehicles/ or src/app/shared/ that calls those services.`
+src/app/vehicles/ or src/app/shared/ that calls those services.`
 
 ### Success Criteria
 

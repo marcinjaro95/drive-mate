@@ -276,9 +276,9 @@ describe('ScheduleViewComponent — service-records unavailable', () => {
     });
 
     it('getServiceRecords throws during ngOnInit → schedule items still rendered', () => {
-      expect(
-        fixture.nativeElement.querySelectorAll('[data-testid="schedule-item"]').length,
-      ).toBe(1);
+      expect(fixture.nativeElement.querySelectorAll('[data-testid="schedule-item"]').length).toBe(
+        1,
+      );
     });
   });
 
@@ -385,9 +385,9 @@ describe('ScheduleViewComponent — service-records unavailable', () => {
       getServiceRecordsSpy.mockRejectedValue(new Error('RLS error'));
       await component.generateSchedule();
       fixture.detectChanges();
-      expect(
-        fixture.nativeElement.querySelectorAll('[data-testid="schedule-item"]').length,
-      ).toBe(1);
+      expect(fixture.nativeElement.querySelectorAll('[data-testid="schedule-item"]').length).toBe(
+        1,
+      );
     });
   });
 });

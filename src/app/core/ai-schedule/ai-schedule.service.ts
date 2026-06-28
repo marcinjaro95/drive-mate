@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { VehicleService } from '../vehicles/vehicle.service';
 import { AuthService } from '../auth/auth.service';
 import type { Vehicle } from '../models/vehicle.model';
@@ -7,10 +7,8 @@ import type { ServiceRecord } from '../models/service-record.model';
 
 @Injectable({ providedIn: 'root' })
 export class AiScheduleService {
-  constructor(
-    private readonly vehicleService: VehicleService,
-    private readonly auth: AuthService,
-  ) {}
+  private readonly vehicleService = inject(VehicleService);
+  private readonly auth = inject(AuthService);
 
   async generateAndSave(
     vehicle: Vehicle,
@@ -26,7 +24,7 @@ export class AiScheduleService {
       headers: { 'Content-Type': 'application/json' },
       signal,
       body: JSON.stringify({
-        model: 'gpt-oss-120b:free',
+        model: 'gemini-2.5-flash-lite',
         messages: [{ role: 'user', content: this.buildPrompt(vehicle, serviceRecords) }],
         response_format: { type: 'json_object' },
       }),
@@ -54,6 +52,8 @@ export class AiScheduleService {
   }
 
   private buildPrompt(vehicle: Vehicle, serviceRecords: ServiceRecord[] = []): string {
+    const today = new Date().toISOString().split('T')[0];
+    const exampleDueDate = new Date(Date.now() + 180 * 86_400_000).toISOString().split('T')[0];
     const mileageNote =
       vehicle.current_mileage != null
         ? `Current mileage: ${vehicle.current_mileage} km.`
@@ -78,6 +78,7 @@ Year: ${vehicle.year}
 Engine capacity: ${vehicle.engine_capacity}L
 Fuel type: ${vehicle.fuel_type}
 ${mileageNote}
+Today's date: ${today}
 ${historySection}
 
 Return a JSON object with a single key "items" containing an array of maintenance schedule items. Each item must have exactly this shape:
@@ -86,7 +87,7 @@ Return a JSON object with a single key "items" containing an array of maintenanc
   "item": "Oil change",
   "interval_km": 10000,
   "next_due_km": 55000,
-  "next_due_date": "2025-06-01",
+  "next_due_date": "${exampleDueDate}",
   "urgency": "upcoming",
   "source": "Toyota Corolla 2019 owner's manual, section 7.2"
 }
@@ -94,7 +95,7 @@ Return a JSON object with a single key "items" containing an array of maintenanc
 Rules:
 - "urgency" must be one of: "overdue", "due_soon", "upcoming"
 - "interval_km" and "next_due_km" may be null if mileage-based scheduling does not apply
-- "next_due_date" may be null if date-based scheduling does not apply
+- "next_due_date" may be null if date-based scheduling does not apply; all dates must be in YYYY-MM-DD format relative to today (${today})
 - "source" must be a non-empty string citing the manufacturer schedule or standard industry practice — never leave it empty
 - Return 8–12 items covering the most important service actions for this vehicle
 - Base intervals on the manufacturer's recommended service schedule if known, otherwise cite standard industry practice

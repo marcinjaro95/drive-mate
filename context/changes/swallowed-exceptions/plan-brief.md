@@ -26,17 +26,18 @@ notice clears. Five new tests reproduce both swallow sites and the happy path.
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-|---|---|---|---|
-| Fix behaviour | Degraded-state UI indicator + console.warn | User needs to know the schedule is approximate; logging makes it visible in monitoring. | Plan |
-| Notice style | Non-blocking, non-dismissable notice below schedule list | Follows existing `mileageSyncWarning` pattern; no dismiss button needed because a successful retry auto-clears it. | Plan |
-| Signal reset | Reset `serviceRecordsUnavailable` at start of `generateSchedule` | Ensures the notice disappears on a successful retry without a separate dismiss action. | Plan |
-| Test scope | Both Instance A (ngOnInit) and Instance B (generateSchedule direct call) | The two sites are in different code paths and require different test setups. | Plan |
-| lessons.md | Fill in Rule + Applies-to | Closes open TODOs while context is fresh; prevents a third error-contract pattern. | Plan |
+| Decision      | Choice                                                                   | Why (1 sentence)                                                                                                   | Source |
+| ------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ------ |
+| Fix behaviour | Degraded-state UI indicator + console.warn                               | User needs to know the schedule is approximate; logging makes it visible in monitoring.                            | Plan   |
+| Notice style  | Non-blocking, non-dismissable notice below schedule list                 | Follows existing `mileageSyncWarning` pattern; no dismiss button needed because a successful retry auto-clears it. | Plan   |
+| Signal reset  | Reset `serviceRecordsUnavailable` at start of `generateSchedule`         | Ensures the notice disappears on a successful retry without a separate dismiss action.                             | Plan   |
+| Test scope    | Both Instance A (ngOnInit) and Instance B (generateSchedule direct call) | The two sites are in different code paths and require different test setups.                                       | Plan   |
+| lessons.md    | Fill in Rule + Applies-to                                                | Closes open TODOs while context is fresh; prevents a third error-contract pattern.                                 | Plan   |
 
 ## Scope
 
 **In scope:**
+
 - `schedule-view.ts`: add signal, reset in `generateSchedule`, fix both catch blocks
 - `schedule-view.html`: add `@if (serviceRecordsUnavailable())` notice block
 - `schedule-view.scss`: style `.records-unavailable-notice` to match `mileage-warning`
@@ -44,6 +45,7 @@ notice clears. Five new tests reproduce both swallow sites and the happy path.
 - `context/foundation/lessons.md`: fill in Rule and Applies-to fields
 
 **Out of scope:**
+
 - Blocking the schedule or showing a full error card on `getServiceRecords` failure
 - Dismissable button on the notice
 - Changing any other catch block in the codebase
@@ -59,12 +61,12 @@ and before the existing `mileageSyncWarning` block.
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. Signal + catch blocks | Error no longer silently swallowed; TypeScript compiles | None — purely additive |
-| 2. Template notice | User sees degraded-state indicator | CSS styling parity with existing warning |
-| 3. Tests | Both swallow sites covered; regression-proof | Instance B setup requires bypassing ngOnInit flow |
-| 4. lessons.md | Rule and Applies-to lines finalized | None |
+| Phase                    | What it delivers                                        | Key risk                                          |
+| ------------------------ | ------------------------------------------------------- | ------------------------------------------------- |
+| 1. Signal + catch blocks | Error no longer silently swallowed; TypeScript compiles | None — purely additive                            |
+| 2. Template notice       | User sees degraded-state indicator                      | CSS styling parity with existing warning          |
+| 3. Tests                 | Both swallow sites covered; regression-proof            | Instance B setup requires bypassing ngOnInit flow |
+| 4. lessons.md            | Rule and Applies-to lines finalized                     | None                                              |
 
 **Prerequisites:** None — no migrations, no API changes, no dependency additions.  
 **Estimated effort:** ~1 session across 4 phases.

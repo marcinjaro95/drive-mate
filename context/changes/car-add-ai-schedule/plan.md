@@ -2,7 +2,7 @@
 
 ## Overview
 
-S-01 from the DriveMate roadmap: user fills in car details (make, model, year, engine capacity, fuel type, optional mileage) → car is saved → user lands directly on the AI-generated maintenance schedule. Schedule is generated via OpenRouter (`gpt-oss-120b:free`) through the existing Cloudflare Worker proxy, persisted as JSONB on the `vehicles` row, and rendered with hard source-attribution enforcement.
+S-01 from the DriveMate roadmap: user fills in car details (make, model, year, engine capacity, fuel type, optional mileage) → car is saved → user lands directly on the AI-generated maintenance schedule. Schedule is generated via OpenRouter (`gemini-2.5-flash-lite`) through the existing Cloudflare Worker proxy, persisted as JSONB on the `vehicles` row, and rendered with hard source-attribution enforcement.
 
 ## Current State Analysis
 
@@ -44,7 +44,7 @@ After this plan:
 - Marking service done / schedule recalculation (S-02)
 - Car deletion (S-04)
 - User-triggered schedule regeneration when a valid schedule already exists (deferred to S-02)
-- Streaming AI response (SSE) — one-shot fetch is sufficient for Gemini Flash 2.0
+- Streaming AI response (SSE) — one-shot fetch is sufficient for Gemini 2.5 Flash Lite
 - Component-level Vitest specs — service + parsing logic specs only (no component test setup)
 - Editing existing vehicles
 
@@ -153,7 +153,7 @@ const httpRes = await fetch('/api/ai', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    model: 'gpt-oss-120b:free',
+    model: 'gemini-2.5-flash-lite',
     messages: [{ role: 'user', content: this.buildPrompt(vehicle) }],
     response_format: { type: 'json_object' },
   }),

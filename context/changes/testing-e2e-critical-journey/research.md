@@ -64,7 +64,7 @@ Material `<mat-select>`, not a native `<select>`. Playwright must click to open 
 then click the desired `mat-option`.
 
 **The AI proxy call is real and free-tier.** Every e2e run makes a real OpenRouter API call
-using the `gpt-oss-120b:free` model. The test must use a generous timeout (60 s+) for schedule
+using the `gemini-2.5-flash-lite` model. The test must use a generous timeout (60 s+) for schedule
 generation and must NOT assert schedule content — only that at least one `mat-card.schedule-card`
 exists with a non-empty `<small>Source: …</small>` element.
 
@@ -359,7 +359,7 @@ scratch in Phase 4.
 
 | Risk                            | Test plan claim                                                      | Research verdict                                                                                                                                                      |
 | ------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| #1 AI schedule resilience       | E2e catches live proxy contract, network errors, full browser render | **Confirmed.** The Worker's `/api/ai` handler calls real OpenRouter. E2e hitting the deployed Worker will use `gpt-oss-120b:free` (free tier).                        |
+| #1 AI schedule resilience       | E2e catches live proxy contract, network errors, full browser render | **Confirmed.** The Worker's `/api/ai` handler calls real OpenRouter. E2e hitting the deployed Worker will use `gemini-2.5-flash-lite`.                                |
 | #2 Source attribution guardrail | Assert in DOM, not service layer                                     | **Confirmed.** `<small>Source: {{ item.source }}</small>` at line 68 of `schedule-view.html`. The filter-out notice at line 42 provides a ready-made error assertion. |
 | #3 Unauthenticated redirect     | Deployed environment, not TestBed                                    | **Confirmed.** Playwright navigating to `/dashboard` unauthenticated should redirect to `/login`. This is simple to assert without auth state.                        |
 
@@ -426,7 +426,7 @@ scratch in Phase 4.
    `schedule-view.html` (and optionally the form components) before writing the Playwright spec?
    This makes selectors more stable but adds an Angular change to the scope.
 
-3. **AI proxy real-call cost**: The `gpt-oss-120b:free` model is free on OpenRouter, but every
+3. **AI proxy real-call cost**: The `gemini-2.5-flash-lite` model is free on OpenRouter, but every
    CI run will make a live network call. This adds 30–90 s to the `e2e` CI job and creates a
    dependency on OpenRouter availability. Should the plan include a fast-path that detects the
    test environment and uses a fixed fixture response, or is real-call verification the whole

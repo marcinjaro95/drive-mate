@@ -1,5 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, withDisabledInitialNavigation, Router, ActivatedRoute } from '@angular/router';
+import {
+  provideRouter,
+  withDisabledInitialNavigation,
+  Router,
+  ActivatedRoute,
+} from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { VehicleEditComponent } from './vehicle-edit';
 import { VehicleService } from '../../core/vehicles/vehicle.service';
@@ -37,7 +42,10 @@ describe('VehicleEditComponent', () => {
         provideAnimationsAsync(),
         provideRouter([], withDisabledInitialNavigation()),
         { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'v1' } } } },
-        { provide: VehicleService, useValue: { getVehicle: getVehicleSpy, updateVehicle: updateVehicleSpy } },
+        {
+          provide: VehicleService,
+          useValue: { getVehicle: getVehicleSpy, updateVehicle: updateVehicleSpy },
+        },
       ],
     });
   }
@@ -112,6 +120,21 @@ describe('VehicleEditComponent', () => {
 
     expect(c.error()).toBe('network error');
     expect(c.isSubmitting()).toBe(false);
+  });
+
+  it('shows a schedule-regeneration snackbar on successful save', async () => {
+    setup();
+    await TestBed.compileComponents();
+    const fixture = TestBed.createComponent(VehicleEditComponent);
+    await fixture.whenStable();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const openSpy = vi.spyOn((fixture.componentInstance as any).snackBar, 'open');
+
+    await fixture.componentInstance.onSubmit();
+
+    expect(openSpy).toHaveBeenCalledWith('Vehicle updated — regenerating AI schedule…', undefined, {
+      duration: 5000,
+    });
   });
 
   it('cancel — updateVehicle is never called without explicit submit', async () => {

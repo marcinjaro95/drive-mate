@@ -79,7 +79,7 @@ const httpRes = await fetch('/api/ai', {
   headers: { 'Content-Type': 'application/json' },
   signal,
   body: JSON.stringify({
-    model: 'gpt-oss-120b:free', // OpenRouter free-tier OSS model
+    model: 'gemini-2.5-flash-lite',
     messages: [{ role: 'user', content: this.buildPrompt(vehicle, serviceRecords) }],
     response_format: { type: 'json_object' },
   }),
@@ -354,7 +354,7 @@ tests cover:
 
 3. **The model is OpenRouter, not Anthropic directly.** The prompt includes
    `response_format: { type: 'json_object' }` to force JSON mode, but the LLM is
-   `gpt-oss-120b:free` (a free-tier OSS model via OpenRouter). Free-tier models can return
+   `gemini-2.5-flash-lite` (via OpenRouter). Free-tier models can return
    malformed content or truncated responses more often than paid models.
 
 4. **UUID injection in service, not DB.** `crypto.randomUUID()` runs at generation time (line 34).

@@ -82,7 +82,7 @@ Phase 2 manual verification. Six GitHub secrets must be set before Phase 3 manua
 
 ## Open Risks & Assumptions
 
-- OpenRouter `gpt-oss-120b:free` is free but has no SLA — CI e2e job will fail if the model is
+- OpenRouter `gemini-2.5-flash-lite` is free-tier — CI e2e job will fail if the model is
   unavailable or the response exceeds 90 s.
 - The production Supabase project and the production Worker are the test environment — test
   vehicles are created and deleted in prod. Cleanup failure leaves orphan rows.

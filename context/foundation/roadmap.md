@@ -46,12 +46,12 @@ A private car owner knows their car needs servicing but doesn't know what, when,
 
 Navigation aid — groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
 
-| Stream | Theme                    | Chain                                              | Note                                                                       |
-| ------ | ------------------------ | -------------------------------------------------- | -------------------------------------------------------------------------- |
-| A      | Auth & schedule loop     | `F-01` → `S-01` → `S-01a` → `S-02` → `S-03`       | Core speed path; proves the north star. All done.                          |
-| B      | Data enabler & lifecycle | `F-02` → `S-01` (joins A) / `S-04` / `S-06`        | Data foundation + car lifecycle (delete, edit). All done.                  |
-| C      | UI polish                | `S-01` → `S-05`                                    | Visual coherence across core screens. Done.                                |
-| T      | Testing                  | `T-01` → `T-02` → `T-03`                           | All three phases done; CI gate active. New features extend the test suite. |
+| Stream | Theme                    | Chain                                       | Note                                                                       |
+| ------ | ------------------------ | ------------------------------------------- | -------------------------------------------------------------------------- |
+| A      | Auth & schedule loop     | `F-01` → `S-01` → `S-01a` → `S-02` → `S-03` | Core speed path; proves the north star. All done.                          |
+| B      | Data enabler & lifecycle | `F-02` → `S-01` (joins A) / `S-04` / `S-06` | Data foundation + car lifecycle (delete, edit). All done.                  |
+| C      | UI polish                | `S-01` → `S-05`                             | Visual coherence across core screens. Done.                                |
+| T      | Testing                  | `T-01` → `T-02` → `T-03`                    | All three phases done; CI gate active. New features extend the test suite. |
 
 ## Baseline
 
@@ -205,20 +205,20 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID                          | Suggested issue title                                    | Ready for `/10x-plan` | Notes          |
-| ---------- | ---------------------------------- | -------------------------------------------------------- | --------------------- | -------------- |
-| F-01       | auth-scaffold                      | Auth scaffold: Supabase + Angular route guard            | no                    | Done           |
-| F-02       | data-schema-rls                    | Data schema: vehicles + service_records with RLS         | no                    | Done           |
-| S-01       | car-add-ai-schedule                | Manual car add + AI maintenance schedule (north star)    | no                    | Done           |
-| S-01a      | schedule-item-identity             | Schedule item identity: stable UUIDs + session-persisted | no                    | Done           |
-| S-02       | service-tracking                   | Service tracking: mark item done with date + mileage     | no                    | Done           |
-| S-03       | vin-car-add                        | VIN car add: AutoRef.eu lookup + field auto-populate     | no                    | Done           |
-| S-04       | car-deletion                       | Car deletion with cascade confirmation                   | no                    | Done           |
-| S-05       | ui-improvements                    | UI polish: consistent design across core screens         | no                    | Done           |
-| S-06       | vehicle-edit                       | Vehicle edit: identity fields; VIN immutable             | no                    | Done           |
-| T-01       | testing-ai-schedule-hardening      | Tests: AI schedule service + component flow              | no                    | Done           |
-| T-02       | testing-auth-ownership-enforcement | Tests: auth guard + RLS + ownership enforcement          | no                    | Done           |
-| T-03       | testing-ci-test-gate               | Tests: GitHub Actions CI gate                            | no                    | Done           |
+| Roadmap ID | Change ID                          | Suggested issue title                                    | Ready for `/10x-plan` | Notes |
+| ---------- | ---------------------------------- | -------------------------------------------------------- | --------------------- | ----- |
+| F-01       | auth-scaffold                      | Auth scaffold: Supabase + Angular route guard            | no                    | Done  |
+| F-02       | data-schema-rls                    | Data schema: vehicles + service_records with RLS         | no                    | Done  |
+| S-01       | car-add-ai-schedule                | Manual car add + AI maintenance schedule (north star)    | no                    | Done  |
+| S-01a      | schedule-item-identity             | Schedule item identity: stable UUIDs + session-persisted | no                    | Done  |
+| S-02       | service-tracking                   | Service tracking: mark item done with date + mileage     | no                    | Done  |
+| S-03       | vin-car-add                        | VIN car add: AutoRef.eu lookup + field auto-populate     | no                    | Done  |
+| S-04       | car-deletion                       | Car deletion with cascade confirmation                   | no                    | Done  |
+| S-05       | ui-improvements                    | UI polish: consistent design across core screens         | no                    | Done  |
+| S-06       | vehicle-edit                       | Vehicle edit: identity fields; VIN immutable             | no                    | Done  |
+| T-01       | testing-ai-schedule-hardening      | Tests: AI schedule service + component flow              | no                    | Done  |
+| T-02       | testing-auth-ownership-enforcement | Tests: auth guard + RLS + ownership enforcement          | no                    | Done  |
+| T-03       | testing-ci-test-gate               | Tests: GitHub Actions CI gate                            | no                    | Done  |
 
 ## Open Roadmap Questions
 

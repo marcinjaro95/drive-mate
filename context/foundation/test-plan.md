@@ -67,12 +67,12 @@ Each row is a discrete rollout phase that will open its own change folder
 via `/10x-new`. Status moves left-to-right through the values below; the
 orchestrator updates Status as artifacts appear on disk.
 
-| #   | Phase name                   | Goal (one line)                                                                                                                                     | Risks covered | Test types                                                | Status        | Change folder                      |
-| --- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------------------- | ------------- | ---------------------------------- |
-| 1   | AI schedule flow hardening   | Prove the core generation loop is resilient to malformed responses and always enforces source attribution                                           | #1, #2        | unit + component                                          | complete      | testing-ai-schedule-hardening      |
-| 2   | Auth & ownership enforcement | Verify route guard covers all protected routes; verify RLS enforces per-user isolation at the DB; verify app-layer ownership on schedule generation | #3, #4, #5    | Angular router integration + Supabase integration (local) | complete      | testing-auth-ownership-enforcement |
-| 3   | CI test gate                 | Wire `npm test` to run on every PR so the floor from Phases 1+2 cannot regress silently                                                             | cross-cutting | CI gate                                                   | complete      | testing-ci-test-gate               |
-| 4   | E2E critical user journey    | Prove the full new-user flow (sign-up → add vehicle → AI schedule renders with visible source attribution) works against a Cloudflare Pages preview | #1, #2, #3    | Playwright e2e (staging + real Supabase)                  | complete      | testing-e2e-critical-journey       |
+| #   | Phase name                   | Goal (one line)                                                                                                                                     | Risks covered | Test types                                                | Status   | Change folder                      |
+| --- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------------------- | -------- | ---------------------------------- |
+| 1   | AI schedule flow hardening   | Prove the core generation loop is resilient to malformed responses and always enforces source attribution                                           | #1, #2        | unit + component                                          | complete | testing-ai-schedule-hardening      |
+| 2   | Auth & ownership enforcement | Verify route guard covers all protected routes; verify RLS enforces per-user isolation at the DB; verify app-layer ownership on schedule generation | #3, #4, #5    | Angular router integration + Supabase integration (local) | complete | testing-auth-ownership-enforcement |
+| 3   | CI test gate                 | Wire `npm test` to run on every PR so the floor from Phases 1+2 cannot regress silently                                                             | cross-cutting | CI gate                                                   | complete | testing-ci-test-gate               |
+| 4   | E2E critical user journey    | Prove the full new-user flow (sign-up → add vehicle → AI schedule renders with visible source attribution) works against a Cloudflare Pages preview | #1, #2, #3    | Playwright e2e (staging + real Supabase)                  | complete | testing-e2e-critical-journey       |
 
 ---
 
@@ -442,16 +442,16 @@ deterministic regardless of LLM availability, rate limits, or Worker deployment 
 
 ```ts
 // Prefer accessible locators
-page.getByLabel('Email')
-page.getByRole('button', { name: /sign in/i })
-page.getByRole('option', { name: 'Gasoline' })   // mat-select options appended to <body>
+page.getByLabel('Email');
+page.getByRole('button', { name: /sign in/i });
+page.getByRole('option', { name: 'Gasoline' }); // mat-select options appended to <body>
 
 // Use data-testid for domain elements (schedule items, source attributions)
-page.locator('[data-testid="schedule-item"]')
-page.getByTestId('schedule-item-source')
+page.locator('[data-testid="schedule-item"]');
+page.getByTestId('schedule-item-source');
 
 // Navigation assertions
-await page.waitForURL(/\/dashboard\/vehicles\/.+/);   // wait for URL, not a timeout
+await page.waitForURL(/\/dashboard\/vehicles\/.+/); // wait for URL, not a timeout
 ```
 
 **Cleanup pattern** (copy from `critical-journey.spec.ts`):

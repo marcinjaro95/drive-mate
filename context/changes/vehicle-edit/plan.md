@@ -106,6 +106,7 @@ Register the new route in `app.routes.ts` and add an Edit button to the vehicle 
 **Intent**: Register `vehicles/:id/edit` as a lazy-loaded child route under `/dashboard`, before the existing `vehicles/:id` entry.
 
 **Contract**:
+
 ```typescript
 {
   path: 'vehicles/:id/edit',
@@ -113,6 +114,7 @@ Register the new route in `app.routes.ts` and add an Edit button to the vehicle 
     import('./vehicles/vehicle-edit/vehicle-edit').then((m) => m.VehicleEditComponent),
 },
 ```
+
 Insert this object at line 32, immediately before the `vehicles/:id` route.
 
 #### 2. Edit button in vehicle list

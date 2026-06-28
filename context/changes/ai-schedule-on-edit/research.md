@@ -4,7 +4,7 @@ researcher: Marcin Jarosz
 git_commit: 95c25c3289758f837f236184926c69c58d292854
 branch: master
 repository: drive-mate
-topic: "AI schedule reload after vehicle-edit; VIN immutability rationale"
+topic: 'AI schedule reload after vehicle-edit; VIN immutability rationale'
 tags: [research, vehicle-edit, ai-schedule, vin, cache-invalidation]
 status: complete
 last_updated: 2026-06-21
@@ -30,7 +30,7 @@ last_updated_by: Marcin Jarosz
 
 Two separate questions, two separate answers:
 
-1. **AI schedule does NOT reload after vehicle-edit** — confirmed gap. This was an *explicit design decision* in the vehicle-edit plan, but it produces a UX bug: edited vehicle specs (fuel type, engine capacity, year) make the cached schedule stale, yet the user sees no indication of this. The simplest fix is to clear `ai_schedule: null` in the update payload, which forces schedule-view to regenerate on next load.
+1. **AI schedule does NOT reload after vehicle-edit** — confirmed gap. This was an _explicit design decision_ in the vehicle-edit plan, but it produces a UX bug: edited vehicle specs (fuel type, engine capacity, year) make the cached schedule stale, yet the user sees no indication of this. The simplest fix is to clear `ai_schedule: null` in the update payload, which forces schedule-view to regenerate on next load.
 
 2. **VIN is immutable by intentional business rule** — documented in the PRD, enforced via disabled form control + payload exclusion (but not at the DB layer). The rationale is that VIN is the anchor for service history; allowing changes would break that link.
 
@@ -47,7 +47,7 @@ Two separate questions, two separate answers:
 ```typescript
 if (vehicleForInit.ai_schedule?.length) {
   this.scheduleItems.set(vehicleForInit.ai_schedule!);
-  return;  // exits — no regeneration
+  return; // exits — no regeneration
 }
 ```
 
@@ -59,7 +59,12 @@ If `ai_schedule` is non-empty in the DB, schedule-view always uses it and never 
 
 ```typescript
 await this.vehicleService.updateVehicle(this.vehicleId, {
-  make, model, year, engine_capacity, fuel_type, current_mileage,
+  make,
+  model,
+  year,
+  engine_capacity,
+  fuel_type,
+  current_mileage,
   // ai_schedule is NOT in the payload — old schedule stays in DB
 });
 ```
@@ -77,6 +82,7 @@ This was an intentional scope cut during implementation. The gap is real and doc
 #### AI schedule generation depends on the edited fields
 
 [`src/app/core/ai-schedule/ai-schedule.service.ts`](https://github.com/marcinjaro95/drive-mate/blob/95c25c3289758f837f236184926c69c58d292854/src/app/core/ai-schedule/ai-schedule.service.ts) — `generateAndSave()` uses:
+
 - `vehicle.year`, `vehicle.make`, `vehicle.model`
 - `vehicle.engine_capacity`, `vehicle.fuel_type`
 - `vehicle.current_mileage`
@@ -118,6 +124,7 @@ Plus: `vin` is never destructured out of `getRawValue()` into the `updateVehicle
 #### Test coverage
 
 [`src/app/vehicles/vehicle-edit/vehicle-edit.spec.ts:60-88`](https://github.com/marcinjaro95/drive-mate/blob/95c25c3289758f837f236184926c69c58d292854/src/app/vehicles/vehicle-edit/vehicle-edit.spec.ts#L60):
+
 - Test 1: VIN control is `disabled: true`
 - Test 2: submit payload does NOT have a `vin` key
 
@@ -129,18 +136,18 @@ Plus: `vin` is never destructured out of `getRawValue()` into the `updateVehicle
 
 ## Code References
 
-| File | Lines | What's there |
-|------|-------|--------------|
-| `src/app/vehicles/schedule-view/schedule-view.ts` | 101-103 | Cache check — reuses old schedule if non-empty, **the gap** |
-| `src/app/vehicles/schedule-view/schedule-view.ts` | 70-106 | Full ngOnInit, including the regeneration branch |
-| `src/app/vehicles/vehicle-edit/vehicle-edit.ts` | 85-95 | onSubmit — list of fields sent to updateVehicle |
-| `src/app/core/ai-schedule/ai-schedule.service.ts` | 15-54 | generateAndSave — fields it reads from Vehicle |
-| `src/app/vehicles/vehicle-edit/vehicle-edit.html` | 13-18 | VIN field: disabled input + lock icon + hint |
-| `src/app/vehicles/vehicle-edit/vehicle-edit.ts` | 42 | Form init: `vin: [{ value: null, disabled: true }]` |
-| `src/app/vehicles/vehicle-edit/vehicle-edit.spec.ts` | 60-88 | VIN disabled + payload exclusion tests |
-| `context/changes/vehicle-edit/plan.md` | "What We're NOT Doing" | Explicit scope cut — no auto-regeneration |
-| `context/foundation/prd.md` | 84 | "VIN is immutable once set" |
-| `supabase/migrations/20260604000000_init_schema.sql` | 30 | `vin text` — no DB-level constraint |
+| File                                                 | Lines                  | What's there                                                |
+| ---------------------------------------------------- | ---------------------- | ----------------------------------------------------------- |
+| `src/app/vehicles/schedule-view/schedule-view.ts`    | 101-103                | Cache check — reuses old schedule if non-empty, **the gap** |
+| `src/app/vehicles/schedule-view/schedule-view.ts`    | 70-106                 | Full ngOnInit, including the regeneration branch            |
+| `src/app/vehicles/vehicle-edit/vehicle-edit.ts`      | 85-95                  | onSubmit — list of fields sent to updateVehicle             |
+| `src/app/core/ai-schedule/ai-schedule.service.ts`    | 15-54                  | generateAndSave — fields it reads from Vehicle              |
+| `src/app/vehicles/vehicle-edit/vehicle-edit.html`    | 13-18                  | VIN field: disabled input + lock icon + hint                |
+| `src/app/vehicles/vehicle-edit/vehicle-edit.ts`      | 42                     | Form init: `vin: [{ value: null, disabled: true }]`         |
+| `src/app/vehicles/vehicle-edit/vehicle-edit.spec.ts` | 60-88                  | VIN disabled + payload exclusion tests                      |
+| `context/changes/vehicle-edit/plan.md`               | "What We're NOT Doing" | Explicit scope cut — no auto-regeneration                   |
+| `context/foundation/prd.md`                          | 84                     | "VIN is immutable once set"                                 |
+| `supabase/migrations/20260604000000_init_schema.sql` | 30                     | `vin text` — no DB-level constraint                         |
 
 ---
 

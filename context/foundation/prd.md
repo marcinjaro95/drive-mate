@@ -77,6 +77,7 @@ Moment they reach for DriveMate: standing at the workshop counter being quoted a
   > Socrates: Counter-argument considered: "Delete is one-way — accidental delete loses all history; soft-delete is safer." Resolution: kept as must-have (GDPR and user autonomy require it). A confirmation step is non-negotiable; data-retention strategy is an open question — see Open Questions.
 
 - FR-004: App fetches basic vehicle data from a VIN lookup. Priority: must-have
+
   > Socrates: Counter-argument considered: "VIN data quality varies by market; EU/Polish VINs may return incomplete data from free APIs." Resolution: kept. VIN lookup is the core differentiator. API reliability for Polish-market vehicles must be validated before committing — see Open Questions.
 
 - FR-009: User can edit a car's fields (make, model, year, engine capacity, fuel type). Priority: must-have
